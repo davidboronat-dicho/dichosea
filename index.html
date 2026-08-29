@@ -758,17 +758,22 @@ const statObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 targets.forEach(t => { const el = document.getElementById(t.id); if (el) statObs.observe(el); });
 
+// ── CONFIGURACIÓN ─────────────────────────────
+// ⚠️ Reemplaza esta URL con la URL de tu Apps Script desplegado
+// (en Apps Script: Implementar → Gestionar implementaciones → la URL de tu web app)
+var DICHO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxB0kQEH21UFoiXM9GsHZQSwETF7oEAA9-ogk9dyipc6r6peoB__DbRTfU88GaKuElu/exec';
+
 // ── FORM SUBMIT → Google Apps Script ──────────
 document.getElementById('lead-form').addEventListener('submit', function(e) {
   e.preventDefault();
 
   // Validación básica
-  const nombre   = document.getElementById('f-nombre').value.trim();
-  const negocio  = document.getElementById('f-negocio').value.trim();
-  const tipo     = document.getElementById('f-tipo').value;
-  const ciudad   = document.getElementById('f-ciudad').value.trim();
-  const email    = document.getElementById('f-email').value.trim();
-  const whatsapp = document.getElementById('f-wa').value.trim();
+  var nombre   = document.getElementById('f-nombre').value.trim();
+  var negocio  = document.getElementById('f-negocio').value.trim();
+  var tipo     = document.getElementById('f-tipo').value;
+  var ciudad   = document.getElementById('f-ciudad').value.trim();
+  var email    = document.getElementById('f-email').value.trim();
+  var whatsapp = document.getElementById('f-wa').value.trim();
 
   if (!nombre || !negocio || !tipo || !ciudad || !email || !whatsapp) {
     document.getElementById('form-error').style.display = 'block';
@@ -776,37 +781,39 @@ document.getElementById('lead-form').addEventListener('submit', function(e) {
     return;
   }
 
-  const btn = document.getElementById('submit-btn');
+  var btn = document.getElementById('submit-btn');
   btn.textContent = 'Enviando…';
   btn.disabled = true;
   document.getElementById('form-error').style.display = 'none';
 
-  // Llamada al backend de Apps Script
-  google.script.run
-    .withSuccessHandler(function(result) {
+  // Llamada al backend de Apps Script via fetch (compatible con GitHub Pages)
+  var params = new URLSearchParams({
+    page:     'submit',
+    nombre:   nombre,
+    negocio:  negocio,
+    tipo:     tipo,
+    ciudad:   ciudad,
+    email:    email,
+    whatsapp: whatsapp
+  });
+
+  fetch(DICHO_SCRIPT_URL + '?' + params.toString())
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
       if (result && result.ok) {
-        // Redirigir a la página de bienvenida con el QR
         window.location.href = result.redirectUrl;
       } else {
         btn.textContent = 'Pruébalo gratis →';
         btn.disabled = false;
         document.getElementById('form-error').style.display = 'block';
-        document.getElementById('form-error').textContent = 'Hubo un error. Por favor intenta de nuevo.';
+        document.getElementById('form-error').textContent = result.error || 'Hubo un error. Por favor intenta de nuevo.';
       }
     })
-    .withFailureHandler(function(err) {
+    .catch(function() {
       btn.textContent = 'Pruébalo gratis →';
       btn.disabled = false;
       document.getElementById('form-error').style.display = 'block';
       document.getElementById('form-error').textContent = 'Error de conexión. Por favor intenta de nuevo.';
-    })
-    .submitForm({
-      nombre:   nombre,
-      negocio:  negocio,
-      tipo:     tipo,
-      ciudad:   ciudad,
-      email:    email,
-      whatsapp: whatsapp
     });
 });
 </script>
