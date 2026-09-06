@@ -354,6 +354,8 @@ body {
 .fgroup input:focus,
 .fgroup select:focus { border-color: #16A34A; background: #F0FDF4; box-shadow: 0 0 0 3px rgba(22,163,74,.15); }
 .lead-form .btn-primary { margin-top: 6px; font-size: 15px; padding: 14px; justify-content: center; width: 100%; }
+.btn-spinner { width:16px; height:16px; border:2.5px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
+@keyframes spin { to { transform:rotate(360deg); } }
 .form-note { font-size: 11px; color: rgba(255,255,255,.3); text-align: center; }
 .form-error { font-size: 12px; color: #FCA5A5; text-align: center; display: none; }
 /* ── AUTOCOMPLETE CIUDAD ── */
@@ -814,7 +816,7 @@ document.getElementById('lead-form').addEventListener('submit', function(e) {
     return;
   }
   var btn = document.getElementById('submit-btn');
-  btn.textContent = 'Enviando…';
+  btn.innerHTML = '<span class="btn-spinner"></span> Creando tu cuenta…';
   btn.disabled = true;
   document.getElementById('form-error').style.display = 'none';
   var params = new URLSearchParams({
@@ -827,7 +829,7 @@ document.getElementById('lead-form').addEventListener('submit', function(e) {
       if (result && result.ok) {
         window.location.href = result.redirectUrl;
       } else {
-        btn.textContent = 'Pruébalo gratis →';
+        btn.innerHTML = 'Pruébalo gratis →';
         btn.disabled = false;
         document.getElementById('form-error').style.display = 'block';
         document.getElementById('form-error').textContent = result.error || 'Hubo un error. Por favor intenta de nuevo.';
