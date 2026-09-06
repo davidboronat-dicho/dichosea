@@ -362,13 +362,13 @@ document.getElementById('btn-dashboard').href = dashUrl;
 
 // QR
 if (qrUrl) {
-  document.getElementById('qr-img').src = decodeURIComponent(qrUrl);
+  document.getElementById('qr-img').src = qrUrl;
 }
 
 // Descargar QR
 function descargarQR() {
   var link = document.createElement('a');
-  link.href = qrUrl ? decodeURIComponent(qrUrl) : '';
+  link.href = qrUrl ? qrUrl : '';
   link.target = '_blank';
   link.rel = 'noopener';
   link.click();
