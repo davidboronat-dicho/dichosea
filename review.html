@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dicho</title>
+  <style>
+    body { margin: 0; background: #F0F7F3; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, sans-serif; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #2DB67D; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  </style>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var waId   = params.get('id');
+      if (waId) {
+        window.location.replace(
+          'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec'
+          + '?page=review&id=' + encodeURIComponent(waId)
+        );
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div class="dot"></div>
+</body>
+</html>
