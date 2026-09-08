@@ -1,6 +1,15 @@
 <!doctype html>
 <html lang="es">
 <head>
+<script>
+(function() {
+  var p = new URLSearchParams(window.location.search);
+  var v = p.get('gmaps');
+  if (v && /^\d{7,15}$/.test(v)) {
+    window.location.replace('/review.html?id=' + v);
+  }
+})();
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dicho · Bienvenida</title>
