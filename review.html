@@ -2,27 +2,300 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dicho</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>¡Tu opinión nos encantó! · Dicho</title>
+  <meta property="og:title" content="¡Tu opinión nos encantó! 🌟">
+  <meta property="og:description" content="Gracias por tomarte un momento.">
+  <meta property="og:site_name" content="Dicho">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Playfair+Display:wght@700&display=swap">
   <style>
-    body { margin: 0; background: #F0F7F3; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, sans-serif; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; background: #2DB67D; animation: pulse 1s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F7F3;
+      color: #1a2e25;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── Loading ── */
+    .loading-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 16px;
+      color: #6a9a80;
+      font-size: 15px;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #C8E6D8;
+      border-top-color: #2DB67D;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Header ── */
+    .header {
+      background: #F0F7F3;
+      padding: 52px 24px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .check-circle {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: #2DB67D;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 9px rgba(45,182,125,0.13);
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .biz-block { line-height: 1.3; }
+    .biz-name {
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px; font-weight: 800;
+      color: #1a2e25;
+    }
+    .biz-city { font-size: 13px; color: #6a9a80; margin-top: 2px; }
+
+    .headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 23px; font-weight: 700;
+      color: #1a2e25; line-height: 1.3;
+    }
+
+    /* ── Body ── */
+    .body {
+      flex: 1;
+      padding: 6px 20px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .hint {
+      font-size: 13px; color: #aaa;
+      font-style: italic; text-align: center;
+    }
+
+    .review-box {
+      background: white;
+      border-radius: 14px;
+      padding: 16px;
+      border: 1.5px solid #ddeae0;
+      min-height: 130px;
+      font-size: 16px;
+      line-height: 1.65;
+      color: #333;
+      outline: none;
+      word-break: break-word;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .review-box:focus {
+      border-color: #2DB67D;
+      box-shadow: 0 0 0 3px rgba(45,182,125,0.12);
+    }
+
+    /* ── CTA ── */
+    .cta {
+      background: linear-gradient(135deg, #1a7a52, #2DB67D);
+      border: none;
+      border-radius: 16px;
+      padding: 16px 20px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(45,182,125,0.3);
+      width: 100%;
+      transition: opacity 0.15s, transform 0.15s;
+      text-decoration: none;
+      display: block;
+    }
+    .cta:active { opacity: 0.88; transform: scale(0.985); }
+
+    .cta-main {
+      font-family: 'Nunito', sans-serif;
+      font-size: 17px; font-weight: 900;
+      color: white; line-height: 1;
+    }
+    .cta-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 36px; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1a2e25;
+      color: white;
+      padding: 13px 22px;
+      border-radius: 13px;
+      font-size: 15px; font-weight: 600;
+      opacity: 0;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+      white-space: nowrap;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Error ── */
+    .error-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 12px;
+      text-align: center;
+      padding: 24px;
+    }
+    .error-icon { font-size: 40px; }
+    .error-msg { font-size: 16px; color: #6a9a80; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 0 0 20px;
+      font-size: 12px; color: #bbb;
+    }
+    .footer a { color: #2DB67D; text-decoration: none; font-weight: 700; }
+
+    /* hidden by default */
+    .page { display: none; }
   </style>
-  <script>
-    (function () {
-      var params = new URLSearchParams(window.location.search);
-      var waId   = params.get('id');
-      if (waId) {
-        window.location.replace(
-          'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec'
-          + '?page=review&id=' + encodeURIComponent(waId)
-        );
-      }
-    })();
-  </script>
 </head>
 <body>
-  <div class="dot"></div>
+
+  <!-- Loading -->
+  <div class="loading-wrap" id="loading">
+    <div class="spinner"></div>
+    <span>Preparando tu reseña…</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-wrap" id="error">
+    <div class="error-icon">😕</div>
+    <div class="error-msg">Esta reseña ya no está disponible.</div>
+  </div>
+
+  <!-- Page -->
+  <div class="page" id="page">
+
+    <div class="header">
+      <div class="check-circle">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white"
+             stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="biz-block">
+        <div class="biz-name" id="negocio"></div>
+        <div class="biz-city" id="ciudad"></div>
+      </div>
+      <div class="headline">¡Tu opinión nos encantó! 🌟</div>
+    </div>
+
+    <div class="body">
+      <p class="hint">Cambia lo que quieras</p>
+      <div class="review-box" id="reviewText" contenteditable="true"></div>
+
+      <a class="cta" id="ctaBtn" href="#" target="_blank" rel="noopener" onclick="copyAndToast()">
+        <div class="cta-main">Publicar en Google Maps</div>
+        <div class="cta-sub">Tu reseña se copia automáticamente.<br>Sólo tendrás que pegarla.</div>
+      </a>
+
+      <div class="footer">Powered by <a href="https://dichosea.com" target="_blank">Dicho</a></div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast">✅ Copiada. ¡Ahora pégala en Google Maps!</div>
+
+  <script>
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+
+    var params = new URLSearchParams(window.location.search);
+    var waId   = params.get('id');
+
+    function show(id) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display   = 'none';
+      document.getElementById('page').style.display    = 'none';
+      if (id === 'loading') document.getElementById('loading').style.display = 'flex';
+      if (id === 'error')   document.getElementById('error').style.display   = 'flex';
+      if (id === 'page')    document.getElementById('page').style.display    = 'flex';
+    }
+
+    if (!waId) {
+      show('error');
+    } else {
+      fetch(GAS_URL + '?page=reviewData&id=' + encodeURIComponent(waId))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.ok) { show('error'); return; }
+          document.getElementById('negocio').textContent   = data.negocio       || '';
+          document.getElementById('ciudad').textContent    = data.ciudad        || '';
+          document.getElementById('reviewText').textContent = data.transcripcion || '';
+          document.getElementById('ctaBtn').href            = data.reviewUrl     || '#';
+          show('page');
+        })
+        .catch(function() { show('error'); });
+    }
+
+    function copyAndToast() {
+      var text = document.getElementById('reviewText').innerText.trim();
+      if (!text) return true;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).catch(function() { fallbackCopy(text); });
+      } else {
+        fallbackCopy(text);
+      }
+      showToast();
+      return true;
+    }
+
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+    }
+
+    function showToast() {
+      var t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(function() { t.classList.remove('show'); }, 3500);
+    }
+  </script>
+
 </body>
 </html>
