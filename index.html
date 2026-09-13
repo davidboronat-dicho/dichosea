@@ -88,10 +88,12 @@ body {
   border-bottom: 1px solid var(--border);
   height: 60px;
   display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
 }
 .nav-logo {
   font-size: 20px; font-weight: 800; color: var(--g);
   letter-spacing: -.5px; font-family: 'Plus Jakarta Sans', sans-serif;
+  flex-shrink: 0;
 }
 .nav-logo span { color: var(--ink); }
 .nav-links { display: flex; gap: 28px; }
@@ -100,6 +102,24 @@ body {
   text-decoration: none; transition: color .15s;
 }
 .nav-links a:hover { color: var(--ink); }
+/* right cluster */
+.nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.nav-lang { display: flex; gap: 2px; margin-right: 4px; }
+.nav-lang-btn {
+  background: none; border: none; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  color: var(--muted); cursor: pointer; padding: 4px 7px;
+  border-radius: 5px; transition: color .15s, background .15s;
+}
+.nav-lang-btn:hover { color: var(--ink); background: var(--g-f); }
+.nav-lang-btn.active { color: var(--g); }
+.nav-acceder {
+  font-size: 14px; font-weight: 600; color: var(--g);
+  text-decoration: none; padding: 7px 14px;
+  border: 1.5px solid color-mix(in srgb, var(--g) 30%, transparent);
+  border-radius: 8px; transition: background .15s, border-color .15s;
+}
+.nav-acceder:hover { background: var(--g-f); border-color: var(--g); }
 .nav-cta {
   background: var(--g); color: #fff;
   padding: 9px 20px; border-radius: 8px;
@@ -108,7 +128,12 @@ body {
   transition: background .15s;
 }
 .nav-cta:hover { background: var(--g-d); }
-@media (max-width: 640px) { .nav-links { display: none; } }
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .nav-lang  { display: none; }
+  .nav-acceder { padding: 7px 11px; font-size: 13px; }
+  .nav-cta { padding: 8px 14px; font-size: 13px; }
+}
 /* ── HERO ── */
 .hero {
   padding-block: 72px 80px;
@@ -433,26 +458,39 @@ body {
   <nav class="nav wrap">
     <div class="nav-logo">dicho<span>.</span></div>
     <div class="nav-links">
-      <a href="#como">Cómo funciona</a>
-      <a href="#beneficios">Beneficios</a>
+      <a href="#como" data-i18n="nav_como">Cómo funciona</a>
+      <a href="#beneficios" data-i18n="nav_ben">Beneficios</a>
     </div>
-    <button class="nav-cta" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Pruébalo gratis</button>
+    <div class="nav-right">
+      <div class="nav-lang">
+        <button class="nav-lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+        <button class="nav-lang-btn" data-lang="ca" onclick="setLang('ca')">CA</button>
+        <button class="nav-lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+      <a href="https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec?page=login"
+         class="nav-acceder" data-i18n="nav_acceder">Acceder</a>
+      <button class="nav-cta" data-i18n="nav_prueba"
+              onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Pruébalo gratis</button>
+    </div>
   </nav>
 </header>
+
 <!-- HERO -->
 <section class="hero wrap">
   <div class="hero-ghost" aria-hidden="true">4.8★</div>
   <div class="hero-content">
-    <span class="label">Feedback por voz · Reseñas con IA</span>
-    <h1 class="hero-h">El 85% de clientes felices<br>nunca deja reseña<br><em>en Google Maps.</em></h1>
-    <p class="hero-sub" style="margin-bottom:18px">Porque nadie quiere escribir. Pero, ¿y si pudieran simplemente enviarte un audio por WhatsApp?</p>
-    <p class="hero-sub">Dicho convierte mensajes de voz en insights para tu negocio y mejores reseñas en Google Maps.</p>
+    <span class="label" data-i18n="hero_label">Feedback por voz · Reseñas con IA</span>
+    <h1 class="hero-h" data-i18n-html="hero_h">El 85% de clientes felices<br>nunca deja reseña<br><em>en Google Maps.</em></h1>
+    <p class="hero-sub" style="margin-bottom:18px" data-i18n="hero_sub1">Porque nadie quiere escribir. Pero, ¿y si pudieran simplemente enviarte un audio por WhatsApp?</p>
+    <p class="hero-sub" data-i18n="hero_sub2">Dicho convierte mensajes de voz en insights para tu negocio y mejores reseñas en Google Maps.</p>
     <div class="hero-btns">
-      <button class="btn-primary" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Pruébalo gratis</button>
-      <button class="btn-ghost" onclick="document.getElementById('como').scrollIntoView({behavior:'smooth'})">Ver cómo funciona</button>
+      <button class="btn-primary" data-i18n="hero_cta"
+              onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Pruébalo gratis</button>
+      <button class="btn-ghost" data-i18n="hero_sec"
+              onclick="document.getElementById('como').scrollIntoView({behavior:'smooth'})">Ver cómo funciona</button>
     </div>
   </div>
-  <!-- Phone mockup -->
+  <!-- Phone mockup (illustrative, kept in Spanish) -->
   <div class="hero-phone">
     <div class="phone-shell">
       <div class="phone-pill">
@@ -520,107 +558,112 @@ body {
     </div>
   </div>
 </section>
+
 <!-- STATS -->
 <div class="stats wrap">
   <div class="reveal">
     <div class="stat-n" id="s1">0%</div>
-    <div class="stat-l">más reseñas en los primeros 30 días</div>
+    <div class="stat-l" data-i18n="stat1">más reseñas en los primeros 30 días</div>
   </div>
   <div class="reveal">
     <div class="stat-n" id="s2">0 seg</div>
-    <div class="stat-l">es lo que tarda un cliente en dar feedback</div>
+    <div class="stat-l" data-i18n="stat2">es lo que tarda un cliente en dar feedback</div>
   </div>
   <div class="reveal">
     <div class="stat-n" id="s3">0★</div>
-    <div class="stat-l">calificación promedio en negocios con Dicho</div>
+    <div class="stat-l" data-i18n="stat3">calificación promedio en negocios con Dicho</div>
   </div>
 </div>
+
 <!-- HOW IT WORKS -->
 <section class="section wrap" id="como">
-  <span class="label reveal">Cómo funciona</span>
+  <span class="label reveal" data-i18n="steps_label">Cómo funciona</span>
   <div class="section-head reveal">
-    <h2 class="section-h">Tres pasos. Una sola vez de configurar.</h2>
-    <p class="section-p">No hay apps que instalar ni formularios que llenar. Tus clientes ya tienen WhatsApp.</p>
+    <h2 class="section-h" data-i18n="steps_h">Tres pasos. Una sola vez de configurar.</h2>
+    <p class="section-p" data-i18n="steps_p">No hay apps que instalar ni formularios que llenar. Tus clientes ya tienen WhatsApp.</p>
   </div>
   <div class="steps-row">
     <div class="step-card reveal">
       <div class="step-n">1</div>
-      <div class="step-h">Pon el código en tu negocio</div>
-      <p class="step-p">Te mandamos un código QR listo para imprimir y colocar en la mesa, en la cuenta o donde prefieras. Un minuto de setup, para siempre.</p>
+      <div class="step-h" data-i18n="step1_h">Pon el código en tu negocio</div>
+      <p class="step-p" data-i18n="step1_p">Te mandamos un código QR listo para imprimir y colocar en la mesa, en la cuenta o donde prefieras. Un minuto de setup, para siempre.</p>
     </div>
     <div class="step-card reveal" style="transition-delay:.08s">
       <div class="step-n">2</div>
-      <div class="step-h">Cliente graba un audio</div>
-      <p class="step-p">Al escanearlo, WhatsApp se abre directamente. El cliente graba un mensaje de voz en segundos — sin apps, sin registros, sin fricción.</p>
+      <div class="step-h" data-i18n="step2_h">Cliente graba un audio</div>
+      <p class="step-p" data-i18n="step2_p">Al escanearlo, WhatsApp se abre directamente. El cliente graba un mensaje de voz en segundos — sin apps, sin registros, sin fricción.</p>
     </div>
     <div class="step-card reveal" style="transition-delay:.16s">
       <div class="step-n">3</div>
-      <div class="step-h">Reseña lista para publicar</div>
-      <p class="step-p">La IA transcribe, analiza el sentimiento y redacta la reseña. El cliente confirma con un toque y queda publicada directo en Google Maps.</p>
+      <div class="step-h" data-i18n="step3_h">Reseña lista para publicar</div>
+      <p class="step-p" data-i18n="step3_p">La IA transcribe, analiza el sentimiento y redacta la reseña. El cliente confirma con un toque y queda publicada directo en Google Maps.</p>
     </div>
   </div>
 </section>
+
 <!-- BENEFITS -->
 <section class="section-sm wrap" id="beneficios">
-  <span class="label reveal">Por qué funciona</span>
+  <span class="label reveal" data-i18n="ben_label">Por qué funciona</span>
   <div class="section-head reveal">
-    <h2 class="section-h" style="text-wrap:nowrap;font-size:clamp(20px,2.6vw,34px)">Tus clientes quieren recomendarte.<br><em style="color:var(--g)">Solo nadie les había puesto fácil.</em></h2>
-    <p class="section-p">Un audio de WhatsApp de 10 segundos tiene más información que cualquier encuesta. La voz dice lo que el texto nunca escribe.</p>
+    <h2 class="section-h" style="text-wrap:nowrap;font-size:clamp(20px,2.6vw,34px)"
+        data-i18n-html="ben_h">Tus clientes quieren recomendarte.<br><em style="color:var(--g)">Solo nadie les había puesto fácil.</em></h2>
+    <p class="section-p" data-i18n="ben_p">Un audio de WhatsApp de 10 segundos tiene más información que cualquier encuesta. La voz dice lo que el texto nunca escribe.</p>
   </div>
   <div class="ben-grid">
     <div class="ben-card reveal">
       <div class="ben-icon">📈</div>
       <div>
-        <div class="ben-h">Mejor posicionamiento en Google</div>
-        <p class="ben-p">Las reseñas son el factor #1 en el ranking local de Google Maps. Más reseñas = más visibilidad = más clientes nuevos que llegan solos.</p>
+        <div class="ben-h" data-i18n="ben1_h">Mejor posicionamiento en Google</div>
+        <p class="ben-p" data-i18n="ben1_p">Las reseñas son el factor #1 en el ranking local de Google Maps. Más reseñas = más visibilidad = más clientes nuevos que llegan solos.</p>
       </div>
     </div>
     <div class="ben-card reveal" style="transition-delay:.06s">
       <div class="ben-icon">🎙️</div>
       <div>
-        <div class="ben-h">Feedback real, no encuestas ignoradas</div>
-        <p class="ben-p">Un audio de 10 segundos tiene más información que cualquier formulario. La voz captura los matices que el texto escrito nunca puede.</p>
+        <div class="ben-h" data-i18n="ben2_h">Feedback real, no encuestas ignoradas</div>
+        <p class="ben-p" data-i18n="ben2_p">Un audio de 10 segundos tiene más información que cualquier formulario. La voz captura los matices que el texto escrito nunca puede.</p>
       </div>
     </div>
     <div class="ben-card reveal" style="transition-delay:.12s">
       <div class="ben-icon">⚡</div>
       <div>
-        <div class="ben-h">Dashboard con insights de IA</div>
-        <p class="ben-p">Detecta tendencias, identifica problemas antes de que escalen y descubre qué es exactamente lo que más les encanta a tus clientes.</p>
+        <div class="ben-h" data-i18n="ben3_h">Dashboard con insights de IA</div>
+        <p class="ben-p" data-i18n="ben3_p">Detecta tendencias, identifica problemas antes de que escalen y descubre qué es exactamente lo que más les encanta a tus clientes.</p>
       </div>
     </div>
     <div class="ben-card reveal" style="transition-delay:.18s">
       <div class="ben-icon">💬</div>
       <div>
-        <div class="ben-h">Solo WhatsApp, nada más</div>
-        <p class="ben-p">Tus clientes ya lo tienen instalado. Sin apps nuevas, sin registro, sin contraseñas. La fricción cero es exactamente la razón por la que funciona.</p>
+        <div class="ben-h" data-i18n="ben4_h">Solo WhatsApp, nada más</div>
+        <p class="ben-p" data-i18n="ben4_p">Tus clientes ya lo tienen instalado. Sin apps nuevas, sin registro, sin contraseñas. La fricción cero es exactamente la razón por la que funciona.</p>
       </div>
     </div>
   </div>
 </section>
+
 <!-- CTA + FORM -->
 <section class="cta-band" id="contacto">
   <div class="wrap cta-grid">
     <div class="cta-left reveal">
-      <span class="label" style="color:#4ADE80">Empieza gratis</span>
-      <h2 class="cta-h">Tu competencia ya está<br><em>acumulando reseñas.</em></h2>
-      <p class="cta-p">En 5 minutos tienes tu QR listo. Los primeros audios de tus clientes llegan ese mismo día.</p>
+      <span class="label" style="color:#4ADE80" data-i18n="cta_label">Empieza gratis</span>
+      <h2 class="cta-h" data-i18n-html="cta_h">Tu competencia ya está<br><em>acumulando reseñas.</em></h2>
+      <p class="cta-p" data-i18n="cta_p">En 5 minutos tienes tu QR listo. Los primeros audios de tus clientes llegan ese mismo día.</p>
     </div>
     <div class="reveal" style="transition-delay:.1s">
       <form class="lead-form" id="lead-form" novalidate>
-        <div class="lead-form-title">Solicita tu prueba gratuita</div>
+        <div class="lead-form-title" data-i18n="form_title">Solicita tu prueba gratuita</div>
         <div class="frow">
           <div class="fgroup">
-            <label for="f-nombre">Nombre y apellidos</label>
-            <input id="f-nombre" type="text" placeholder="Ana García" required>
+            <label for="f-nombre" data-i18n="f_nombre_lbl">Nombre y apellidos</label>
+            <input id="f-nombre" type="text" data-i18n-placeholder="f_nombre_ph" placeholder="Ana García" required>
           </div>
           <div class="fgroup">
-            <label for="f-negocio">Nombre del negocio</label>
-            <input id="f-negocio" type="text" placeholder="Restaurante El Mirador" required>
+            <label for="f-negocio" data-i18n="f_negocio_lbl">Nombre del negocio</label>
+            <input id="f-negocio" type="text" data-i18n-placeholder="f_negocio_ph" placeholder="Restaurante El Mirador" required>
           </div>
         </div>
         <div class="fgroup">
-          <label for="f-tipo">Tipo de negocio</label>
+          <label for="f-tipo" data-i18n="f_tipo_lbl">Tipo de negocio</label>
           <select id="f-tipo" required>
             <option value="" disabled selected>Selecciona una categoría…</option>
             <option>Restaurante / Comida</option>
@@ -639,40 +682,239 @@ body {
         </div>
         <div class="frow">
           <div class="fgroup">
-            <label for="f-ciudad">Ciudad</label>
+            <label for="f-ciudad" data-i18n="f_ciudad_lbl">Ciudad</label>
             <div class="autocomplete-wrap" id="ciudad-wrap">
-              <input id="f-ciudad" type="text" placeholder="Escribe tu ciudad…" autocomplete="off" required>
+              <input id="f-ciudad" type="text" data-i18n-placeholder="f_ciudad_ph" placeholder="Escribe tu ciudad…" autocomplete="off" required>
               <div class="ac-list" id="ciudad-list"></div>
             </div>
           </div>
           <div class="fgroup">
-            <label for="f-email">Correo electrónico</label>
-            <input id="f-email" type="email" placeholder="ana@negocio.com" required>
+            <label for="f-email" data-i18n="f_email_lbl">Correo electrónico</label>
+            <input id="f-email" type="email" data-i18n-placeholder="f_email_ph" placeholder="ana@negocio.com" required>
           </div>
         </div>
         <div class="fgroup">
-          <label for="f-wa">WhatsApp</label>
-          <input id="f-wa" type="tel" placeholder="+34 612 345 678" required>
+          <label for="f-wa" data-i18n="f_wa_lbl">WhatsApp</label>
+          <input id="f-wa" type="tel" data-i18n-placeholder="f_wa_ph" placeholder="+34 612 345 678" required>
         </div>
-        <button class="btn-primary" type="submit" id="submit-btn">Pruébalo gratis →</button>
+        <button class="btn-primary" type="submit" id="submit-btn" data-i18n="f_submit">Pruébalo gratis →</button>
         <p class="form-error" id="form-error">Hubo un error al enviar. Por favor intenta de nuevo.</p>
       </form>
     </div>
   </div>
 </section>
+
 <!-- FOOTER -->
 <footer class="wrap">
   <div class="footer">
     <div class="footer-logo">dicho<span>.</span></div>
-    <div>© 2026 Dicho · hecho con ❤️</div>
+    <div data-i18n="footer_copy">© 2026 Dicho · hecho con ❤️</div>
     <div class="footer-links">
-      <a href="#">Privacidad</a>
-      <a href="#">Términos</a>
-      <a href="#">Contacto</a>
+      <a href="#" data-i18n="footer_privacy">Privacidad</a>
+      <a href="#" data-i18n="footer_terms">Términos</a>
+      <a href="#" data-i18n="footer_contact">Contacto</a>
     </div>
   </div>
 </footer>
+
 <script>
+// ── i18n ──────────────────────────────────────────────────────────────────────
+var LANG = 'es';
+var TR = {
+  es: {
+    nav_como:'Cómo funciona', nav_ben:'Beneficios',
+    nav_acceder:'Acceder', nav_prueba:'Pruébalo gratis',
+    hero_label:'Feedback por voz · Reseñas con IA',
+    hero_h:'El 85% de clientes felices<br>nunca deja reseña<br><em>en Google Maps.</em>',
+    hero_sub1:'Porque nadie quiere escribir. Pero, ¿y si pudieran simplemente enviarte un audio por WhatsApp?',
+    hero_sub2:'Dicho convierte mensajes de voz en insights para tu negocio y mejores reseñas en Google Maps.',
+    hero_cta:'Pruébalo gratis', hero_sec:'Ver cómo funciona',
+    stat1:'más reseñas en los primeros 30 días',
+    stat2:'es lo que tarda un cliente en dar feedback',
+    stat3:'calificación promedio en negocios con Dicho',
+    steps_label:'Cómo funciona',
+    steps_h:'Tres pasos. Una sola vez de configurar.',
+    steps_p:'No hay apps que instalar ni formularios que llenar. Tus clientes ya tienen WhatsApp.',
+    step1_h:'Pon el código en tu negocio',
+    step1_p:'Te mandamos un código QR listo para imprimir y colocar en la mesa, en la cuenta o donde prefieras. Un minuto de setup, para siempre.',
+    step2_h:'Cliente graba un audio',
+    step2_p:'Al escanearlo, WhatsApp se abre directamente. El cliente graba un mensaje de voz en segundos — sin apps, sin registros, sin fricción.',
+    step3_h:'Reseña lista para publicar',
+    step3_p:'La IA transcribe, analiza el sentimiento y redacta la reseña. El cliente confirma con un toque y queda publicada directo en Google Maps.',
+    ben_label:'Por qué funciona',
+    ben_h:'Tus clientes quieren recomendarte.<br><em style="color:var(--g)">Solo nadie les había puesto fácil.</em>',
+    ben_p:'Un audio de WhatsApp de 10 segundos tiene más información que cualquier encuesta. La voz dice lo que el texto nunca escribe.',
+    ben1_h:'Mejor posicionamiento en Google',
+    ben1_p:'Las reseñas son el factor #1 en el ranking local de Google Maps. Más reseñas = más visibilidad = más clientes nuevos que llegan solos.',
+    ben2_h:'Feedback real, no encuestas ignoradas',
+    ben2_p:'Un audio de 10 segundos tiene más información que cualquier formulario. La voz captura los matices que el texto escrito nunca puede.',
+    ben3_h:'Dashboard con insights de IA',
+    ben3_p:'Detecta tendencias, identifica problemas antes de que escalen y descubre qué es exactamente lo que más les encanta a tus clientes.',
+    ben4_h:'Solo WhatsApp, nada más',
+    ben4_p:'Tus clientes ya lo tienen instalado. Sin apps nuevas, sin registro, sin contraseñas. La fricción cero es exactamente la razón por la que funciona.',
+    cta_label:'Empieza gratis',
+    cta_h:'Tu competencia ya está<br><em>acumulando reseñas.</em>',
+    cta_p:'En 5 minutos tienes tu QR listo. Los primeros audios de tus clientes llegan ese mismo día.',
+    form_title:'Solicita tu prueba gratuita',
+    f_nombre_lbl:'Nombre y apellidos', f_nombre_ph:'Ana García',
+    f_negocio_lbl:'Nombre del negocio', f_negocio_ph:'Restaurante El Mirador',
+    f_tipo_lbl:'Tipo de negocio', f_tipo_ph:'Selecciona una categoría…',
+    f_ciudad_lbl:'Ciudad', f_ciudad_ph:'Escribe tu ciudad…',
+    f_email_lbl:'Correo electrónico', f_email_ph:'ana@negocio.com',
+    f_wa_lbl:'WhatsApp', f_wa_ph:'+34 612 345 678',
+    f_submit:'Pruébalo gratis →', f_submit_loading:'Creando tu cuenta…',
+    f_err_campos:'Por favor completa todos los campos.',
+    f_err_conexion:'Error de conexión. Por favor intenta de nuevo.',
+    f_err_general:'Hubo un error al enviar. Por favor intenta de nuevo.',
+    tipos:['Restaurante / Comida','Café / Cafetería','Bar / Cantina','Hotel / Hospedaje','Spa / Centro de bienestar','Clínica / Consultorio','Salón de belleza / Estética','Gimnasio / Fitness','Tienda / Retail','Entretenimiento / Ocio','Servicios profesionales','Otro'],
+    footer_copy:'© 2026 Dicho · hecho con ❤️',
+    footer_privacy:'Privacidad', footer_terms:'Términos', footer_contact:'Contacto',
+    ac_loading:'Buscando…',
+  },
+  ca: {
+    nav_como:'Com funciona', nav_ben:'Beneficis',
+    nav_acceder:'Accedeix', nav_prueba:'Prova\'l gratis',
+    hero_label:'Feedback per veu · Ressenyes amb IA',
+    hero_h:'El 85% de clients satisfets<br>mai deixa ressenya<br><em>a Google Maps.</em>',
+    hero_sub1:'Perquè ningú vol escriure. Però, i si poguessin simplement enviar-te un àudio per WhatsApp?',
+    hero_sub2:'Dicho converteix missatges de veu en insights per al teu negoci i millors ressenyes a Google Maps.',
+    hero_cta:'Prova\'l gratis', hero_sec:'Veure com funciona',
+    stat1:'més ressenyes els primers 30 dies',
+    stat2:'és el que triga un client a donar feedback',
+    stat3:'puntuació mitjana en negocis amb Dicho',
+    steps_label:'Com funciona',
+    steps_h:'Tres passos. Una sola vegada de configurar.',
+    steps_p:'No cal instal·lar apps ni omplir formularis. Els teus clients ja tenen WhatsApp.',
+    step1_h:'Posa el codi al teu negoci',
+    step1_p:'T\'enviem un codi QR llest per imprimir i col·locar a la taula, al compte o on prefereixis. Un minut de setup, per sempre.',
+    step2_h:'El client grava un àudio',
+    step2_p:'En escanejar-lo, WhatsApp s\'obre directament. El client grava un missatge de veu en segons — sense apps, sense registres, sense fricció.',
+    step3_h:'Ressenya llesta per publicar',
+    step3_p:'La IA transcriu, analitza el sentiment i redacta la ressenya. El client confirma amb un toc i queda publicada directament a Google Maps.',
+    ben_label:'Per què funciona',
+    ben_h:'Els teus clients volen recomanar-te.<br><em style="color:var(--g)">Només ningú els ho havia posat fàcil.</em>',
+    ben_p:'Un àudio de WhatsApp de 10 segons té més informació que qualsevol enquesta. La veu diu el que el text mai escriu.',
+    ben1_h:'Millor posicionament a Google',
+    ben1_p:'Les ressenyes són el factor #1 en el rànquing local de Google Maps. Més ressenyes = més visibilitat = més clients nous que arriben sols.',
+    ben2_h:'Feedback real, no enquestes ignorades',
+    ben2_p:'Un àudio de 10 segons té més informació que qualsevol formulari. La veu captura els matisos que el text escrit mai pot.',
+    ben3_h:'Dashboard amb insights d\'IA',
+    ben3_p:'Detecta tendències, identifica problemes abans que escalen i descobreix exactament el que més agrada als teus clients.',
+    ben4_h:'Només WhatsApp, res més',
+    ben4_p:'Els teus clients ja el tenen instal·lat. Sense apps noves, sense registre, sense contrasenyes. La fricció zero és exactament la raó per la qual funciona.',
+    cta_label:'Comença gratis',
+    cta_h:'La teva competència ja està<br><em>acumulant ressenyes.</em>',
+    cta_p:'En 5 minuts tens el teu QR llest. Els primers àudios dels teus clients arriben aquell mateix dia.',
+    form_title:'Sol·licita la teva prova gratuïta',
+    f_nombre_lbl:'Nom i cognoms', f_nombre_ph:'Anna García',
+    f_negocio_lbl:'Nom del negoci', f_negocio_ph:'Restaurant El Mirador',
+    f_tipo_lbl:'Tipus de negoci', f_tipo_ph:'Selecciona una categoria…',
+    f_ciudad_lbl:'Ciutat', f_ciudad_ph:'Escriu la teva ciutat…',
+    f_email_lbl:'Correu electrònic', f_email_ph:'anna@negoci.com',
+    f_wa_lbl:'WhatsApp', f_wa_ph:'+34 612 345 678',
+    f_submit:'Prova\'l gratis →', f_submit_loading:'Creant el teu compte…',
+    f_err_campos:'Si us plau, omple tots els camps.',
+    f_err_conexion:'Error de connexió. Si us plau, intenta-ho de nou.',
+    f_err_general:'Hi ha hagut un error en enviar. Si us plau, intenta-ho de nou.',
+    tipos:['Restaurant / Menjar','Cafè / Cafeteria','Bar / Local de copes','Hotel / Allotjament','Spa / Centre de benestar','Clínica / Consultori','Saló de bellesa / Estètica','Gimnàs / Fitness','Botiga / Retail','Entreteniment / Oci','Serveis professionals','Altre'],
+    footer_copy:'© 2026 Dicho · fet amb ❤️',
+    footer_privacy:'Privadesa', footer_terms:'Termes', footer_contact:'Contacte',
+    ac_loading:'Cercant…',
+  },
+  en: {
+    nav_como:'How it works', nav_ben:'Benefits',
+    nav_acceder:'Log in', nav_prueba:'Try it free',
+    hero_label:'Voice feedback · AI-powered reviews',
+    hero_h:'85% of happy customers<br>never leave a review<br><em>on Google Maps.</em>',
+    hero_sub1:'Because nobody wants to write. But what if they could just send you a voice message on WhatsApp?',
+    hero_sub2:'Dicho turns voice messages into insights for your business and better reviews on Google Maps.',
+    hero_cta:'Try it free', hero_sec:'See how it works',
+    stat1:'more reviews in the first 30 days',
+    stat2:'is all it takes for a customer to give feedback',
+    stat3:'average rating for businesses using Dicho',
+    steps_label:'How it works',
+    steps_h:'Three steps. Set it up once.',
+    steps_p:'No apps to install, no forms to fill. Your customers already have WhatsApp.',
+    step1_h:'Place the code in your business',
+    step1_p:'We send you a QR code ready to print and place on the table, the bill, or wherever you prefer. One minute of setup, forever.',
+    step2_h:'Customer records a voice message',
+    step2_p:'After scanning, WhatsApp opens directly. The customer records a voice message in seconds — no apps, no registration, no friction.',
+    step3_h:'Review ready to publish',
+    step3_p:'The AI transcribes, analyzes sentiment and drafts the review. The customer confirms with a tap and it goes live on Google Maps.',
+    ben_label:'Why it works',
+    ben_h:'Your customers want to recommend you.<br><em style="color:var(--g)">Nobody had made it easy for them.</em>',
+    ben_p:'A 10-second WhatsApp voice message contains more information than any survey. Voice captures what written text never can.',
+    ben1_h:'Better Google ranking',
+    ben1_p:'Reviews are the #1 factor in Google Maps local ranking. More reviews = more visibility = more new customers finding you.',
+    ben2_h:'Real feedback, not ignored surveys',
+    ben2_p:'A 10-second audio holds more information than any form. Voice captures the nuances that written text never can.',
+    ben3_h:'Dashboard with AI insights',
+    ben3_p:'Spot trends, identify issues before they escalate, and discover exactly what your customers love most.',
+    ben4_h:'Just WhatsApp, nothing else',
+    ben4_p:'Your customers already have it installed. No new apps, no registration, no passwords. Zero friction is exactly why it works.',
+    cta_label:'Start for free',
+    cta_h:'Your competitors are already<br><em>collecting reviews.</em>',
+    cta_p:'In 5 minutes your QR is ready. Your customers\' first voice messages arrive that same day.',
+    form_title:'Request your free trial',
+    f_nombre_lbl:'Full name', f_nombre_ph:'Ana García',
+    f_negocio_lbl:'Business name', f_negocio_ph:'El Mirador Restaurant',
+    f_tipo_lbl:'Business type', f_tipo_ph:'Select a category…',
+    f_ciudad_lbl:'City', f_ciudad_ph:'Type your city…',
+    f_email_lbl:'Email', f_email_ph:'ana@business.com',
+    f_wa_lbl:'WhatsApp', f_wa_ph:'+1 555 123 4567',
+    f_submit:'Try it free →', f_submit_loading:'Creating your account…',
+    f_err_campos:'Please fill in all fields.',
+    f_err_conexion:'Connection error. Please try again.',
+    f_err_general:'There was an error submitting. Please try again.',
+    tipos:['Restaurant / Food','Coffee shop / Café','Bar','Hotel / Accommodation','Spa / Wellness center','Clinic / Medical office','Hair salon / Beauty','Gym / Fitness','Shop / Retail','Entertainment / Leisure','Professional services','Other'],
+    footer_copy:'© 2026 Dicho · made with ❤️',
+    footer_privacy:'Privacy', footer_terms:'Terms', footer_contact:'Contact',
+    ac_loading:'Searching…',
+  }
+};
+
+function detectLang() {
+  var p = new URLSearchParams(window.location.search);
+  if (p.get('lang') && TR[p.get('lang')]) return p.get('lang');
+  var bl = (navigator.language || 'es').toLowerCase();
+  if (bl.startsWith('ca')) return 'ca';
+  if (bl.startsWith('en')) return 'en';
+  return 'es';
+}
+
+function setLang(lang) {
+  if (!TR[lang]) lang = 'es';
+  LANG = lang;
+  var t = TR[lang];
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var k = el.getAttribute('data-i18n');
+    if (t[k] !== undefined) el.textContent = t[k];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+    var k = el.getAttribute('data-i18n-html');
+    if (t[k] !== undefined) el.innerHTML = t[k];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+    var k = el.getAttribute('data-i18n-placeholder');
+    if (t[k] !== undefined) el.placeholder = t[k];
+  });
+  // Rebuild select
+  var sel = document.getElementById('f-tipo');
+  sel.innerHTML = '<option value="" disabled selected>' + t.f_tipo_ph + '</option>';
+  t.tipos.forEach(function(opt) {
+    var o = document.createElement('option');
+    o.value = opt; o.textContent = opt; sel.appendChild(o);
+  });
+  // Lang button active state
+  document.querySelectorAll('.nav-lang-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+  });
+}
+
+// Init lang on load
+LANG = detectLang();
+setLang(LANG);
+
 // ── SCROLL REVEAL ──────────────────────────────
 const obs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
@@ -709,7 +951,7 @@ const statObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 targets.forEach(t => { const el = document.getElementById(t.id); if (el) statObs.observe(el); });
 
-// ── AUTOCOMPLETE CIUDAD (OpenStreetMap Nominatim) ──────────────────────────────
+// ── AUTOCOMPLETE CIUDAD ──────────────────────────────────────────────────────
 var acInput  = document.getElementById('f-ciudad');
 var acList   = document.getElementById('ciudad-list');
 var acWrap   = document.getElementById('ciudad-wrap');
@@ -742,28 +984,24 @@ function renderItems(items) {
 function searchCities(q) {
   if (acAbort) acAbort.abort();
   acAbort = new AbortController();
-  acList.innerHTML = '<div class="ac-loading">Buscando…</div>';
+  acList.innerHTML = '<div class="ac-loading">' + TR[LANG].ac_loading + '</div>';
   acList.classList.add('open');
   var url = 'https://nominatim.openstreetmap.org/search?q='
     + encodeURIComponent(q)
     + '&format=json&addressdetails=1&featuretype=city&limit=8&accept-language=es';
-  fetch(url, {
-    signal: acAbort.signal,
-    headers: { 'Accept-Language': 'es' }
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    // Filter to cities/towns/villages only
-    var cities = data.filter(function(r) {
-      return ['city','town','village','municipality'].indexOf(r.type) !== -1
-          || ['city','town','village','municipality'].indexOf(r.addresstype) !== -1;
+  fetch(url, { signal: acAbort.signal, headers: { 'Accept-Language': 'es' } })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var cities = data.filter(function(r) {
+        return ['city','town','village','municipality'].indexOf(r.type) !== -1
+            || ['city','town','village','municipality'].indexOf(r.addresstype) !== -1;
+      });
+      if (!cities.length) cities = data;
+      renderItems(cities.slice(0, 8));
+    })
+    .catch(function(err) {
+      if (err.name !== 'AbortError') acList.classList.remove('open');
     });
-    if (!cities.length) cities = data; // fallback: show all results
-    renderItems(cities.slice(0, 8));
-  })
-  .catch(function(err) {
-    if (err.name !== 'AbortError') acList.classList.remove('open');
-  });
 }
 
 acInput.addEventListener('input', function() {
@@ -776,21 +1014,13 @@ acInput.addEventListener('input', function() {
 acInput.addEventListener('keydown', function(e) {
   var items = acList.querySelectorAll('.ac-item');
   if (!items.length) return;
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    acIdx = Math.min(acIdx + 1, items.length - 1);
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    acIdx = Math.max(acIdx - 1, 0);
-  } else if (e.key === 'Enter' && acIdx >= 0) {
+  if (e.key === 'ArrowDown') { e.preventDefault(); acIdx = Math.min(acIdx + 1, items.length - 1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); acIdx = Math.max(acIdx - 1, 0); }
+  else if (e.key === 'Enter' && acIdx >= 0) {
     e.preventDefault();
     acInput.value = items[acIdx].firstChild.textContent;
-    acList.classList.remove('open');
-    return;
-  } else if (e.key === 'Escape') {
-    acList.classList.remove('open');
-    return;
-  }
+    acList.classList.remove('open'); return;
+  } else if (e.key === 'Escape') { acList.classList.remove('open'); return; }
   items.forEach(function(it, i) { it.classList.toggle('active', i === acIdx); });
 });
 
@@ -801,24 +1031,25 @@ document.addEventListener('click', function(e) {
 // ── CONFIGURACIÓN ─────────────────────────────
 var DICHO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
 
-// ── FORM SUBMIT → Google Apps Script ──────────
+// ── FORM SUBMIT ───────────────────────────────
 document.getElementById('lead-form').addEventListener('submit', function(e) {
   e.preventDefault();
+  var t = TR[LANG];
   var nombre   = document.getElementById('f-nombre').value.trim();
   var negocio  = document.getElementById('f-negocio').value.trim();
   var tipo     = document.getElementById('f-tipo').value;
   var ciudad   = document.getElementById('f-ciudad').value.trim();
   var email    = document.getElementById('f-email').value.trim();
   var whatsapp = document.getElementById('f-wa').value.trim();
+  var errEl    = document.getElementById('form-error');
   if (!nombre || !negocio || !tipo || !ciudad || !email || !whatsapp) {
-    document.getElementById('form-error').style.display = 'block';
-    document.getElementById('form-error').textContent = 'Por favor completa todos los campos.';
-    return;
+    errEl.style.display = 'block';
+    errEl.textContent = t.f_err_campos; return;
   }
   var btn = document.getElementById('submit-btn');
-  btn.innerHTML = '<span class="btn-spinner"></span> Creando tu cuenta…';
+  btn.innerHTML = '<span class="btn-spinner"></span> ' + t.f_submit_loading;
   btn.disabled = true;
-  document.getElementById('form-error').style.display = 'none';
+  errEl.style.display = 'none';
   var params = new URLSearchParams({
     page: 'submit', nombre: nombre, negocio: negocio,
     tipo: tipo, ciudad: ciudad, email: email, whatsapp: whatsapp
@@ -829,17 +1060,17 @@ document.getElementById('lead-form').addEventListener('submit', function(e) {
       if (result && result.ok) {
         window.location.href = result.redirectUrl;
       } else {
-        btn.innerHTML = 'Pruébalo gratis →';
+        btn.textContent = t.f_submit;
         btn.disabled = false;
-        document.getElementById('form-error').style.display = 'block';
-        document.getElementById('form-error').textContent = result.error || 'Hubo un error. Por favor intenta de nuevo.';
+        errEl.style.display = 'block';
+        errEl.textContent = result.error || t.f_err_general;
       }
     })
     .catch(function() {
-      btn.textContent = 'Pruébalo gratis →';
+      btn.textContent = t.f_submit;
       btn.disabled = false;
-      document.getElementById('form-error').style.display = 'block';
-      document.getElementById('form-error').textContent = 'Error de conexión. Por favor intenta de nuevo.';
+      errEl.style.display = 'block';
+      errEl.textContent = t.f_err_conexion;
     });
 });
 </script>
