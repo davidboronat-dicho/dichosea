@@ -489,7 +489,7 @@ body {
               onclick="document.getElementById('como').scrollIntoView({behavior:'smooth'})">Ver cómo funciona</button>
     </div>
   </div>
-  <!-- Phone mockup (illustrative, kept in Spanish) -->
+  <!-- Phone mockup -->
   <div class="hero-phone">
     <div class="phone-shell">
       <div class="phone-pill">
@@ -675,6 +675,7 @@ body {
             <option>Gimnasio / Fitness</option>
             <option>Tienda / Retail</option>
             <option>Entretenimiento / Ocio</option>
+            <option>Taller mecánico</option>
             <option>Servicios profesionales</option>
             <option>Otro</option>
           </select>
@@ -773,7 +774,7 @@ var TR = {
     f_err_campos:'Por favor completa todos los campos.',
     f_err_conexion:'Error de conexión. Por favor intenta de nuevo.',
     f_err_general:'Hubo un error al enviar. Por favor intenta de nuevo.',
-    tipos:['Restaurante / Comida','Café / Cafetería','Bar / Cantina','Hotel / Hospedaje','Spa / Centro de bienestar','Clínica / Consultorio','Salón de belleza / Estética','Gimnasio / Fitness','Tienda / Retail','Entretenimiento / Ocio','Servicios profesionales','Otro'],
+    tipos:['Restaurante / Comida','Café / Cafetería','Bar / Cantina','Hotel / Hospedaje','Spa / Centro de bienestar','Clínica / Consultorio','Salón de belleza / Estética','Gimnasio / Fitness','Tienda / Retail','Entretenimiento / Ocio','Taller mecánico','Servicios profesionales','Otro'],
     footer_copy:'© 2026 Dicho · hecho con ❤️',
     footer_privacy:'Privacidad', footer_terms:'Términos', footer_contact:'Contacto',
     ac_loading:'Buscando…',
@@ -823,7 +824,7 @@ var TR = {
     f_err_campos:'Si us plau, omple tots els camps.',
     f_err_conexion:'Error de connexió. Si us plau, intenta-ho de nou.',
     f_err_general:'Hi ha hagut un error en enviar. Si us plau, intenta-ho de nou.',
-    tipos:['Restaurant / Menjar','Cafè / Cafeteria','Bar / Local de copes','Hotel / Allotjament','Spa / Centre de benestar','Clínica / Consultori','Saló de bellesa / Estètica','Gimnàs / Fitness','Botiga / Retail','Entreteniment / Oci','Serveis professionals','Altre'],
+    tipos:['Restaurant / Menjar','Cafè / Cafeteria','Bar / Local de copes','Hotel / Allotjament','Spa / Centre de benestar','Clínica / Consultori','Saló de bellesa / Estètica','Gimnàs / Fitness','Botiga / Retail','Entreteniment / Oci','Taller mecànic','Serveis professionals','Altre'],
     footer_copy:'© 2026 Dicho · fet amb ❤️',
     footer_privacy:'Privadesa', footer_terms:'Termes', footer_contact:'Contacte',
     ac_loading:'Cercant…',
@@ -873,7 +874,7 @@ var TR = {
     f_err_campos:'Please fill in all fields.',
     f_err_conexion:'Connection error. Please try again.',
     f_err_general:'There was an error submitting. Please try again.',
-    tipos:['Restaurant / Food','Coffee shop / Café','Bar','Hotel / Accommodation','Spa / Wellness center','Clinic / Medical office','Hair salon / Beauty','Gym / Fitness','Shop / Retail','Entertainment / Leisure','Professional services','Other'],
+    tipos:['Restaurant / Food','Coffee shop / Café','Bar','Hotel / Accommodation','Spa / Wellness center','Clinic / Medical office','Hair salon / Beauty','Gym / Fitness','Shop / Retail','Entertainment / Leisure','Mechanic workshop','Professional services','Other'],
     footer_copy:'© 2026 Dicho · made with ❤️',
     footer_privacy:'Privacy', footer_terms:'Terms', footer_contact:'Contact',
     ac_loading:'Searching…',
@@ -918,7 +919,7 @@ function setLang(lang) {
   document.querySelectorAll('.footer-lang-btn').forEach(function(b) {
     b.classList.toggle('active', b.getAttribute('data-lang') === lang);
   });
-  // Keep the "Acceder" link pointing to Login.html in the same language
+  // Keep the "Acceder" link pointing to Login in the same language
   var accederLink = document.getElementById('nav-acceder-link');
   if (accederLink) accederLink.href = ACCEDER_BASE_URL + '&lang=' + lang;
 }
