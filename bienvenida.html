@@ -13,7 +13,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dicho · Bienvenida</title>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">  
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
@@ -364,8 +363,10 @@ if (email) {
   document.getElementById('mail-addr').textContent = email;
 }
 
-// Link al dashboard — ahora vía dichosea.com, sin exponer la URL de Google
-var dashUrl = 'https://dichosea.com/login.html?token=' + encodeURIComponent(token);
+var GAS_URL = 'https://script.google.com/a/multiplica.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+
+// Link al dashboard
+var dashUrl = GAS_URL + '?page=dashboard&token=' + encodeURIComponent(token);
 document.getElementById('btn-dashboard').href = dashUrl;
 
 // QR
