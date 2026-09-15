@@ -103,23 +103,15 @@ body {
 }
 .nav-links a:hover { color: var(--ink); }
 /* right cluster */
-.nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.nav-lang { display: flex; gap: 2px; margin-right: 4px; }
-.nav-lang-btn {
-  background: none; border: none; font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: .06em;
-  color: var(--muted); cursor: pointer; padding: 4px 7px;
-  border-radius: 5px; transition: color .15s, background .15s;
+.nav-right { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+.nav-sep {
+  width: 1px; height: 18px; background: var(--border);
 }
-.nav-lang-btn:hover { color: var(--ink); background: var(--g-f); }
-.nav-lang-btn.active { color: var(--g); }
 .nav-acceder {
   font-size: 14px; font-weight: 600; color: var(--g);
-  text-decoration: none; padding: 7px 14px;
-  border: 1.5px solid color-mix(in srgb, var(--g) 30%, transparent);
-  border-radius: 8px; transition: background .15s, border-color .15s;
+  text-decoration: none; transition: opacity .15s;
 }
-.nav-acceder:hover { background: var(--g-f); border-color: var(--g); }
+.nav-acceder:hover { opacity: .75; }
 .nav-cta {
   background: var(--g); color: #fff;
   padding: 9px 20px; border-radius: 8px;
@@ -130,8 +122,6 @@ body {
 .nav-cta:hover { background: var(--g-d); }
 @media (max-width: 640px) {
   .nav-links { display: none; }
-  .nav-lang  { display: none; }
-  .nav-acceder { padding: 7px 11px; font-size: 13px; }
   .nav-cta { padding: 8px 14px; font-size: 13px; }
 }
 /* ── HERO ── */
@@ -413,9 +403,20 @@ body {
 }
 .footer-logo { font-size: 16px; font-weight: 800; color: var(--g); }
 .footer-logo span { color: var(--ink); }
+.footer-right { display: flex; align-items: center; gap: 20px; }
 .footer-links { display: flex; gap: 20px; }
 .footer-links a { color: var(--muted); text-decoration: none; transition: color .15s; }
 .footer-links a:hover { color: var(--ink); }
+.footer-sep { width: 1px; height: 14px; background: var(--border); }
+.footer-lang { display: flex; gap: 8px; }
+.footer-lang-btn {
+  background: none; border: none; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: .04em;
+  color: var(--muted); cursor: pointer; padding: 2px 4px;
+  transition: color .15s;
+}
+.footer-lang-btn:hover { color: var(--ink); }
+.footer-lang-btn.active { color: var(--g); }
 /* ── REVEAL ── */
 .reveal {
   opacity: 0; transform: translateY(20px);
@@ -435,6 +436,8 @@ body {
   .cta-grid { grid-template-columns: 1fr; gap: 40px; }
   .frow { grid-template-columns: 1fr; }
   .footer { flex-direction: column; gap: 16px; text-align: center; }
+  .footer-right { flex-direction: column; gap: 14px; }
+  .footer-sep { display: none; }
 }
 @media (max-width: 640px) {
   .section { padding-block: 56px; }
@@ -462,13 +465,9 @@ body {
       <a href="#beneficios" data-i18n="nav_ben">Beneficios</a>
     </div>
     <div class="nav-right">
-      <div class="nav-lang">
-        <button class="nav-lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
-        <button class="nav-lang-btn" data-lang="ca" onclick="setLang('ca')">CA</button>
-        <button class="nav-lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
-      </div>
       <a href="https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec?page=login"
-         class="nav-acceder" data-i18n="nav_acceder">Acceder</a>
+         class="nav-acceder" id="nav-acceder-link" data-i18n="nav_acceder">Acceder</a>
+      <div class="nav-sep"></div>
       <button class="nav-cta" data-i18n="nav_prueba"
               onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Pruébalo gratis</button>
     </div>
@@ -709,10 +708,18 @@ body {
   <div class="footer">
     <div class="footer-logo">dicho<span>.</span></div>
     <div data-i18n="footer_copy">© 2026 Dicho · hecho con ❤️</div>
-    <div class="footer-links">
-      <a href="#" data-i18n="footer_privacy">Privacidad</a>
-      <a href="#" data-i18n="footer_terms">Términos</a>
-      <a href="#" data-i18n="footer_contact">Contacto</a>
+    <div class="footer-right">
+      <div class="footer-links">
+        <a href="#" data-i18n="footer_privacy">Privacidad</a>
+        <a href="#" data-i18n="footer_terms">Términos</a>
+        <a href="#" data-i18n="footer_contact">Contacto</a>
+      </div>
+      <div class="footer-sep"></div>
+      <div class="footer-lang">
+        <button class="footer-lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+        <button class="footer-lang-btn" data-lang="ca" onclick="setLang('ca')">CA</button>
+        <button class="footer-lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
     </div>
   </div>
 </footer>
@@ -882,6 +889,8 @@ function detectLang() {
   return 'es';
 }
 
+var ACCEDER_BASE_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec?page=login';
+
 function setLang(lang) {
   if (!TR[lang]) lang = 'es';
   LANG = lang;
@@ -905,10 +914,13 @@ function setLang(lang) {
     var o = document.createElement('option');
     o.value = opt; o.textContent = opt; sel.appendChild(o);
   });
-  // Lang button active state
-  document.querySelectorAll('.nav-lang-btn').forEach(function(b) {
+  // Footer lang button active state
+  document.querySelectorAll('.footer-lang-btn').forEach(function(b) {
     b.classList.toggle('active', b.getAttribute('data-lang') === lang);
   });
+  // Keep the "Acceder" link pointing to Login.html in the same language
+  var accederLink = document.getElementById('nav-acceder-link');
+  if (accederLink) accederLink.href = ACCEDER_BASE_URL + '&lang=' + lang;
 }
 
 // Init lang on load
