@@ -883,10 +883,10 @@ var TR = {
 function detectLang() {
   var p = new URLSearchParams(window.location.search);
   if (p.get('lang') && TR[p.get('lang')]) return p.get('lang');
-  var bl = (navigator.language || 'es').toLowerCase();
+  var bl = (navigator.language || 'en').toLowerCase();
+  if (bl.startsWith('es')) return 'es';
   if (bl.startsWith('ca')) return 'ca';
-  if (bl.startsWith('en')) return 'en';
-  return 'es';
+  return 'en';
 }
 
 var ACCEDER_BASE_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec?page=login';
