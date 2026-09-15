@@ -353,8 +353,6 @@ var email   = p.get('email')   || '';
 var token   = p.get('token')   || '';
 var qrUrl   = p.get('qrUrl')   || '';
 
-var GAS_URL = 'https://script.google.com/a/multiplica.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
-
 // Nombre del negocio
 if (negocio) {
   document.getElementById('biz-name').textContent = negocio + '.';
@@ -365,8 +363,8 @@ if (email) {
   document.getElementById('mail-addr').textContent = email;
 }
 
-// Link al dashboard
-var dashUrl = GAS_URL + '?page=dashboard&token=' + encodeURIComponent(token);
+// Link al dashboard — ahora vía dichosea.com, sin exponer la URL de Google
+var dashUrl = 'https://dichosea.com/login.html?token=' + encodeURIComponent(token);
 document.getElementById('btn-dashboard').href = dashUrl;
 
 // QR
