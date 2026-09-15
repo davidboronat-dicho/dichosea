@@ -465,7 +465,7 @@ body {
       <a href="#beneficios" data-i18n="nav_ben">Beneficios</a>
     </div>
     <div class="nav-right">
-      <a href="https://dichosea.com/login.html"
+      <a href="https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec?page=login"
          class="nav-acceder" id="nav-acceder-link" data-i18n="nav_acceder">Acceder</a>
       <div class="nav-sep"></div>
       <button class="nav-cta" data-i18n="nav_prueba"
@@ -889,7 +889,7 @@ function detectLang() {
   return 'en';
 }
 
-var ACCEDER_BASE_URL = 'https://dichosea.com/login.html';
+var ACCEDER_BASE_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec?page=login';
 
 function setLang(lang) {
   if (!TR[lang]) lang = 'es';
@@ -920,7 +920,7 @@ function setLang(lang) {
   });
   // Keep the "Acceder" link pointing to Login.html in the same language
   var accederLink = document.getElementById('nav-acceder-link');
-  if (accederLink) accederLink.href = ACCEDER_BASE_URL + '?lang=' + lang;
+  if (accederLink) accederLink.href = ACCEDER_BASE_URL + '&lang=' + lang;
 }
 
 // Init lang on load
