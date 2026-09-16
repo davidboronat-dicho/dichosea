@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Dóna la teva opinió · Dicho</title>
+  <meta property="og:title" content="La teva opinió importa 🎙️">
+  <meta property="og:description" content="Dóna'ns la teva opinió enviant un àudio de WhatsApp.">
+  <meta property="og:site_name" content="Dicho">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F7F3;
+      color: #1a2e25;
+    }
+
+    /* ── Loading ── */
+    .loading-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 16px;
+      color: #6a9a80;
+      font-size: 15px;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #C8E6D8;
+      border-top-color: #2DB67D;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error ── */
+    .error-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 12px;
+      text-align: center;
+      padding: 24px;
+    }
+    .error-icon { font-size: 40px; }
+    .error-msg { font-size: 16px; color: #6a9a80; }
+
+    /* ── Page ── */
+    .page {
+      display: none;
+      min-height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+      flex-direction: column;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      padding: 48px 28px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .biz-name {
+      font-family: 'Nunito', sans-serif;
+      font-size: 20px; font-weight: 800;
+      color: #1a2e25;
+    }
+    .biz-city {
+      font-size: 15px;
+      color: #6a9a80;
+      margin-top: 4px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 36px 0;
+      text-align: center;
+    }
+
+    /* Mic visual */
+    .mic-wrap {
+      position: relative;
+      width: 120px; height: 120px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+    }
+    .mic-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid #2DB67D;
+      opacity: 0;
+      animation: ripple 2.4s ease-out infinite;
+    }
+    .mic-ring:nth-child(1) { width: 120px; height: 120px; animation-delay: 0s; }
+    .mic-ring:nth-child(2) { width: 92px;  height: 92px;  animation-delay: 0.6s; }
+    .mic-ring:nth-child(3) { width: 68px;  height: 68px;  animation-delay: 1.2s; }
+    @keyframes ripple {
+      0%   { opacity: 0.5; transform: scale(0.7); }
+      100% { opacity: 0;   transform: scale(1.1); }
+    }
+    .mic-circle {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: #2DB67D;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 32px rgba(45,182,125,0.35);
+      position: relative;
+      z-index: 1;
+    }
+    .mic-circle svg { width: 34px; height: 34px; }
+
+    /* Headline */
+    .headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; font-weight: 700;
+      color: #1a2e25;
+      line-height: 1.3;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .headline-sub {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px; font-weight: 700;
+      color: #1a2e25;
+      line-height: 1.3;
+      text-align: center;
+    }
+    .headline-sub em {
+      font-style: italic;
+      color: #2DB67D;
+    }
+
+    .confidential {
+      font-size: 12px;
+      color: #9ab8a8;
+      margin-top: 20px;
+    }
+
+    /* ── CTA area ── */
+    .cta-wrap {
+      margin-top: 56px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 0 28px 48px;
+    }
+
+    .cta {
+      background: linear-gradient(135deg, #1a7a52, #2DB67D);
+      border: none;
+      border-radius: 16px;
+      padding: 18px 28px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(45,182,125,0.32);
+      transition: opacity 0.15s, transform 0.15s;
+      text-decoration: none;
+      display: flex;
+      width: calc(100% - 3cm);
+      align-items: center;
+      justify-content: center;
+    }
+    .cta:active { opacity: 0.88; transform: scale(0.985); }
+
+    .cta-main {
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px; font-weight: 900;
+      color: white; line-height: 1.3;
+      text-align: center;
+    }
+
+    .countdown {
+      font-size: 13px;
+      color: #9ab8a8;
+      text-align: center;
+    }
+    .countdown strong {
+      color: #2DB67D;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading -->
+  <div class="loading-wrap" id="loading">
+    <div class="spinner"></div>
+    <span id="loadingText">Un moment…</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-wrap" id="error">
+    <div class="error-icon">😕</div>
+    <div class="error-msg" id="errorMsg">No hem trobat aquest negoci.</div>
+  </div>
+
+  <!-- Page -->
+  <div class="page" id="page">
+
+    <div class="topbar">
+      <div class="biz-name" id="bizName"></div>
+      <div class="biz-city" id="bizCity"></div>
+    </div>
+
+    <div class="hero">
+      <div class="mic-wrap">
+        <div class="mic-ring"></div>
+        <div class="mic-ring"></div>
+        <div class="mic-ring"></div>
+        <div class="mic-circle">
+          <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="11" y="3" width="12" height="18" rx="6" fill="white"/>
+            <path d="M6 17c0 6.075 4.925 11 11 11s11-4.925 11-11" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="17" y1="28" x2="17" y2="32" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="12" y1="32" x2="22" y2="32" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="headline" id="headline">La teva opinió,</div>
+      <div class="headline-sub" id="headlineSub">enviant <em>només</em> un àudio<br>de WhatsApp</div>
+      <div class="confidential" id="confidentialText">🔒 100% confidencial</div>
+
+      <div class="cta-wrap">
+        <a class="cta" id="ctaBtn" href="#" onclick="handleCta(event)">
+          <div class="cta-main" id="ctaText">Obrir WhatsApp<br><span style="font-weight:700; font-size:13px; opacity:0.85;">i enviar àudio</span></div>
+        </a>
+        <div class="countdown" id="countdown"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+    var MAKE_WEBHOOK = 'https://hook.eu2.make.com/TU_WEBHOOK_AQUI'; // ← reemplazar
+
+    var params  = new URLSearchParams(window.location.search);
+    var storeId = params.get('store_id') || params.get('id');
+    var waData  = {};
+    var waLink  = '#';
+    var countdownInterval = null;
+
+    var copy = {
+      'ca': {
+        headline:       'La teva opinió,',
+        headlineSub:    'enviant <em>només</em> un àudio<br>de WhatsApp',
+        cta:            'Obrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">i enviar àudio</span>',
+        countdown:      "S'obrirà en",
+        countdownUnit:  'segons',
+        countdownReady: 'Obrint WhatsApp…',
+        confidential:   '🔒 100% confidencial',
+        loading:        'Un moment…',
+        preText:        '🎤 Mantén premut el micro i envia àudio'
+      },
+      'es': {
+        headline:       'Tu opinión,',
+        headlineSub:    'enviando <em>solo</em> un audio<br>de WhatsApp',
+        cta:            'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y enviar audio</span>',
+        countdown:      'Se abrirá en',
+        countdownUnit:  'segundos',
+        countdownReady: 'Abriendo WhatsApp…',
+        confidential:   '🔒 100% confidencial',
+        loading:        'Un momento…',
+        preText:        '🎤 Mantén pulsado el micro y envía audio'
+      },
+      'es-mx': {
+        headline:       'Tu opinión,',
+        headlineSub:    'enviando <em>solo</em> un audio<br>de WhatsApp',
+        cta:            'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y enviar audio</span>',
+        countdown:      'Se abrirá en',
+        countdownUnit:  'segundos',
+        countdownReady: 'Abriendo WhatsApp…',
+        confidential:   '🔒 100% confidencial',
+        loading:        'Un momento…',
+        preText:        '🎤 Mantén presionado el micro y envía audio'
+      },
+      'en': {
+        headline:       'Your opinion,',
+        headlineSub:    'by sending <em>just</em> a WhatsApp<br>voice message',
+        cta:            'Open WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">and send audio</span>',
+        countdown:      'WhatsApp opens in',
+        countdownUnit:  'seconds',
+        countdownReady: 'Opening WhatsApp…',
+        confidential:   '🔒 100% confidential',
+        loading:        'One moment…',
+        preText:        '🎤 Hold the mic button and send audio'
+      }
+    };
+
+    function show(id) {
+      ['loading','error','page'].forEach(function(s) {
+        var el = document.getElementById(s);
+        el.style.display = (s === id) ? 'flex' : 'none';
+      });
+    }
+
+    function startCountdown(t) {
+      var secs = 5;
+      var cdEl = document.getElementById('countdown');
+      cdEl.innerHTML = t.countdown + ' <strong>' + secs + '</strong> ' + t.countdownUnit;
+
+      countdownInterval = setInterval(function() {
+        secs--;
+        if (secs <= 0) {
+          clearInterval(countdownInterval);
+          cdEl.textContent = t.countdownReady;
+          window.location.href = waLink;
+        } else {
+          cdEl.innerHTML = t.countdown + ' <strong>' + secs + '</strong> ' + t.countdownUnit;
+        }
+      }, 1000);
+    }
+
+    function applyLang(idioma) {
+      var t = copy[idioma] || copy['ca'];
+      document.getElementById('headline').innerHTML       = t.headline;
+      document.getElementById('headlineSub').innerHTML    = t.headlineSub;
+      document.getElementById('ctaText').innerHTML        = t.cta;
+      document.getElementById('confidentialText').textContent = t.confidential;
+      document.getElementById('loadingText').textContent  = t.loading;
+      return t;
+    }
+
+    if (!storeId) {
+      show('error');
+    } else {
+      fetch(GAS_URL + '?page=landingData&store_id=' + encodeURIComponent(storeId))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.ok) { show('error'); return; }
+
+          waData = data;
+          var idioma = data.idioma || 'ca';
+          var t = applyLang(idioma);
+
+          document.getElementById('bizName').textContent = data.negocio || '';
+          document.getElementById('bizCity').textContent = data.ciudad  || '';
+
+          var preText = encodeURIComponent(t.preText);
+          waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
+          document.getElementById('ctaBtn').href = waLink;
+
+          show('page');
+          startCountdown(t);
+        })
+        .catch(function() { show('error'); });
+    }
+
+    function handleCta(e) {
+      clearInterval(countdownInterval);
+      document.getElementById('countdown').textContent = '';
+      if (MAKE_WEBHOOK && MAKE_WEBHOOK.indexOf('TU_WEBHOOK') === -1) {
+        navigator.sendBeacon(MAKE_WEBHOOK, JSON.stringify({
+          store_id:  storeId,
+          negocio:   waData.negocio || '',
+          timestamp: new Date().toISOString(),
+          source:    'landing_qr'
+        }));
+      }
+    }
+  </script>
+
+</body>
+</html>
