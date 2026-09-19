@@ -344,29 +344,60 @@
       return t;
     }
 
-    if (!storeId) {
-      show('error');
-    } else {
+    var CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
+    var CACHE_KEY = 'dicho_landing_' + storeId;
+
+    function renderData(data, t) {
+      waData = data;
+      document.getElementById('bizName').textContent = data.negocio || '';
+      document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
+      var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + t.preText);
+      waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
+      document.getElementById('ctaBtn').href = waLink;
+    }
+
+    function fetchAndCache(onSuccess, onError) {
       fetch(GAS_URL + '?page=landingData&store_id=' + encodeURIComponent(storeId))
         .then(function(r) { return r.json(); })
         .then(function(data) {
-          if (!data.ok) { show('error'); return; }
+          if (!data.ok) { onError && onError(); return; }
+          try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data: data, ts: Date.now() })); } catch(e) {}
+          onSuccess && onSuccess(data);
+        })
+        .catch(function() { onError && onError(); });
+    }
 
-          waData = data;
+    if (!storeId) {
+      show('error');
+    } else {
+      var cached = null;
+      try {
+        var raw = localStorage.getItem(CACHE_KEY);
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && parsed.data && (Date.now() - parsed.ts) < CACHE_TTL) cached = parsed.data;
+        }
+      } catch(e) {}
+
+      if (cached) {
+        // Render instantly from cache
+        var idioma = cached.idioma || 'ca';
+        var t = applyLang(idioma);
+        renderData(cached, t);
+        show('page');
+        startCountdown(t);
+        // Refresh cache silently in background
+        fetchAndCache(null, null);
+      } else {
+        // No cache — fetch normally
+        fetchAndCache(function(data) {
           var idioma = data.idioma || 'ca';
           var t = applyLang(idioma);
-
-          document.getElementById('bizName').textContent = data.negocio || '';
-          document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
-
-          var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + t.preText);
-          waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
-          document.getElementById('ctaBtn').href = waLink;
-
+          renderData(data, t);
           show('page');
           startCountdown(t);
-        })
-        .catch(function() { show('error'); });
+        }, function() { show('error'); });
+      }
     }
 
     function handleCta(e) {
