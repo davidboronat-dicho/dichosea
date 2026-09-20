@@ -1,15 +1,6 @@
 <!doctype html>
 <html lang="es">
 <head>
-<script>
-(function() {
-  var p = new URLSearchParams(window.location.search);
-  var v = p.get('gmaps');
-  if (v && /^\d{7,15}$/.test(v)) {
-    window.location.replace('/review.html?id=' + v);
-  }
-})();
-</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dicho · Bienvenida</title>
@@ -193,12 +184,7 @@ nav {
 }
 .cl-scan-text { font-size: 12px; color: #3E4E41; line-height: 1.5; }
 .cl-note { font-size: 11px; color: #6B7A6E; }
-.cl-footer {
-  display: flex; align-items: center; gap: 5px;
-  padding-top: 10px; margin-top: 14px;
-  font-size: 10px; font-weight: 700; color: #6B7A6E;
-}
-.cl-footer svg { flex-shrink: 0; }
+.cl-footer { display: flex; align-items: center; padding-top: 10px; margin-top: 14px; }
 .cr-top { display: flex; align-items: center; gap: 5px; }
 .cr-via { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #9CA3AF; }
 .cr-wa {
@@ -207,11 +193,11 @@ nav {
   padding: 2px 7px; border-radius: 20px;
 }
 .cr-qr { background: #fff; border-radius: 14px; padding: 9px; }
-.cr-qr img { width: 110px; height: 110px; display: block; }
-.cr-powered {
-  font-size: 9px; font-weight: 600; color: #6B7A6E;
-  margin-top: -4px; text-align: center; line-height: 1.5;
-}
+/* QR img + mic overlay canvas, both 110×110 in CSS (canvas internal: 220×220 for crispness) */
+.qr-wrap { position: relative; width: 110px; height: 110px; }
+.qr-wrap img { width: 110px; height: 110px; display: block; }
+.qr-wrap canvas { position: absolute; top: 0; left: 0; width: 110px; height: 110px; pointer-events: none; }
+.cr-powered { font-size: 9px; font-weight: 600; color: #6B7A6E; margin-top: -4px; }
 .cr-powered strong { color: #1C2B20; font-weight: 800; }
 
 /* Print-only */
@@ -241,7 +227,7 @@ nav {
 
 <nav class="wrap">
   <div class="nav-logo">dicho<span>.</span></div>
-  <a class="nav-link" href="https://dichosea.com">Volver al inicio</a>
+  <a class="nav-link" href="javascript:history.back()">Volver al inicio</a>
 </nav>
 
 <main class="confirm-wrap wrap">
@@ -291,11 +277,11 @@ nav {
     </div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <a class="btn-dash" id="btn-dashboard" href="#">
+      <a class="btn-dash" href="#">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
         Ir a mi dashboard
       </a>
-      <a class="btn-ghost-sm" href="https://dichosea.com">Volver al inicio</a>
+      <a class="btn-ghost-sm" id="link-inicio" href="#">Volver al inicio</a>
     </div>
   </div>
 
@@ -312,10 +298,7 @@ nav {
           <div class="cl-scan-label">Escáneame</div>
           <div class="cl-scan-text">Solo envías un audio y listo.<br><span class="cl-note">(Sin apps ni registros ;)</span></div>
         </div>
-        <div class="cl-footer">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          100% confidencial
-        </div>
+        <div class="cl-footer"></div>
       </div>
       <!-- RIGHT: QR -->
       <div class="card-right">
@@ -324,9 +307,13 @@ nav {
           <span class="cr-wa">WHATSAPP</span>
         </div>
         <div class="cr-qr">
-          <img id="qr-img" src="" alt="QR Feedback">
+          <!-- img carga el QR desde api.qrserver; canvas overlay dibuja el círculo+micrófono encima -->
+          <div class="qr-wrap">
+            <img id="qr-img" alt="QR code">
+            <canvas id="qr-overlay" width="220" height="220"></canvas>
+          </div>
         </div>
-        <div class="cr-powered">powered by <strong>dicho.</strong><br>www.dichosea.com</div>
+        <div class="cr-powered">powered by <strong>dicho.</strong></div>
       </div>
     </div>
 
@@ -346,41 +333,117 @@ nav {
 </main>
 
 <script>
-// ── Leer parámetros del URL ──────────────────────────────────────
-var p       = new URLSearchParams(window.location.search);
-var negocio = p.get('negocio') || '';
-var email   = p.get('email')   || '';
-var token   = p.get('token')   || '';
-var qrUrl   = p.get('qrUrl')   || '';
+// ── Leer parámetros de la URL (pasados por submitForm en code.gs) ──
+var params  = new URLSearchParams(window.location.search);
+var negocio = params.get('negocio') || '';
+var email   = params.get('email')   || '';
+var token   = params.get('token')   || '';
+var qrUrl   = params.get('qrUrl')   || '';
+var dashUrl = params.get('dashUrl') || '#';
 
-// Nombre del negocio
-if (negocio) {
-  document.getElementById('biz-name').textContent = negocio + '.';
+// ── Actualizar textos y links ──
+document.getElementById('biz-name').textContent  = negocio || 'tu negocio';
+document.getElementById('mail-addr').textContent = email   || 'tu correo';
+document.querySelector('.btn-dash').href          = dashUrl;
+document.getElementById('link-inicio').href       = 'https://dichosea.com';
+
+// ── Mostrar el QR usando la URL ya generada por el servidor ──
+if (qrUrl) document.getElementById('qr-img').src = qrUrl;
+
+// ── Constantes del micrófono ──
+var QR_GREEN = '#14532D';
+var QR_CX = 110, QR_CY = 110, QR_R = 38;
+
+function rrPath(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y,     x + w, y + r,     r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x,      y + h, x,      y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x,      y,     x + r,  y,         r);
+  ctx.closePath();
 }
 
-// Email
-if (email) {
-  document.getElementById('mail-addr').textContent = email;
+function drawMic(ctx, centerX, centerY, totalHeight, color) {
+  var s  = totalHeight / 118;
+  var ox = centerX - 50 * s;
+  var oy = centerY - 59 * s;
+  ctx.save();
+  ctx.fillStyle   = color;
+  ctx.strokeStyle = color;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+  /* Horseshoe */
+  ctx.lineWidth = 11 * s;
+  ctx.beginPath();
+  ctx.moveTo(ox + 19*s, oy + 40*s);
+  ctx.bezierCurveTo(ox+19*s, oy+90*s, ox+81*s, oy+90*s, ox+81*s, oy+40*s);
+  ctx.stroke();
+  /* Stem */
+  rrPath(ctx, ox + 45*s, oy + 90*s, 10*s, 14*s, 5*s); ctx.fill();
+  /* Base */
+  rrPath(ctx, ox + 22*s, oy + 102*s, 56*s, 10*s, 5*s); ctx.fill();
+  /* Capsule — dibujado al final para tapar las puntas del horseshoe */
+  rrPath(ctx, ox + 34*s, oy + 4*s, 32*s, 55*s, 16*s); ctx.fill();
+  ctx.restore();
 }
 
-var GAS_URL = 'https://script.google.com/a/multiplica.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+// ── Dibujar círculo + micrófono en el overlay INMEDIATAMENTE (sin esperar al QR) ──
+(function drawOverlay() {
+  var canvas = document.getElementById('qr-overlay');
+  var ctx    = canvas.getContext('2d');
+  /* Halo blanco */
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath(); ctx.arc(QR_CX, QR_CY, QR_R + 6, 0, Math.PI * 2); ctx.fill();
+  /* Círculo verde */
+  ctx.fillStyle = QR_GREEN;
+  ctx.beginPath(); ctx.arc(QR_CX, QR_CY, QR_R, 0, Math.PI * 2); ctx.fill();
+  /* Micrófono blanco */
+  var iconH = QR_R * 1.1;
+  drawMic(ctx, QR_CX, QR_CY - iconH * 0.04, iconH, '#ffffff');
+})();
 
-// Link al dashboard
-var dashUrl = GAS_URL + '?page=dashboard&token=' + encodeURIComponent(token);
-document.getElementById('btn-dashboard').href = dashUrl;
-
-// QR
-if (qrUrl) {
-  document.getElementById('qr-img').src = qrUrl;
-}
-
-// Descargar QR
+// ── Descargar QR con micrófono compuesto ──
+// Usamos fetch para obtener la imagen como blob (evita restricciones CORS de canvas)
 function descargarQR() {
-  var link = document.createElement('a');
-  link.href = qrUrl ? qrUrl : '';
-  link.target = '_blank';
-  link.rel = 'noopener';
-  link.click();
+  if (!qrUrl) return;
+  var filename = (negocio ? negocio.replace(/\s+/g, '-').toLowerCase() : 'qr') + '-dicho.png';
+  fetch(qrUrl)
+    .then(function(r) { return r.blob(); })
+    .then(function(blob) {
+      var img = new Image();
+      img.onload = function() {
+        var tmpC = document.createElement('canvas');
+        tmpC.width = tmpC.height = 220;
+        var ctx = tmpC.getContext('2d');
+        ctx.drawImage(img, 0, 0, 220, 220);
+        /* Componer el micrófono encima */
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.arc(QR_CX, QR_CY, QR_R + 6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = QR_GREEN;
+        ctx.beginPath(); ctx.arc(QR_CX, QR_CY, QR_R, 0, Math.PI * 2); ctx.fill();
+        var iconH = QR_R * 1.1;
+        drawMic(ctx, QR_CX, QR_CY - iconH * 0.04, iconH, '#ffffff');
+        var a = document.createElement('a');
+        a.href = tmpC.toDataURL('image/png');
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(img.src);
+      };
+      img.src = URL.createObjectURL(blob);
+    })
+    .catch(function() {
+      /* Fallback: descarga directa sin micrófono */
+      var a = document.createElement('a');
+      a.href = qrUrl;
+      a.download = filename;
+      a.click();
+    });
 }
 </script>
 </body>
