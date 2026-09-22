@@ -199,13 +199,13 @@
   <!-- Loading -->
   <div class="loading-wrap" id="loading">
     <div class="spinner"></div>
-    <span>Preparando tu reseña…</span>
+    <span id="loadingText">Preparando tu reseña…</span>
   </div>
 
   <!-- Error -->
   <div class="error-wrap" id="error">
     <div class="error-icon">😕</div>
-    <div class="error-msg">Esta reseña ya no está disponible.</div>
+    <div class="error-msg" id="errorMsg">Esta reseña ya no está disponible.</div>
   </div>
 
   <!-- Page -->
@@ -222,8 +222,8 @@
         <div class="biz-name" id="negocio"></div>
         <div class="biz-city" id="ciudad"></div>
       </div>
-      <div class="headline">Revisa tu reseña</div>
-      <div class="headline-sub">antes de publicarla 🌟</div>
+      <div class="headline" id="headline">Revisa tu reseña</div>
+      <div class="headline-sub" id="headlineSub">antes de publicarla 🌟</div>
     </div>
 
     <div class="body">
@@ -231,9 +231,9 @@
 
       <div class="cta-wrap">
         <a class="cta" id="ctaBtn" href="#" target="_blank" rel="noopener" onclick="copyAndToast()">
-          <div class="cta-main">Copiar reseña y abrir Maps</div>
+          <div class="cta-main" id="ctaMain">Copiar reseña y abrir Maps</div>
         </a>
-        <div class="cta-hint">En Google Maps solo deberás puntuar con<br>estrellas y pegar tu reseña.</div>
+        <div class="cta-hint" id="ctaHint">En Google Maps solo deberás puntuar con<br>estrellas y pegar tu reseña.</div>
       </div>
 
       <div class="footer">Powered by <a href="https://dichosea.com" target="_blank">Dicho</a></div>
@@ -245,6 +245,62 @@
 
   <script>
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+
+    // ── Traducciones por idioma del NEGOCIO ──────────────────────────
+    var TR = {
+      'es': {
+        loading:     'Preparando tu reseña…',
+        error:       'Esta reseña ya no está disponible.',
+        headline:    'Revisa tu reseña',
+        headlineSub: 'antes de publicarla 🌟',
+        ctaMain:     'Copiar reseña y abrir Maps',
+        ctaHint:     'En Google Maps solo deberás puntuar con<br>estrellas y pegar tu reseña.',
+        toast:       '✅ Copiada. Puntúa con estrellas y pégala en Maps'
+      },
+      'es-mx': {
+        loading:     'Preparando tu reseña…',
+        error:       'Esta reseña ya no está disponible.',
+        headline:    'Revisa tu reseña',
+        headlineSub: 'antes de publicarla 🌟',
+        ctaMain:     'Copiar reseña y abrir Maps',
+        ctaHint:     'En Google Maps solo tienes que calificar con<br>estrellas y pegar tu reseña.',
+        toast:       '✅ Copiada. Califica con estrellas y pégala en Maps'
+      },
+      'ca': {
+        loading:     'Preparant la teva ressenya…',
+        error:       'Aquesta ressenya ja no està disponible.',
+        headline:    'Revisa la teva ressenya',
+        headlineSub: 'abans de publicar-la 🌟',
+        ctaMain:     'Copiar ressenya i obrir Maps',
+        ctaHint:     'A Google Maps només cal que puntuis amb<br>estrelles i enganxis la teva ressenya.',
+        toast:       '✅ Copiada. Puntua amb estrelles i enganxa-la a Maps'
+      },
+      'en': {
+        loading:     'Preparing your review…',
+        error:       'This review is no longer available.',
+        headline:    'Check your review',
+        headlineSub: 'before publishing it 🌟',
+        ctaMain:     'Copy review & open Maps',
+        ctaHint:     'On Google Maps just rate with stars<br>and paste your review.',
+        toast:       '✅ Copied! Rate with stars and paste it on Maps'
+      }
+    };
+
+    function t(lang, key) {
+      var l = TR[lang] || TR['es'];
+      return l[key] || TR['es'][key] || '';
+    }
+
+    function applyLang(lang) {
+      document.getElementById('loadingText').textContent  = t(lang, 'loading');
+      document.getElementById('errorMsg').textContent     = t(lang, 'error');
+      document.getElementById('headline').textContent     = t(lang, 'headline');
+      document.getElementById('headlineSub').textContent  = t(lang, 'headlineSub');
+      document.getElementById('ctaMain').textContent      = t(lang, 'ctaMain');
+      document.getElementById('ctaHint').innerHTML        = t(lang, 'ctaHint');
+      document.getElementById('toast').textContent        = t(lang, 'toast');
+      document.documentElement.lang = lang === 'ca' ? 'ca' : (lang === 'en' ? 'en' : 'es');
+    }
 
     var params = new URLSearchParams(window.location.search);
     var waId   = params.get('id');
@@ -265,10 +321,15 @@
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (!data.ok) { show('error'); return; }
-          document.getElementById('negocio').textContent   = data.negocio       || '';
-          document.getElementById('ciudad').textContent    = data.ciudad        || '';
+
+          // Aplicar idioma del negocio (no del cliente)
+          var lang = data.idioma_negocio || 'es';
+          applyLang(lang);
+
+          document.getElementById('negocio').textContent    = data.negocio       || '';
+          document.getElementById('ciudad').textContent     = data.ciudad        || '';
           document.getElementById('reviewText').textContent = data.transcripcion || '';
-          document.getElementById('ctaBtn').href            = data.reviewUrl     || '#';
+          document.getElementById('ctaBtn').href             = data.reviewUrl     || '#';
           show('page');
         })
         .catch(function() { show('error'); });
