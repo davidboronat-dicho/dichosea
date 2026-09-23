@@ -8,7 +8,9 @@
   <meta property="og:description" content="Gracias por tomarte un momento.">
   <meta property="og:site_name" content="Dicho">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Playfair+Display:wght@700&display=swap">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"></noscript>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -17,14 +19,6 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #F0F7F3;
       color: #1a2e25;
-    }
-
-    .page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      max-width: 480px;
-      margin: 0 auto;
     }
 
     /* ── Loading ── */
@@ -47,61 +41,123 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Header ── */
-    .header {
-      background: #F0F7F3;
-      padding: 44px 24px 16px;
+    /* ── Error ── */
+    .error-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 12px;
       text-align: center;
+      padding: 24px;
+    }
+    .error-icon { font-size: 40px; }
+    .error-msg { font-size: 16px; color: #6a9a80; }
+
+    /* ── Page ── */
+    .page {
+      display: none;
+      min-height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+      flex-direction: column;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      padding: 48px 28px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      text-align: center;
+    }
+    .biz-name {
+      font-family: 'Nunito', sans-serif;
+      font-size: 20px; font-weight: 800;
+      color: #1a2e25;
+    }
+    .biz-city {
+      font-size: 15px;
+      color: #6a9a80;
+      margin-top: 4px;
     }
 
+    /* ── Hero ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 36px 0;
+      text-align: center;
+    }
+
+    /* Check visual — same pattern as mic-wrap in landing */
+    .check-wrap {
+      position: relative;
+      width: 120px; height: 120px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+    }
+    .check-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid #2DB67D;
+      opacity: 0;
+      animation: ripple 2.4s ease-out infinite;
+    }
+    .check-ring:nth-child(1) { width: 120px; height: 120px; animation-delay: 0s; }
+    .check-ring:nth-child(2) { width: 92px;  height: 92px;  animation-delay: 0.6s; }
+    .check-ring:nth-child(3) { width: 68px;  height: 68px;  animation-delay: 1.2s; }
+    @keyframes ripple {
+      0%   { opacity: 0.5; transform: scale(0.7); }
+      100% { opacity: 0;   transform: scale(1.1); }
+    }
     .check-circle {
-      width: 48px; height: 48px;
+      width: 80px; height: 80px;
       border-radius: 50%;
       background: #2DB67D;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 0 9px rgba(45,182,125,0.13);
-      margin-bottom: 14px;
-      flex-shrink: 0;
+      box-shadow: 0 8px 32px rgba(45,182,125,0.35);
+      position: relative;
+      z-index: 1;
     }
 
-    .biz-block { line-height: 1.3; }
-    .biz-name {
-      font-family: 'Nunito', sans-serif;
-      font-size: 14px; font-weight: 800;
-      color: #1a2e25;
-    }
-    .biz-city { font-size: 11px; color: #6a9a80; margin-top: 2px; }
-
+    /* Headline */
     .headline {
       font-family: 'Playfair Display', serif;
-      font-size: 22px; font-weight: 700;
-      color: #1a2e25; line-height: 1.3;
-      margin-top: 16px;
+      font-size: 28px; font-weight: 700;
+      color: #1a2e25;
+      line-height: 1.3;
+      text-align: center;
+      margin-bottom: 6px;
     }
     .headline-sub {
       font-family: 'Playfair Display', serif;
-      font-size: 17px; font-weight: 700;
+      font-size: 26px; font-weight: 700;
       color: #1a2e25;
-      margin-top: 2px;
+      line-height: 1.3;
+      text-align: center;
+    }
+    .headline-sub em {
+      font-style: italic;
+      color: #2DB67D;
     }
 
-    /* ── Body ── */
-    .body {
+    /* ── Review area ── */
+    .review-area {
       flex: 1;
-      padding: 8px 24px 28px;
+      padding: 28px 28px 48px;
       display: flex;
       flex-direction: column;
     }
 
     .review-box {
       background: white;
-      border-radius: 14px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 18px;
       border: 1.5px solid #ddeae0;
-      min-height: 130px;
+      min-height: 140px;
       font-size: 16px;
       line-height: 1.65;
       color: #333;
@@ -115,36 +171,41 @@
     }
 
     /* ── CTA ── */
-    .cta-wrap {
+    .cta-section {
       margin-top: 20px;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
     .cta {
       background: linear-gradient(135deg, #1a7a52, #2DB67D);
       border: none;
-      border-radius: 14px;
-      padding: 15px 20px;
-      text-align: center;
+      border-radius: 16px;
+      padding: 18px 28px;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(45,182,125,0.3);
-      width: 100%;
+      box-shadow: 0 8px 24px rgba(45,182,125,0.32);
       transition: opacity 0.15s, transform 0.15s;
       text-decoration: none;
-      display: block;
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
     }
     .cta:active { opacity: 0.88; transform: scale(0.985); }
 
     .cta-main {
       font-family: 'Nunito', sans-serif;
-      font-size: 14px; font-weight: 900;
-      color: white; line-height: 1;
+      font-size: 16px; font-weight: 900;
+      color: white; line-height: 1.3;
+      text-align: center;
     }
 
     .cta-hint {
-      font-size: 12.5px;
+      font-size: 13px;
       line-height: 1.5;
-      color: #6a9a80;
-      margin-top: 12px;
+      color: #9ab8a8;
+      text-align: center;
     }
 
     /* ── Toast ── */
@@ -171,27 +232,10 @@
     /* ── Footer ── */
     .footer {
       text-align: center;
-      margin-top: 28px;
+      margin-top: 32px;
       font-size: 12px; color: #bbb;
     }
     .footer a { color: #2DB67D; text-decoration: none; font-weight: 700; }
-
-    /* ── Error ── */
-    .error-wrap {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      gap: 12px;
-      text-align: center;
-      padding: 24px;
-    }
-    .error-icon { font-size: 40px; }
-    .error-msg { font-size: 16px; color: #6a9a80; }
-
-    /* hidden by default */
-    .page { display: none; }
   </style>
 </head>
 <body>
@@ -211,25 +255,32 @@
   <!-- Page -->
   <div class="page" id="page">
 
-    <div class="header">
-      <div class="check-circle">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white"
-             stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-      </div>
-      <div class="biz-block">
-        <div class="biz-name" id="negocio"></div>
-        <div class="biz-city" id="ciudad"></div>
-      </div>
-      <div class="headline" id="headline">Revisa tu reseña</div>
-      <div class="headline-sub" id="headlineSub">antes de publicarla 🌟</div>
+    <div class="topbar">
+      <div class="biz-name" id="negocio"></div>
+      <div class="biz-city" id="ciudad"></div>
     </div>
 
-    <div class="body">
+    <div class="hero">
+      <div class="check-wrap">
+        <div class="check-ring"></div>
+        <div class="check-ring"></div>
+        <div class="check-ring"></div>
+        <div class="check-circle">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="white"
+               stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="30 10 15 26 8 19"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="headline" id="headline">Revisa tu reseña</div>
+      <div class="headline-sub" id="headlineSub">antes de <em>publicarla</em> 🌟</div>
+    </div>
+
+    <div class="review-area">
       <div class="review-box" id="reviewText" contenteditable="true"></div>
 
-      <div class="cta-wrap">
+      <div class="cta-section">
         <a class="cta" id="ctaBtn" href="#" target="_blank" rel="noopener" onclick="copyAndToast()">
           <div class="cta-main" id="ctaMain">Copiar reseña y abrir Maps</div>
         </a>
@@ -246,13 +297,13 @@
   <script>
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
 
-    // ── Traducciones por idioma del NEGOCIO ──────────────────────────
+    // ── Traducciones por idioma del negocio ──
     var TR = {
       'es': {
         loading:     'Preparando tu reseña…',
         error:       'Esta reseña ya no está disponible.',
         headline:    'Revisa tu reseña',
-        headlineSub: 'antes de publicarla 🌟',
+        headlineSub: 'antes de <em>publicarla</em> 🌟',
         ctaMain:     'Copiar reseña y abrir Maps',
         ctaHint:     'En Google Maps solo deberás puntuar con<br>estrellas y pegar tu reseña.',
         toast:       '✅ Copiada. Puntúa con estrellas y pégala en Maps'
@@ -261,7 +312,7 @@
         loading:     'Preparando tu reseña…',
         error:       'Esta reseña ya no está disponible.',
         headline:    'Revisa tu reseña',
-        headlineSub: 'antes de publicarla 🌟',
+        headlineSub: 'antes de <em>publicarla</em> 🌟',
         ctaMain:     'Copiar reseña y abrir Maps',
         ctaHint:     'En Google Maps solo tienes que calificar con<br>estrellas y pegar tu reseña.',
         toast:       '✅ Copiada. Califica con estrellas y pégala en Maps'
@@ -270,7 +321,7 @@
         loading:     'Preparant la teva ressenya…',
         error:       'Aquesta ressenya ja no està disponible.',
         headline:    'Revisa la teva ressenya',
-        headlineSub: 'abans de publicar-la 🌟',
+        headlineSub: 'abans de <em>publicar-la</em> 🌟',
         ctaMain:     'Copiar ressenya i obrir Maps',
         ctaHint:     'A Google Maps només cal que puntuis amb<br>estrelles i enganxis la teva ressenya.',
         toast:       '✅ Copiada. Puntua amb estrelles i enganxa-la a Maps'
@@ -279,26 +330,26 @@
         loading:     'Preparing your review…',
         error:       'This review is no longer available.',
         headline:    'Check your review',
-        headlineSub: 'before publishing it 🌟',
+        headlineSub: 'before <em>publishing</em> it 🌟',
         ctaMain:     'Copy review & open Maps',
         ctaHint:     'On Google Maps just rate with stars<br>and paste your review.',
         toast:       '✅ Copied! Rate with stars and paste it on Maps'
       }
     };
 
-    function t(lang, key) {
+    function tr(lang, key) {
       var l = TR[lang] || TR['es'];
       return l[key] || TR['es'][key] || '';
     }
 
     function applyLang(lang) {
-      document.getElementById('loadingText').textContent  = t(lang, 'loading');
-      document.getElementById('errorMsg').textContent     = t(lang, 'error');
-      document.getElementById('headline').textContent     = t(lang, 'headline');
-      document.getElementById('headlineSub').textContent  = t(lang, 'headlineSub');
-      document.getElementById('ctaMain').textContent      = t(lang, 'ctaMain');
-      document.getElementById('ctaHint').innerHTML        = t(lang, 'ctaHint');
-      document.getElementById('toast').textContent        = t(lang, 'toast');
+      document.getElementById('loadingText').textContent  = tr(lang, 'loading');
+      document.getElementById('errorMsg').textContent     = tr(lang, 'error');
+      document.getElementById('headline').textContent     = tr(lang, 'headline');
+      document.getElementById('headlineSub').innerHTML    = tr(lang, 'headlineSub');
+      document.getElementById('ctaMain').textContent      = tr(lang, 'ctaMain');
+      document.getElementById('ctaHint').innerHTML        = tr(lang, 'ctaHint');
+      document.getElementById('toast').textContent        = tr(lang, 'toast');
       document.documentElement.lang = lang === 'ca' ? 'ca' : (lang === 'en' ? 'en' : 'es');
     }
 
@@ -322,7 +373,6 @@
         .then(function(data) {
           if (!data.ok) { show('error'); return; }
 
-          // Aplicar idioma del negocio (no del cliente)
           var lang = data.idioma_negocio || 'es';
           applyLang(lang);
 
@@ -359,9 +409,9 @@
     }
 
     function showToast() {
-      var t = document.getElementById('toast');
-      t.classList.add('show');
-      setTimeout(function() { t.classList.remove('show'); }, 4000);
+      var el = document.getElementById('toast');
+      el.classList.add('show');
+      setTimeout(function() { el.classList.remove('show'); }, 4000);
     }
   </script>
 
