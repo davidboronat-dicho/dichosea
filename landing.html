@@ -269,8 +269,8 @@
         countdownReady: 'Obrint WhatsApp…',
         confidential:   '🔒 100% confidencial',
         loading:        'Un moment…',
-        preTextPrefix:  'Opina sobre ',
-        preText:        'Toca primer el botó verd ▶'
+        preTextPrefix:  'Opina de ',
+        preText:        ''
       },
       'es': {
         headline:       'Tu opinión,',
@@ -282,7 +282,7 @@
         confidential:   '🔒 100% confidencial',
         loading:        'Un momento…',
         preTextPrefix:  'Opina sobre ',
-        preText:        'Toca primero el botón verde ▶'
+        preText:        ''
       },
       'es-mx': {
         headline:       'Tu opinión,',
@@ -293,8 +293,8 @@
         countdownReady: 'Abriendo WhatsApp…',
         confidential:   '🔒 100% confidencial',
         loading:        'Un momento…',
-        preTextPrefix:  'Opina sobre ',
-        preText:        'Toca primero el botón verde ▶'
+        preTextPrefix:  'Cuéntanos sobre ',
+        preText:        ''
       },
       'en': {
         headline:       'Your opinion,',
@@ -305,8 +305,8 @@
         countdownReady: 'Opening WhatsApp…',
         confidential:   '🔒 100% confidential',
         loading:        'One moment…',
-        preTextPrefix:  'To review ',
-        preText:        'Tap the green button first ▶'
+        preTextPrefix:  'Review ',
+        preText:        ''
       }
     };
 
@@ -351,7 +351,7 @@
       waData = data;
       document.getElementById('bizName').textContent = data.negocio || '';
       document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
-      var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + t.preText);
+      var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + (t.preText ? '\n' + t.preText : ''));
       waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
       document.getElementById('ctaBtn').href = waLink;
     }
