@@ -421,8 +421,10 @@
       if (cached) {
         renderData(cached);
       } else {
-        fetch(GAS_URL + '?page=reviewData&id=' + encodeURIComponent(waId))
-          .then(function(r) { return r.json(); })
+        var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        var tid = controller ? setTimeout(function() { controller.abort(); }, 12000) : null;
+        fetch(GAS_URL + '?page=reviewData&id=' + encodeURIComponent(waId), controller ? { signal: controller.signal } : {})
+          .then(function(r) { if (tid) clearTimeout(tid); return r.json(); })
           .then(function(data) {
             if (!data.ok) { show('error'); return; }
             setCache(waId, data);
