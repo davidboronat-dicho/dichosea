@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Dóna la teva opinió · Dicho</title>
-  <meta property="og:title" content="La teva opinió importa 🎙️">
-  <meta property="og:description" content="Dóna'ns la teva opinió enviant un àudio de WhatsApp.">
+  <title>Da tu opinión · Dicho</title>
+  <meta property="og:title" content="Tu opinión importa 🎙️">
+  <meta property="og:description" content="Danos tu opinión enviando un audio de WhatsApp.">
   <meta property="og:site_name" content="Dicho">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -203,7 +203,7 @@
   <!-- Loading -->
   <div class="loading-wrap" id="loading">
     <div class="spinner"></div>
-    <span id="loadingText">Un moment…</span>
+    <span id="loadingText">Un momento…</span>
   </div>
 
   <!-- Error -->
@@ -269,8 +269,8 @@
         countdownReady: 'Obrint WhatsApp…',
         confidential:   '🔒 100% confidencial',
         loading:        'Un moment…',
-        preTextPrefix:  'Opina de ',
-        preText:        'Toca primer el botó verd ▶️'
+        preTextPrefix:  'Per opinar sobre ',
+        preText:        'Toca primer el botó verd ▶'
       },
       'es': {
         headline:       'Tu opinión,',
@@ -281,8 +281,8 @@
         countdownReady: 'Abriendo WhatsApp…',
         confidential:   '🔒 100% confidencial',
         loading:        'Un momento…',
-        preTextPrefix:  'Opina sobre ',
-        preText:        'Toca primero el botón verde ▶️'
+        preTextPrefix:  'Para opinar sobre ',
+        preText:        'Toca primero el botón verde ▶'
       },
       'es-mx': {
         headline:       'Tu opinión,',
@@ -293,8 +293,8 @@
         countdownReady: 'Abriendo WhatsApp…',
         confidential:   '🔒 100% confidencial',
         loading:        'Un momento…',
-        preTextPrefix:  'Cuéntanos sobre ',
-        preText:        'Toca primero el botón verde ▶️'
+        preTextPrefix:  'Para opinar sobre ',
+        preText:        'Toca primero el botón verde ▶'
       },
       'en': {
         headline:       'Your opinion,',
@@ -305,8 +305,8 @@
         countdownReady: 'Opening WhatsApp…',
         confidential:   '🔒 100% confidential',
         loading:        'One moment…',
-        preTextPrefix:  'Review ',
-        preText:        'Tap the green button first ▶️'
+        preTextPrefix:  'To review ',
+        preText:        'Tap the green button first ▶'
       }
     };
 
@@ -334,8 +334,20 @@
       }, 1000);
     }
 
+    // ── Detectar idioma inicial por browser (para el texto de carga) ──
+    // Catalán solo se activa cuando el negocio lo configura (data.idioma='ca'),
+    // no por navigator.language, para evitar mostrar catalán a clientes en español.
+    function detectBrowserLang() {
+      var paramLang = params.get('lang');
+      if (paramLang && copy[paramLang]) return paramLang;
+      var nav = navigator.language || navigator.userLanguage || 'es';
+      if (nav.startsWith('en')) return 'en';
+      if (nav.toLowerCase().startsWith('es-mx')) return 'es-mx';
+      return 'es';
+    }
+
     function applyLang(idioma) {
-      var t = copy[idioma] || copy['ca'];
+      var t = copy[idioma] || copy['es']; // fallback 'es', nunca 'ca'
       document.getElementById('headline').innerHTML       = t.headline;
       document.getElementById('headlineSub').innerHTML    = t.headlineSub;
       document.getElementById('ctaText').innerHTML        = t.cta;
@@ -344,6 +356,9 @@
       return t;
     }
 
+    // Aplicar idioma del navegador inmediatamente (texto de carga)
+    applyLang(detectBrowserLang());
+
     var CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
     var CACHE_KEY = 'dicho_landing_' + storeId;
 
@@ -351,7 +366,7 @@
       waData = data;
       document.getElementById('bizName').textContent = data.negocio || '';
       document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
-      var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + (t.preText ? '\n' + t.preText : ''));
+      var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + t.preText);
       waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
       document.getElementById('ctaBtn').href = waLink;
     }
@@ -381,7 +396,7 @@
 
       if (cached) {
         // Render instantly from cache
-        var idioma = cached.idioma || 'ca';
+        var idioma = cached.idioma || 'es';
         var t = applyLang(idioma);
         renderData(cached, t);
         show('page');
@@ -391,7 +406,7 @@
       } else {
         // No cache — fetch normally
         fetchAndCache(function(data) {
-          var idioma = data.idioma || 'ca';
+          var idioma = data.idioma || 'es';
           var t = applyLang(idioma);
           renderData(data, t);
           show('page');
