@@ -92,7 +92,7 @@
       text-align: center;
     }
 
-    /* Check visual — same pattern as mic-wrap in landing */
+    /* Check visual */
     .check-wrap {
       position: relative;
       width: 120px; height: 120px;
@@ -243,13 +243,13 @@
   <!-- Loading -->
   <div class="loading-wrap" id="loading">
     <div class="spinner"></div>
-    <span id="loadingText">Preparando tu reseña…</span>
+    <span id="loadingText"></span>
   </div>
 
   <!-- Error -->
   <div class="error-wrap" id="error">
     <div class="error-icon">😕</div>
-    <div class="error-msg" id="errorMsg">Esta reseña ya no está disponible.</div>
+    <div class="error-msg" id="errorMsg"></div>
   </div>
 
   <!-- Page -->
@@ -273,8 +273,8 @@
         </div>
       </div>
 
-      <div class="headline" id="headline">Revisa tu reseña</div>
-      <div class="headline-sub" id="headlineSub">antes de <em>publicarla</em> 🌟</div>
+      <div class="headline" id="headline"></div>
+      <div class="headline-sub" id="headlineSub"></div>
     </div>
 
     <div class="review-area">
@@ -282,9 +282,9 @@
 
       <div class="cta-section">
         <a class="cta" id="ctaBtn" href="#" target="_blank" rel="noopener" onclick="copyAndToast()">
-          <div class="cta-main" id="ctaMain">Copiar reseña y abrir Maps</div>
+          <div class="cta-main" id="ctaMain"></div>
         </a>
-        <div class="cta-hint" id="ctaHint">En Google Maps solo deberás puntuar con<br>estrellas y pegar tu reseña.</div>
+        <div class="cta-hint" id="ctaHint"></div>
       </div>
 
       <div class="footer">Powered by <a href="https://dichosea.com" target="_blank">Dicho</a></div>
@@ -292,12 +292,13 @@
 
   </div>
 
-  <div class="toast" id="toast">✅ Copiada. Puntúa con estrellas y pégala en Maps</div>
+  <div class="toast" id="toast"></div>
 
   <script>
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+    var CACHE_TTL = 30 * 60 * 1000; // 30 minutos
 
-    // ── Traducciones por idioma del negocio ──
+    // ── Traducciones ──
     var TR = {
       'es': {
         loading:     'Preparando tu reseña…',
@@ -337,6 +338,19 @@
       }
     };
 
+    // ── Detectar idioma inicial por browser (mejora UX durante carga) ──
+    function detectBrowserLang() {
+      var params = new URLSearchParams(window.location.search);
+      // Primero: param ?lang= en la URL
+      var paramLang = params.get('lang');
+      if (paramLang && TR[paramLang]) return paramLang;
+      // Segundo: idioma del navegador
+      var nav = navigator.language || navigator.userLanguage || 'es';
+      if (nav.startsWith('ca')) return 'ca';
+      if (nav.startsWith('en')) return 'en';
+      return 'es';
+    }
+
     function tr(lang, key) {
       var l = TR[lang] || TR['es'];
       return l[key] || TR['es'][key] || '';
@@ -353,8 +367,25 @@
       document.documentElement.lang = lang === 'ca' ? 'ca' : (lang === 'en' ? 'en' : 'es');
     }
 
-    var params = new URLSearchParams(window.location.search);
-    var waId   = params.get('id');
+    // ── Caché localStorage ──
+    function getCached(waId) {
+      try {
+        var raw = localStorage.getItem('review_' + waId);
+        if (!raw) return null;
+        var obj = JSON.parse(raw);
+        if (Date.now() - obj.ts > CACHE_TTL) { localStorage.removeItem('review_' + waId); return null; }
+        return obj.data;
+      } catch(e) { return null; }
+    }
+
+    function setCache(waId, data) {
+      try { localStorage.setItem('review_' + waId, JSON.stringify({ ts: Date.now(), data: data })); } catch(e) {}
+    }
+
+    // ── Ciudad: quitar ", País" si viene en el valor ──
+    function formatCiudad(raw) {
+      return (raw || '').split(',')[0].trim();
+    }
 
     function show(id) {
       document.getElementById('loading').style.display = 'none';
@@ -365,24 +396,40 @@
       if (id === 'page')    document.getElementById('page').style.display    = 'flex';
     }
 
+    function renderData(data) {
+      var lang = data.idioma_negocio || 'es';
+      applyLang(lang);
+      document.getElementById('negocio').textContent    = data.negocio       || '';
+      document.getElementById('ciudad').textContent     = formatCiudad(data.ciudad);
+      document.getElementById('reviewText').textContent = data.transcripcion || '';
+      document.getElementById('ctaBtn').href             = data.reviewUrl     || '#';
+      show('page');
+    }
+
+    // ── Iniciar ──
+    var params = new URLSearchParams(window.location.search);
+    var waId   = params.get('id');
+
+    // Aplicar idioma inmediatamente para el texto de carga
+    applyLang(detectBrowserLang());
+
     if (!waId) {
       show('error');
     } else {
-      fetch(GAS_URL + '?page=reviewData&id=' + encodeURIComponent(waId))
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (!data.ok) { show('error'); return; }
-
-          var lang = data.idioma_negocio || 'es';
-          applyLang(lang);
-
-          document.getElementById('negocio').textContent    = data.negocio       || '';
-          document.getElementById('ciudad').textContent     = data.ciudad        || '';
-          document.getElementById('reviewText').textContent = data.transcripcion || '';
-          document.getElementById('ctaBtn').href             = data.reviewUrl     || '#';
-          show('page');
-        })
-        .catch(function() { show('error'); });
+      // Intentar caché primero
+      var cached = getCached(waId);
+      if (cached) {
+        renderData(cached);
+      } else {
+        fetch(GAS_URL + '?page=reviewData&id=' + encodeURIComponent(waId))
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (!data.ok) { show('error'); return; }
+            setCache(waId, data);
+            renderData(data);
+          })
+          .catch(function() { show('error'); });
+      }
     }
 
     function copyAndToast() {
