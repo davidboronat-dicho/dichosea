@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dicho · Panel de Feedback</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap">
+<style>
+  :root {
+    --green-deep: #14532D;
+    --green:   #16A34A;
+    --green2:  #15803d;
+    --green-l: #eaf3ee;
+    --surface: #F0F3F8;
+    --card:    #FFFFFF;
+    --border:  #E0E6EF;
+    --text:    #1A2A4A;
+    --muted:   #6B7A8D;
+    --danger:  #B53A2E;
+    --accent:  #2E5FA3;
+    --rule:    #E8EDF4;
+    --pos:     #16A34A;
+    --neu:     #9CA3AF;
+    --neg:     #DC2626;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Jost',sans-serif; background:var(--surface); color:var(--text); min-height:100vh; }
+
+  .header {
+    background:var(--green-deep); padding:0 28px;
+    display:flex; align-items:stretch; height:54px;
+    position:sticky; top:0; z-index:50;
+  }
+  .header-brand {
+    display:flex; align-items:center; gap:10px;
+    padding-right:24px; border-right:1px solid rgba(255,255,255,.14);
+    margin-right:4px; flex-shrink:0;
+  }
+  .logo { width:28px; height:28px; background:#fff; border-radius:7px;
+          display:flex; align-items:center; justify-content:center;
+          font-size:15px; font-weight:800; color:var(--green-deep);
+          font-family:'Jost',sans-serif; letter-spacing:-.03em; flex-shrink:0; }
+  .brand-name { font-size:17px; font-weight:900; color:#fff; letter-spacing:-.03em; }
+  .brand-name span { color:#86efac; }
+  .nav { display:flex; align-items:stretch; gap:2px; flex:1; }
+  .nav-item {
+    display:inline-flex; align-items:center; gap:7px;
+    padding:0 15px; font-size:13px; font-weight:500;
+    color:rgba(255,255,255,.62); font-family:'Jost',sans-serif;
+    cursor:pointer; border:none; background:none;
+    border-bottom:2px solid transparent; transition:.15s;
+    text-decoration:none; white-space:nowrap;
+  }
+  .nav-item:hover { color:rgba(255,255,255,.88); }
+  .nav-item.active {
+    color:#fff; font-weight:700;
+    border-bottom-color:#86efac; background:rgba(255,255,255,.07);
+  }
+  .nav-item svg { flex-shrink:0; opacity:.7; }
+  .nav-item.active svg { opacity:1; }
+  .header-right {
+    display:flex; align-items:center; gap:10px;
+    padding-left:6px;
+    margin-left:auto; flex-shrink:0;
+  }
+  .header-biz {
+    font-size:13px; color:rgba(255,255,255,.65); font-weight:500;
+    white-space:nowrap;
+    padding-right:16px; border-right:1px solid rgba(255,255,255,.14); margin-right:4px;
+  }
+  .header-biz strong { color:#fff; }
+  .hdr-logout { font-size:12px; font-weight:600; color:rgba(255,255,255,.6);
+                background:none; border:1px solid rgba(255,255,255,.25);
+                border-radius:6px; padding:5px 11px; cursor:pointer;
+                font-family:'Jost',sans-serif; transition:.15s; }
+  .hdr-logout:hover { color:#fff; border-color:rgba(255,255,255,.5); background:rgba(255,255,255,.1); }
+  .main { max-width:1100px; margin:0 auto; padding:28px 20px; }
+
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+  @media(max-width:760px){ .stats { grid-template-columns:repeat(2,1fr); } }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
+  .stat-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:6px; }
+  .stat-value { font-size:32px; font-weight:700; color:var(--text); line-height:1; }
+  .stat-value.green { color:var(--green); }
+  .stat-value.orange { color:#D97706; }
+  .stat-sub { font-size:12px; color:var(--muted); margin-top:5px; }
+
+  .row2 { display:grid; grid-template-columns:1fr 340px; gap:14px; margin-bottom:20px; }
+  @media(max-width:860px){ .row2 { grid-template-columns:1fr; } }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:22px 24px; }
+  .card-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+                color:var(--muted); margin-bottom:14px; }
+
+  .chart-wrap { position:relative; height:180px; }
+  canvas { width:100%!important; }
+
+  .topics-wrap { display:flex; flex-direction:column; gap:8px; min-height:120px; }
+  .topic-row { display:flex; align-items:center; gap:8px; }
+  .topic-bar-bg { flex:1; background:var(--rule); border-radius:4px; height:6px; overflow:hidden; }
+  .topic-bar { height:6px; background:var(--green); border-radius:4px; transition:.4s; }
+  .topic-label { font-size:12.5px; color:var(--text); min-width:90px; font-weight:500; }
+  .topic-count { font-size:12px; color:var(--muted); min-width:24px; text-align:right; }
+
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em;
+       color:var(--muted); padding:8px 14px; border-bottom:2px solid var(--border); background:#F8FAFD; white-space:nowrap; }
+  td { padding:10px 14px; border-bottom:1px solid var(--rule); font-size:13px; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tbody tr:hover td { background:#F8FAFD; }
+
+  .sent-pill { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; }
+  .sent-positivo { background:#dcfce7; color:#15803d; }
+  .sent-neutro   { background:#f3f4f6; color:#6b7280; }
+  .sent-negativo { background:#fee2e2; color:#b91c1c; }
+
+  .stars { color:#f59e0b; letter-spacing:1px; }
+
+  .hdr-btn { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500;
+             color:#fff; border:1px solid rgba(255,255,255,.35); border-radius:7px;
+             padding:7px 14px; cursor:pointer; background:rgba(255,255,255,.12);
+             font-family:'Jost',sans-serif; transition:.15s; text-decoration:none; }
+  .hdr-btn:hover { background:rgba(255,255,255,.22); }
+
+  .qr-btn { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500;
+            color:var(--green); border:1px solid var(--green); border-radius:6px;
+            padding:5px 11px; cursor:pointer; background:none; font-family:'Jost',sans-serif; }
+  .qr-btn:hover { background:var(--green-l); }
+
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+                   z-index:200; align-items:center; justify-content:center; padding:20px; }
+  .modal-overlay.open { display:flex; }
+  .modal-box { background:#fff; border-radius:16px; padding:28px;
+               max-width:420px; width:100%; position:relative;
+               max-height:90vh; overflow-y:auto; }
+  .modal-box.wide { max-width:580px; }
+  .modal-close { position:absolute; top:12px; right:16px; font-size:18px; cursor:pointer;
+                 color:var(--muted); background:none; border:none; font-family:'Jost',sans-serif; }
+  .modal-title { font-size:17px; font-weight:700; margin-bottom:4px; }
+  .modal-sub   { font-size:13px; color:var(--muted); margin-bottom:22px; }
+
+  .form-group { margin-bottom:16px; }
+  .form-label { display:block; font-size:12px; font-weight:600; color:var(--muted);
+                text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
+  .form-input { width:100%; padding:10px 13px; border:1.5px solid var(--border);
+                border-radius:8px; font-family:'Jost',sans-serif; font-size:14px;
+                color:var(--text); background:#fff; transition:.15s; }
+  .form-input:focus { outline:none; border-color:var(--green); box-shadow:0 0 0 3px rgba(22,163,74,.12); }
+  .form-hint { font-size:11px; color:var(--muted); margin-top:4px; }
+
+  .form-divider { border:none; border-top:1px solid var(--border); margin:22px 0; }
+  .form-section-title { font-size:11px; font-weight:700; text-transform:uppercase;
+                         letter-spacing:.09em; color:var(--muted); margin-bottom:14px; }
+
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px;
+         font-family:'Jost',sans-serif; font-size:14px; font-weight:600;
+         padding:10px 20px; border-radius:8px; cursor:pointer; border:none; transition:.15s; }
+  .btn-primary { background:var(--green); color:#fff; }
+  .btn-primary:hover { background:var(--green2); }
+  .btn-primary:disabled { opacity:.55; cursor:not-allowed; }
+  .btn-ghost { background:#F0F3F8; color:var(--text); }
+  .btn-ghost:hover { background:#e2e8f0; }
+
+  .form-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:22px; }
+
+  .form-alert { display:none; padding:10px 13px; border-radius:8px;
+                font-size:13px; font-weight:500; margin-bottom:12px; }
+  .form-alert.success { background:#dcfce7; color:#15803d; }
+  .form-alert.error   { background:#fee2e2; color:#b91c1c; }
+  .form-alert.show    { display:block; }
+
+  .qr-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+              z-index:200; align-items:center; justify-content:center; }
+  .qr-modal.open { display:flex; }
+  .qr-box { background:#fff; border-radius:16px; padding:28px; text-align:center;
+            max-width:340px; width:90%; position:relative; }
+  .qr-box h3 { margin-bottom:4px; font-size:15px; }
+  .qr-box .qr-sub { font-size:12px; color:var(--muted); margin-bottom:16px; }
+  .qr-box img { width:220px; height:220px; border:1px solid var(--border); border-radius:8px; }
+  .qr-close { position:absolute; top:10px; right:14px; font-size:18px; cursor:pointer;
+              color:var(--muted); background:none; border:none; }
+
+  .empty   { text-align:center; padding:36px 20px; color:var(--muted); font-size:13.5px; }
+  .loading { text-align:center; padding:28px; color:var(--muted); font-size:13px;
+             display:flex; align-items:center; justify-content:center; gap:8px; }
+  .spinner { width:18px; height:18px; border:2px solid var(--border);
+             border-top-color:var(--green); border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .footer { text-align:center; padding:28px 20px 40px; font-size:12px; color:var(--muted); }
+
+  @media(max-width:640px) {
+    .header { height:auto; flex-wrap:wrap; padding:10px 16px; gap:0; }
+    .header-brand { padding-right:16px; }
+    .nav { flex-wrap:wrap; width:100%; order:3; border-top:1px solid rgba(255,255,255,.1); gap:0; padding:2px 0; }
+    .nav-item { padding:8px 12px; font-size:12px; }
+    .header-right { margin-left:auto; padding-left:12px; }
+    .main { padding:16px 12px; }
+    .stats { grid-template-columns:repeat(2,1fr); gap:10px; }
+    .stat-value { font-size:26px; }
+    .stat-card { padding:16px 14px; }
+    .card { padding:16px 14px; }
+    .row2 { grid-template-columns:1fr; gap:10px; }
+    th, td { padding:8px 10px; }
+  }
+
+  .expand-btn { background:none; border:none; cursor:pointer; color:var(--green); font-size:12px;
+                font-family:'Jost',sans-serif; padding:0; }
+  .transcript { font-size:12px; color:var(--muted); font-style:italic; padding:8px 14px 12px; background:#f8fafd; }
+
+  .loc-filter { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .loc-chip { font-family:'Jost',sans-serif; font-size:12px; font-weight:500;
+              padding:5px 13px; border-radius:20px; cursor:pointer; border:1.5px solid var(--border);
+              background:#fff; color:var(--muted); transition:.12s; white-space:nowrap; }
+  .loc-chip:hover { border-color:var(--green); color:var(--green); background:var(--green-l); }
+  .loc-chip.active { border-color:var(--green); color:var(--green); background:var(--green-l); font-weight:600; }
+
+  .new-loc-toggle { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600;
+                    color:var(--green); cursor:pointer; background:none; border:1.5px dashed var(--green);
+                    border-radius:8px; padding:9px 14px; width:100%; font-family:'Jost',sans-serif;
+                    margin-bottom:12px; justify-content:center; }
+  .new-loc-toggle:hover { background:var(--green-l); }
+  .new-loc-form { background:#F8FAFD; border:1px solid var(--border); border-radius:10px;
+                  padding:16px; margin-bottom:14px; display:none; }
+  .new-loc-form.open { display:block; }
+
+  .loc-row { padding:12px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; }
+  .loc-row-name { font-weight:600; font-size:14px; margin-bottom:2px; }
+  .loc-row-meta { font-size:12px; color:var(--muted); margin-bottom:8px; }
+  .loc-row-actions { display:flex; flex-wrap:wrap; gap:6px; }
+  .loc-action-btn { font-family:'Jost',sans-serif; font-size:12px; font-weight:500;
+                    padding:5px 12px; border-radius:6px; cursor:pointer; border:1px solid var(--border);
+                    background:#fff; color:var(--text); display:inline-flex; align-items:center; gap:5px; }
+  .loc-action-btn:hover { background:var(--surface); }
+  .loc-action-btn.primary { border-color:var(--green); color:var(--green); }
+  .loc-action-btn.primary:hover { background:var(--green-l); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-brand">
+    <div class="logo">D</div>
+    <span class="brand-name">dicho<span>.</span></span>
+  </div>
+  <nav class="nav">
+    <button class="nav-item active">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span data-i18n="nav_dashboard">Dashboard</span>
+    </button>
+    <button class="nav-item" onclick="goToQRPage()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="17" y="17" width="4" height="4" rx=".5"/><rect x="17" y="13" width="4" height="2" rx=".5"/><rect x="13" y="17" width="2" height="4" rx=".5"/></svg>
+      <span data-i18n="nav_qr">Código QR</span>
+    </button>
+    <button class="nav-item" onclick="goToUbicaciones()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span data-i18n="nav_ubicaciones">Ubicaciones</span>
+    </button>
+    <a class="nav-item" id="nav-config" href="javascript:void(0)" onclick="goToConfig()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span data-i18n="nav_config">Configuración</span>
+    </a>
+  </nav>
+  <div class="header-right">
+    <span class="header-biz"><strong id="header-biz"></strong></span>
+    <button class="hdr-logout" onclick="doLogout()" data-i18n="logout">Salir</button>
+  </div>
+</header>
+
+<div class="main" id="main-loading">
+  <div class="loading"><div class="spinner"></div> <span data-i18n="loading">Cargando tu panel…</span></div>
+</div>
+
+<div class="main" id="main-content" style="display:none">
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="stat_total">Total Feedbacks</div>
+      <div class="stat-value" id="s-total">0</div>
+      <div class="stat-sub" data-i18n="stat_total_sub">Registros totales</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="stat_pos">Sentimiento Positivo</div>
+      <div class="stat-value green" id="s-pos">0%</div>
+      <div class="stat-sub" data-i18n="stat_pos_sub">De los feedbacks recibidos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="stat_avg">Puntuación Media</div>
+      <div class="stat-value green" id="s-avg">—</div>
+      <div class="stat-sub" data-i18n="stat_avg_sub">Sobre 5 puntos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label" data-i18n="stat_aptos">Aptos para Publicar</div>
+      <div class="stat-value orange" id="s-aptos">0%</div>
+      <div class="stat-sub" data-i18n="stat_aptos_sub">Listos para Google Maps</div>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div class="card">
+      <div class="card-title" data-i18n="chart_title">Sentimiento por día</div>
+      <div style="display:flex;gap:16px;margin-bottom:12px;font-size:12px">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--pos);margin-right:4px"></span><span data-i18n="legend_pos">Positivo</span></span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neu);margin-right:4px"></span><span data-i18n="legend_neu">Neutro</span></span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neg);margin-right:4px"></span><span data-i18n="legend_neg">Negativo</span></span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-sent"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title" data-i18n="topics_title">Temas más mencionados</div>
+      <div class="topics-wrap" id="topics-wrap">
+        <div class="empty" style="padding:20px" data-i18n="topics_empty">Sin datos de temas aún</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div class="card-title" style="margin-bottom:0" id="fb-card-title" data-i18n="fb_title">Feedbacks</div>
+      <div class="loc-filter" id="loc-filter" style="margin-bottom:0"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="th_fecha">Fecha</th>
+            <th data-i18n="th_resumen">Resumen</th>
+            <th data-i18n="th_sent">Sentimiento</th>
+            <th data-i18n="th_punt">Puntuación</th>
+            <th data-i18n="th_apto">Apto Publicar</th>
+            <th id="th-ubicacion" style="display:none" data-i18n="th_ubic">Ubicación</th>
+          </tr>
+        </thead>
+        <tbody id="fb-tbody">
+          <tr><td colspan="5" class="empty" data-i18n="no_fb">Sin feedbacks aún</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer" data-i18n="footer">Dicho — Feedback por voz via WhatsApp &nbsp;·&nbsp; Datos en tiempo real desde Google Sheets</div>
+
+<!-- MODAL: Ubicaciones -->
+<div class="modal-overlay" id="loc-modal">
+  <div class="modal-box" style="max-width:540px">
+    <button class="modal-close" onclick="closeLocModal()">✕</button>
+    <div class="modal-title" data-i18n="loc_modal_title">Ubicaciones</div>
+    <div class="modal-sub" data-i18n="loc_modal_sub">Gestiona tus puntos de feedback. Cada ubicación tiene su propio código QR.</div>
+
+    <button class="new-loc-toggle" onclick="toggleNewLocForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span data-i18n="new_loc">Nueva ubicación</span>
+    </button>
+
+    <div class="new-loc-form" id="new-loc-form">
+      <div class="form-alert" id="new-loc-alert"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group" style="margin:0">
+          <label class="form-label" for="nl-nombre" data-i18n="nl_nombre_label">Nombre *</label>
+          <input class="form-input" id="nl-nombre" type="text" data-i18n-ph="nl_nombre_ph" placeholder="Ej. Sucursal Centro">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label" for="nl-ciudad" data-i18n="nl_ciudad_label">Ciudad</label>
+          <input class="form-input" id="nl-ciudad" type="text" data-i18n-ph="nl_ciudad_ph" placeholder="Ej. Guadalajara">
+        </div>
+      </div>
+      <div class="form-actions" style="margin-top:12px">
+        <button class="btn btn-ghost" onclick="toggleNewLocForm()" data-i18n="cancel">Cancelar</button>
+        <button class="btn btn-primary" id="save-new-loc-btn" onclick="saveNewLocation()" data-i18n="create_loc">Crear ubicación</button>
+      </div>
+    </div>
+
+    <div id="loc-modal-list"></div>
+  </div>
+</div>
+
+<!-- MODAL: QR rápido -->
+<div class="qr-modal" id="qr-modal">
+  <div class="qr-box">
+    <button class="qr-close" onclick="closeQR()">✕</button>
+    <h3 id="qr-title"></h3>
+    <div class="qr-sub" id="qr-sub"></div>
+    <img id="qr-img" src="" alt="QR">
+    <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <a id="qr-open" class="qr-btn" target="_blank" style="text-decoration:none" data-i18n="open_img">Abrir imagen</a>
+      <button class="qr-btn" onclick="copyWa()" data-i18n="copy_wa">Copiar enlace WA</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Editar perfil -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal-box wide">
+    <button class="modal-close" onclick="closeProfileModal()">✕</button>
+    <div class="modal-title" data-i18n="profile_title">Mi perfil</div>
+    <div class="modal-sub" data-i18n="profile_sub">Actualiza los datos de tu negocio y tus credenciales de acceso.</div>
+
+    <div class="form-alert" id="profile-alert"></div>
+
+    <div class="form-section-title" data-i18n="biz_info">Información del negocio</div>
+
+    <div class="form-group">
+      <label class="form-label" for="pf-negocio" data-i18n="negocio_label">Nombre del negocio</label>
+      <input class="form-input" id="pf-negocio" type="text" data-i18n-ph="negocio_ph" placeholder="Ej. Restaurante El Olivo">
+      <div class="form-hint" data-i18n="negocio_hint">Si cambias el nombre, el enlace de WhatsApp y el QR se regenerarán automáticamente.</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group">
+        <label class="form-label" for="pf-ciudad" data-i18n="ciudad_label">Ciudad</label>
+        <input class="form-input" id="pf-ciudad" type="text" data-i18n-ph="ciudad_ph" placeholder="Ej. Barcelona">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="pf-whatsapp" data-i18n="wa_label">WhatsApp (con prefijo)</label>
+        <input class="form-input" id="pf-whatsapp" type="tel" data-i18n-ph="wa_ph" placeholder="+34 612 345 678">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="pf-email" data-i18n="email_label">Email de contacto</label>
+      <input class="form-input" id="pf-email" type="email" data-i18n-ph="email_ph" placeholder="hola@tunegocio.com">
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeProfileModal()" data-i18n="cancel">Cancelar</button>
+      <button class="btn btn-primary" id="save-profile-btn" onclick="saveProfile()" data-i18n="save_changes">Guardar cambios</button>
+    </div>
+
+    <hr class="form-divider">
+
+    <div class="form-section-title" data-i18n="change_pwd">Cambiar contraseña</div>
+
+    <div class="form-alert" id="pwd-alert"></div>
+
+    <div class="form-group">
+      <label class="form-label" for="pf-old-pwd" data-i18n="old_pwd">Contraseña actual</label>
+      <input class="form-input" id="pf-old-pwd" type="password" data-i18n-ph="old_pwd_ph" placeholder="Tu contraseña actual">
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group">
+        <label class="form-label" for="pf-new-pwd" data-i18n="new_pwd">Nueva contraseña</label>
+        <input class="form-input" id="pf-new-pwd" type="password" data-i18n-ph="new_pwd_ph" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="pf-new-pwd2" data-i18n="confirm_pwd">Confirmar contraseña</label>
+        <input class="form-input" id="pf-new-pwd2" type="password" data-i18n-ph="confirm_pwd_ph" placeholder="Repite la nueva contraseña">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" id="save-pwd-btn" onclick="savePwd()" data-i18n="do_change_pwd">Cambiar contraseña</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<script>
+// ── Variables (GitHub Pages: leídas de la URL) ────────────────
+var GAS_URL    = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+var _p         = new URLSearchParams(window.location.search);
+var TOKEN      = _p.get('token')   || '';
+var SESSION    = _p.get('session') || '';
+var SCRIPT_URL = GAS_URL; // compatibilidad
+
+// ── Helper API ────────────────────────────────────────────────
+function gasCall(page, params) {
+  var url = GAS_URL + '?page=' + page;
+  for (var k in params) {
+    if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
+      url += '&' + k + '=' + encodeURIComponent(params[k]);
+    }
+  }
+  return fetch(url).then(function(r) { return r.json(); });
+}
+
+// ── Estado global ─────────────────────────────────────────────
+var dashData      = null;
+var allFeedbacks  = [];
+var activeLocId   = null;
+var chartInst     = null;
+var currentLang   = 'es';
+
+// ── Traducciones ──────────────────────────────────────────────
+var TR = {
+  es: {
+    nav_dashboard: 'Dashboard', nav_qr: 'Código QR',
+    nav_ubicaciones: 'Ubicaciones', nav_config: 'Configuración', logout: 'Salir',
+    loading: 'Cargando tu panel…',
+    stat_total: 'Total Feedbacks', stat_total_sub: 'Registros totales',
+    stat_pos: 'Sentimiento Positivo', stat_pos_sub: 'De los feedbacks recibidos',
+    stat_avg: 'Puntuación Media', stat_avg_sub: 'Sobre 5 puntos',
+    stat_aptos: 'Aptos para Publicar', stat_aptos_sub: 'Listos para Google Maps',
+    chart_title: 'Sentimiento por día',
+    legend_pos: 'Positivo', legend_neu: 'Neutro', legend_neg: 'Negativo',
+    topics_title: 'Temas más mencionados', topics_empty: 'Sin datos de temas aún',
+    fb_title: 'Feedbacks', filter_all: 'Todas',
+    th_fecha: 'Fecha', th_resumen: 'Resumen', th_sent: 'Sentimiento',
+    th_punt: 'Puntuación', th_apto: 'Apto Publicar', th_ubic: 'Ubicación',
+    sent_positivo: 'Positivo', sent_neutro: 'Neutro', sent_negativo: 'Negativo',
+    no_fb: 'Sin feedbacks aún',
+    footer: 'Dicho — Feedback por voz via WhatsApp · Datos en tiempo real desde Google Sheets',
+    loc_modal_title: 'Ubicaciones',
+    loc_modal_sub: 'Gestiona tus puntos de feedback. Cada ubicación tiene su propio código QR.',
+    new_loc: 'Nueva ubicación',
+    nl_nombre_label: 'Nombre *', nl_nombre_ph: 'Ej. Sucursal Centro',
+    nl_ciudad_label: 'Ciudad', nl_ciudad_ph: 'Ej. Guadalajara',
+    cancel: 'Cancelar', create_loc: 'Crear ubicación', creating: 'Creando…',
+    empty_locs: 'Aún no tienes ubicaciones.',
+    loc_feedbacks: 'Ver feedbacks', ver_qr: 'Ver QR', probar_wa: 'Probar WA',
+    copy_wa: 'Copiar enlace WA', open_img: 'Abrir imagen',
+    profile_title: 'Mi perfil',
+    profile_sub: 'Actualiza los datos de tu negocio y tus credenciales de acceso.',
+    biz_info: 'Información del negocio',
+    negocio_label: 'Nombre del negocio', negocio_ph: 'Ej. Restaurante El Olivo',
+    negocio_hint: 'Si cambias el nombre, el enlace de WhatsApp y el QR se regenerarán automáticamente.',
+    ciudad_label: 'Ciudad', ciudad_ph: 'Ej. Barcelona',
+    wa_label: 'WhatsApp (con prefijo)', wa_ph: '+34 612 345 678',
+    email_label: 'Email de contacto', email_ph: 'hola@tunegocio.com',
+    save_changes: 'Guardar cambios', saving: 'Guardando…',
+    change_pwd: 'Cambiar contraseña',
+    old_pwd: 'Contraseña actual', old_pwd_ph: 'Tu contraseña actual',
+    new_pwd: 'Nueva contraseña', new_pwd_ph: 'Mínimo 6 caracteres',
+    confirm_pwd: 'Confirmar contraseña', confirm_pwd_ph: 'Repite la nueva contraseña',
+    do_change_pwd: 'Cambiar contraseña', changing: 'Cambiando…',
+    fb_title_loc: 'Feedbacks · '
+  },
+  ca: {
+    nav_dashboard: 'Tauler', nav_qr: 'Codi QR',
+    nav_ubicaciones: 'Ubicacions', nav_config: 'Configuració', logout: 'Sortir',
+    loading: 'Carregant el tauler…',
+    stat_total: 'Total Feedbacks', stat_total_sub: 'Registres totals',
+    stat_pos: 'Sentiment Positiu', stat_pos_sub: 'Dels feedbacks rebuts',
+    stat_avg: 'Puntuació Mitjana', stat_avg_sub: 'Sobre 5 punts',
+    stat_aptos: 'Aptes per Publicar', stat_aptos_sub: 'Llestos per a Google Maps',
+    chart_title: 'Sentiment per dia',
+    legend_pos: 'Positiu', legend_neu: 'Neutre', legend_neg: 'Negatiu',
+    topics_title: 'Temes més esmentats', topics_empty: 'Sense dades de temes encara',
+    fb_title: 'Feedbacks', filter_all: 'Totes',
+    th_fecha: 'Data', th_resumen: 'Resum', th_sent: 'Sentiment',
+    th_punt: 'Puntuació', th_apto: 'Apte Publicar', th_ubic: 'Ubicació',
+    sent_positivo: 'Positiu', sent_neutro: 'Neutre', sent_negativo: 'Negatiu',
+    no_fb: 'Sense feedbacks encara',
+    footer: 'Dicho — Feedback per veu via WhatsApp · Dades en temps real des de Google Sheets',
+    loc_modal_title: 'Ubicacions',
+    loc_modal_sub: 'Gestiona els teus punts de feedback. Cada ubicació té el seu propi codi QR.',
+    new_loc: 'Nova ubicació',
+    nl_nombre_label: 'Nom *', nl_nombre_ph: 'Ex. Sucursal Centre',
+    nl_ciudad_label: 'Ciutat', nl_ciudad_ph: 'Ex. Girona',
+    cancel: 'Cancel·lar', create_loc: 'Crear ubicació', creating: 'Creant…',
+    empty_locs: 'Encara no tens ubicacions.',
+    loc_feedbacks: 'Veure feedbacks', ver_qr: 'Veure QR', probar_wa: 'Provar WA',
+    copy_wa: 'Copiar enllaç WA', open_img: 'Obrir imatge',
+    profile_title: 'El meu perfil',
+    profile_sub: "Actualitza les dades del teu negoci i les teves credencials d'accés.",
+    biz_info: 'Informació del negoci',
+    negocio_label: 'Nom del negoci', negocio_ph: 'Ex. Restaurant El Molí',
+    negocio_hint: "Si canvies el nom, l'enllaç de WhatsApp i el QR es regeneraran automàticament.",
+    ciudad_label: 'Ciutat', ciudad_ph: 'Ex. Barcelona',
+    wa_label: 'WhatsApp (amb prefix)', wa_ph: '+34 612 345 678',
+    email_label: 'Email de contacte', email_ph: 'hola@elnegoci.com',
+    save_changes: 'Desar canvis', saving: 'Desant…',
+    change_pwd: 'Canviar contrasenya',
+    old_pwd: 'Contrasenya actual', old_pwd_ph: 'La teva contrasenya actual',
+    new_pwd: 'Nova contrasenya', new_pwd_ph: 'Mínim 6 caràcters',
+    confirm_pwd: 'Confirmar contrasenya', confirm_pwd_ph: 'Repeteix la nova contrasenya',
+    do_change_pwd: 'Canviar contrasenya', changing: 'Canviant…',
+    fb_title_loc: 'Feedbacks · '
+  },
+  en: {
+    nav_dashboard: 'Dashboard', nav_qr: 'QR Code',
+    nav_ubicaciones: 'Locations', nav_config: 'Settings', logout: 'Log out',
+    loading: 'Loading your dashboard…',
+    stat_total: 'Total Feedbacks', stat_total_sub: 'Total records',
+    stat_pos: 'Positive Sentiment', stat_pos_sub: 'Of received feedbacks',
+    stat_avg: 'Average Score', stat_avg_sub: 'Out of 5 points',
+    stat_aptos: 'Ready to Publish', stat_aptos_sub: 'Ready for Google Maps',
+    chart_title: 'Sentiment by day',
+    legend_pos: 'Positive', legend_neu: 'Neutral', legend_neg: 'Negative',
+    topics_title: 'Most mentioned topics', topics_empty: 'No topic data yet',
+    fb_title: 'Feedbacks', filter_all: 'All',
+    th_fecha: 'Date', th_resumen: 'Summary', th_sent: 'Sentiment',
+    th_punt: 'Score', th_apto: 'Ready to Publish', th_ubic: 'Location',
+    sent_positivo: 'Positive', sent_neutro: 'Neutral', sent_negativo: 'Negative',
+    no_fb: 'No feedbacks yet',
+    footer: 'Dicho — Voice feedback via WhatsApp · Real-time data from Google Sheets',
+    loc_modal_title: 'Locations',
+    loc_modal_sub: 'Manage your feedback points. Each location has its own QR code.',
+    new_loc: 'New location',
+    nl_nombre_label: 'Name *', nl_nombre_ph: 'E.g. Downtown Branch',
+    nl_ciudad_label: 'City', nl_ciudad_ph: 'E.g. Madrid',
+    cancel: 'Cancel', create_loc: 'Create location', creating: 'Creating…',
+    empty_locs: 'You have no locations yet.',
+    loc_feedbacks: 'View feedbacks', ver_qr: 'View QR', probar_wa: 'Test WA',
+    copy_wa: 'Copy WA link', open_img: 'Open image',
+    profile_title: 'My profile',
+    profile_sub: 'Update your business data and access credentials.',
+    biz_info: 'Business information',
+    negocio_label: 'Business name', negocio_ph: 'E.g. The Olive Restaurant',
+    negocio_hint: 'If you change the name, the WhatsApp link and QR will be regenerated automatically.',
+    ciudad_label: 'City', ciudad_ph: 'E.g. Barcelona',
+    wa_label: 'WhatsApp (with prefix)', wa_ph: '+34 612 345 678',
+    email_label: 'Contact email', email_ph: 'hello@yourbusiness.com',
+    save_changes: 'Save changes', saving: 'Saving…',
+    change_pwd: 'Change password',
+    old_pwd: 'Current password', old_pwd_ph: 'Your current password',
+    new_pwd: 'New password', new_pwd_ph: 'Minimum 6 characters',
+    confirm_pwd: 'Confirm password', confirm_pwd_ph: 'Repeat new password',
+    do_change_pwd: 'Change password', changing: 'Changing…',
+    fb_title_loc: 'Feedbacks · '
+  }
+};
+
+function t(k) { return (TR[currentLang] || TR.es)[k] || k; }
+
+function applyLang(lang) {
+  currentLang = lang || 'es';
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+    el.placeholder = t(el.getAttribute('data-i18n-ph'));
+  });
+}
+
+// ── Navegación ────────────────────────────────────────────────
+function goToQRPage() {
+  window.top.location.href = 'https://dichosea.com/codigoqr.html?token=' + encodeURIComponent(TOKEN);
+}
+function goToUbicaciones() {
+  window.top.location.href = 'https://dichosea.com/ubicaciones.html?token=' + encodeURIComponent(TOKEN);
+}
+function goToConfig() {
+  window.top.location.href = 'https://dichosea.com/configuracion.html?token=' + encodeURIComponent(TOKEN);
+}
+
+gasCall('api_dashboard', { token: TOKEN })
+  .then(function(data) {
+    if (!data || !data.ok) {
+      document.getElementById('main-loading').innerHTML =
+        '<div class="empty">No se encontraron datos para este dashboard.<br><small>' +
+        (data && data.error ? data.error : 'Token inválido o sin datos.') + '</small></div>';
+      return;
+    }
+    dashData = data;
+    var lang = data.idioma || (data.clientInfo && data.clientInfo.idioma) || 'es';
+    applyLang(lang);
+    renderDashboard();
+    document.getElementById('main-loading').style.display  = 'none';
+    document.getElementById('main-content').style.display  = 'block';
+    var urlParams = new URLSearchParams(window.location.search);
+    var openModal = urlParams.get('open');
+    if (openModal === 'ubicaciones') showLocModal();
+    else if (openModal === 'config') showProfileModal();
+  })
+  .catch(function(err) {
+    document.getElementById('main-loading').innerHTML =
+      '<div class="empty">Error al cargar datos: ' + err + '</div>';
+  });
+
+// ── Render principal ─────────────────────────────────────────
+function renderDashboard() {
+  var d = dashData;
+  document.getElementById('header-biz').textContent = d.clientInfo.negocio || '';
+  document.getElementById('s-total').textContent = d.total;
+  document.getElementById('s-pos').textContent   = d.pctPositivo + '%';
+  document.getElementById('s-avg').textContent   = d.total > 0 ? d.avgScore : '—';
+  document.getElementById('s-aptos').textContent = d.pctAptos + '%';
+  allFeedbacks = d.recientes || [];
+  renderChart(d);
+  renderTopics(d.topics);
+  renderFilterChips();
+  renderTable(allFeedbacks);
+}
+
+// ── Chips de filtro ───────────────────────────────────────────
+function renderFilterChips() {
+  var container = document.getElementById('loc-filter');
+  var locs = (dashData && dashData.ubicaciones) || [];
+  if (locs.length < 2) { container.innerHTML = ''; return; }
+
+  document.getElementById('th-ubicacion').style.display = '';
+
+  var chips = '<button class="loc-chip active" id="chip-all" onclick="filterByLoc(null)">' + t('filter_all') + '</button>';
+  chips += locs.map(function(u) {
+    return '<button class="loc-chip" id="chip-' + u.id + '" onclick="filterByLoc(\'' + u.id + '\')">' + esc(u.nombre) + '</button>';
+  }).join('');
+  container.innerHTML = chips;
+}
+
+function filterByLoc(locId) {
+  activeLocId = locId;
+  var locs = (dashData && dashData.ubicaciones) || [];
+  var chipAll = document.getElementById('chip-all');
+  if (chipAll) chipAll.className = 'loc-chip' + (locId === null ? ' active' : '');
+  locs.forEach(function(u) {
+    var el = document.getElementById('chip-' + u.id);
+    if (el) el.className = 'loc-chip' + (locId === u.id ? ' active' : '');
+  });
+
+  var filtered = locId ? allFeedbacks.filter(function(f){ return f.locId === locId; }) : allFeedbacks;
+
+  var titleEl = document.getElementById('fb-card-title');
+  if (locId) {
+    var loc = locs.filter(function(u){ return u.id === locId; })[0];
+    titleEl.textContent = t('fb_title_loc') + (loc ? loc.nombre : '');
+  } else {
+    titleEl.textContent = t('fb_title');
+  }
+
+  renderTable(filtered);
+}
+
+// ── Gráfica sentimiento ───────────────────────────────────────
+function renderChart(d) {
+  if (chartInst) chartInst.destroy();
+  var ctx = document.getElementById('chart-sent').getContext('2d');
+  var labels = d.chartLabels.map(function(l) {
+    var parts = l.split('/'); return parts[0] + '/' + parts[1];
+  });
+  chartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: t('legend_pos'), data:d.chartPos, backgroundColor:'rgba(22,163,74,.75)', borderRadius:3, stack:'s' },
+        { label: t('legend_neu'), data:d.chartNeu, backgroundColor:'rgba(156,163,175,.6)', borderRadius:3, stack:'s' },
+        { label: t('legend_neg'), data:d.chartNeg, backgroundColor:'rgba(220,38,38,.7)',   borderRadius:3, stack:'s' }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ mode:'index', intersect:false } },
+      scales:{
+        x:{ stacked:true, grid:{display:false}, ticks:{font:{size:10},maxRotation:45,minRotation:30} },
+        y:{ stacked:true, grid:{color:'rgba(0,0,0,.05)'}, ticks:{font:{size:10},stepSize:1} }
+      }
+    }
+  });
+}
+
+// ── Temas ─────────────────────────────────────────────────────
+function renderTopics(topics) {
+  var wrap = document.getElementById('topics-wrap');
+  if (!topics || !topics.length) {
+    wrap.innerHTML = '<div class="empty" style="padding:20px">' + t('topics_empty') + '</div>';
+    return;
+  }
+  var max = topics[0].count;
+  wrap.innerHTML = topics.map(function(topic) {
+    var pct = Math.round(topic.count / max * 100);
+    return '<div class="topic-row">' +
+      '<span class="topic-label">' + esc(topic.label) + '</span>' +
+      '<div class="topic-bar-bg"><div class="topic-bar" style="width:' + pct + '%"></div></div>' +
+      '<span class="topic-count">' + topic.count + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+// ── Tabla feedbacks ───────────────────────────────────────────
+function renderTable(feedbacks) {
+  var tbody = document.getElementById('fb-tbody');
+  var multiLoc = (dashData && dashData.ubicaciones && dashData.ubicaciones.length > 1);
+  var cols = multiLoc ? 6 : 5;
+  if (!feedbacks || !feedbacks.length) {
+    tbody.innerHTML = '<tr><td colspan="' + cols + '" class="empty">' + t('no_fb') + '</td></tr>';
+    return;
+  }
+
+  var locMap = {};
+  if (dashData && dashData.ubicaciones) {
+    dashData.ubicaciones.forEach(function(u){ locMap[u.id] = u.nombre; });
+  }
+
+  tbody.innerHTML = feedbacks.map(function(f, i) {
+    var sentKey = 'sent_' + (f.sent || 'neutro');
+    var sentLabel = t(sentKey);
+    var sentClass = 'sent-' + (f.sent || 'neutro');
+    var stars = '';
+    for (var s = 1; s <= 5; s++) stars += (s <= Math.round(f.punt) ? '★' : '☆');
+    var aptoIcon = f.apto ? '✓' : '✗';
+    var aptoColor = f.apto ? 'color:var(--pos)' : 'color:var(--muted)';
+    var locCell = multiLoc
+      ? '<td style="font-size:12px;color:var(--muted)">' + esc(f.locId ? (locMap[f.locId] || f.codigo) : f.codigo) + '</td>'
+      : '';
+    var rows = '<tr>' +
+      '<td style="white-space:nowrap;color:var(--muted);font-size:12px">' + esc(f.fecha) + '</td>' +
+      '<td>' + esc(f.resumen || '—') +
+        (f.transcripcion ? ' <button class="expand-btn" onclick="toggleTr(' + i + ')">[ver]</button>' : '') +
+      '</td>' +
+      '<td><span class="sent-pill ' + sentClass + '">' + sentLabel + '</span></td>' +
+      '<td><span class="stars">' + stars + '</span></td>' +
+      '<td style="' + aptoColor + ';font-weight:600">' + aptoIcon + '</td>' +
+      locCell +
+    '</tr>';
+    if (f.transcripcion) {
+      rows += '<tr id="tr-' + i + '" style="display:none"><td></td><td colspan="' + (cols - 1) + '" class="transcript">' +
+        esc(f.transcripcion) + '</td></tr>';
+    }
+    return rows;
+  }).join('');
+}
+
+function toggleTr(i) {
+  var el = document.getElementById('tr-' + i);
+  if (el) el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+
+// ── QR Modal ─────────────────────────────────────────────────
+function showQRFor(loc) {
+  closeLocModal();
+  document.getElementById('qr-title').textContent = loc.nombre;
+  document.getElementById('qr-sub').textContent   = 'Código: ' + loc.codigo;
+  document.getElementById('qr-img').src           = loc.qrUrl;
+  document.getElementById('qr-open').href         = loc.qrUrl;
+  window._waUrl = loc.waUrl;
+  document.getElementById('qr-modal').classList.add('open');
+}
+
+function closeQR() { document.getElementById('qr-modal').classList.remove('open'); }
+
+// ── Locations modal ───────────────────────────────────────────
+function showLocModal() {
+  refreshLocModalList();
+  document.getElementById('new-loc-form').classList.remove('open');
+  document.getElementById('nl-nombre').value = '';
+  document.getElementById('nl-ciudad').value = '';
+  hideAlert('new-loc-alert');
+  document.getElementById('loc-modal').classList.add('open');
+}
+
+function closeLocModal() {
+  document.getElementById('loc-modal').classList.remove('open');
+}
+
+function refreshLocModalList() {
+  if (!dashData) return;
+  var locs = dashData.ubicaciones;
+  if (!locs.length) {
+    document.getElementById('loc-modal-list').innerHTML = '<div class="empty">' + t('empty_locs') + '</div>';
+    return;
+  }
+  document.getElementById('loc-modal-list').innerHTML = locs.map(function(u) {
+    var hasFeedbacks = allFeedbacks.some(function(f){ return f.locId === u.id; });
+    return '<div class="loc-row">' +
+      '<div class="loc-row-name">' + esc(u.nombre) + '</div>' +
+      '<div class="loc-row-meta">' + esc(u.ciudad || '—') + ' · <code style="font-size:11px">' + esc(u.codigo) + '</code></div>' +
+      '<div class="loc-row-actions">' +
+        '<button class="loc-action-btn primary" onclick="viewLocFeedbacks(\'' + u.id + '\')">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>' +
+          t('loc_feedbacks') + (hasFeedbacks ? '' : ' (0)') +
+        '</button>' +
+        '<button class="loc-action-btn" onclick=\'showQRFor(' + JSON.stringify(u) + ')\'>' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>' +
+          t('ver_qr') +
+        '</button>' +
+        '<a class="loc-action-btn" href="' + esc(u.waUrl) + '" target="_blank" style="text-decoration:none">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>' +
+          t('probar_wa') +
+        '</a>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function viewLocFeedbacks(locId) {
+  closeLocModal();
+  var locs = (dashData && dashData.ubicaciones) || [];
+  if (locs.length >= 2) filterByLoc(locId);
+  setTimeout(function(){
+    var card = document.getElementById('fb-tbody');
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function toggleNewLocForm() {
+  document.getElementById('new-loc-form').classList.toggle('open');
+}
+
+function saveNewLocation() {
+  var nombre = document.getElementById('nl-nombre').value.trim();
+  var ciudad = document.getElementById('nl-ciudad').value.trim();
+  if (!nombre) {
+    showAlert('new-loc-alert', 'El nombre de la ubicación es obligatorio.', 'error');
+    return;
+  }
+  var btn = document.getElementById('save-new-loc-btn');
+  btn.disabled = true;
+  btn.textContent = t('creating');
+  hideAlert('new-loc-alert');
+
+  gasCall('api_addLocation', { token: TOKEN, nombre: nombre, ciudad: ciudad })
+    .then(function(res) {
+      btn.disabled = false;
+      btn.textContent = t('create_loc');
+      if (res && res.ok) {
+        dashData.ubicaciones.push(res.ubicacion);
+        document.getElementById('nl-nombre').value = '';
+        document.getElementById('nl-ciudad').value = '';
+        document.getElementById('new-loc-form').classList.remove('open');
+        showAlert('new-loc-alert', '¡Ubicación creada!', 'success');
+        refreshLocModalList();
+        renderFilterChips();
+      } else {
+        showAlert('new-loc-alert', (res && res.error) || 'Error al crear la ubicación.', 'error');
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.textContent = t('create_loc');
+      showAlert('new-loc-alert', 'Error: ' + err, 'error');
+    });
+}
+
+function copyWa() {
+  if (navigator.clipboard && window._waUrl)
+    navigator.clipboard.writeText(window._waUrl).then(function(){ alert(t('copy_wa')); });
+}
+
+// ── Perfil modal ──────────────────────────────────────────────
+function showProfileModal() {
+  if (!dashData) return;
+  var ci = dashData.clientInfo;
+  document.getElementById('pf-negocio').value  = ci.negocio  || '';
+  document.getElementById('pf-ciudad').value   = ci.ciudad   || '';
+  document.getElementById('pf-whatsapp').value = ci.whatsapp || '';
+  document.getElementById('pf-email').value    = ci.email    || '';
+  document.getElementById('pf-old-pwd').value  = '';
+  document.getElementById('pf-new-pwd').value  = '';
+  document.getElementById('pf-new-pwd2').value = '';
+  hideAlert('profile-alert');
+  hideAlert('pwd-alert');
+  document.getElementById('profile-modal').classList.add('open');
+}
+
+function closeProfileModal() {
+  document.getElementById('profile-modal').classList.remove('open');
+}
+
+function saveProfile() {
+  var negocio  = document.getElementById('pf-negocio').value.trim();
+  var ciudad   = document.getElementById('pf-ciudad').value.trim();
+  var whatsapp = document.getElementById('pf-whatsapp').value.trim();
+  var email    = document.getElementById('pf-email').value.trim();
+
+  if (!negocio) { showAlert('profile-alert', 'El nombre del negocio no puede estar vacío.', 'error'); return; }
+
+  var btn = document.getElementById('save-profile-btn');
+  btn.disabled = true;
+  btn.textContent = t('saving');
+  hideAlert('profile-alert');
+
+  gasCall('api_updateClient', { token: TOKEN, negocio: negocio, ciudad: ciudad, whatsapp: whatsapp, email: email })
+    .then(function(res) {
+      btn.disabled = false;
+      btn.textContent = t('save_changes');
+      if (res && res.ok) {
+        dashData.clientInfo.negocio  = negocio;
+        dashData.clientInfo.ciudad   = ciudad;
+        dashData.clientInfo.whatsapp = whatsapp;
+        dashData.clientInfo.email    = email;
+        document.getElementById('header-biz').textContent = negocio;
+        showAlert('profile-alert', '¡Cambios guardados!', 'success');
+      } else {
+        showAlert('profile-alert', (res && res.error) || 'No se pudieron guardar los cambios.', 'error');
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.textContent = t('save_changes');
+      showAlert('profile-alert', 'Error: ' + err, 'error');
+    });
+}
+
+function savePwd() {
+  var oldPwd  = document.getElementById('pf-old-pwd').value;
+  var newPwd  = document.getElementById('pf-new-pwd').value;
+  var newPwd2 = document.getElementById('pf-new-pwd2').value;
+
+  if (!oldPwd || !newPwd) { showAlert('pwd-alert', 'Completa todos los campos de contraseña.', 'error'); return; }
+  if (newPwd !== newPwd2)  { showAlert('pwd-alert', 'Las contraseñas nuevas no coinciden.', 'error'); return; }
+  if (newPwd.length < 6)   { showAlert('pwd-alert', 'La nueva contraseña debe tener al menos 6 caracteres.', 'error'); return; }
+
+  var btn = document.getElementById('save-pwd-btn');
+  btn.disabled = true;
+  btn.textContent = t('changing');
+  hideAlert('pwd-alert');
+
+  gasCall('api_changePassword', { token: TOKEN, oldPwd: oldPwd, newPwd: newPwd })
+    .then(function(res) {
+      btn.disabled = false;
+      btn.textContent = t('do_change_pwd');
+      if (res && res.ok) {
+        document.getElementById('pf-old-pwd').value  = '';
+        document.getElementById('pf-new-pwd').value  = '';
+        document.getElementById('pf-new-pwd2').value = '';
+        showAlert('pwd-alert', '¡Contraseña cambiada con éxito!', 'success');
+      } else {
+        showAlert('pwd-alert', (res && res.error) || 'No se pudo cambiar la contraseña.', 'error');
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.textContent = t('do_change_pwd');
+      showAlert('pwd-alert', 'Error: ' + err, 'error');
+    });
+}
+
+function showAlert(id, msg, type) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.className   = 'form-alert ' + type + ' show';
+}
+function hideAlert(id) {
+  document.getElementById(id).className = 'form-alert';
+}
+
+function doLogout() {
+  if (SESSION) gasCall('api_logout', { session: SESSION }).catch(function(){});
+  window.top.location.href = 'https://dichosea.com/login.html?token=' + encodeURIComponent(TOKEN);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
