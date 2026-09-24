@@ -296,7 +296,7 @@
 
   <script>
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
-    var CACHE_TTL = 30 * 60 * 1000; // 30 minutos
+    var CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
     // ── Traducciones ──
     var TR = {
@@ -397,7 +397,9 @@
     }
 
     function renderData(data) {
-      var lang = data.idioma_negocio || 'es';
+      // Prioridad: idioma detectado en el audio del cliente → idioma del negocio → 'es'
+      // (idioma_negocio es solo para las plantillas de WATI/Make, no para la UI del cliente)
+      var lang = data.idioma_detectado || data.idioma_negocio || 'es';
       applyLang(lang);
       document.getElementById('negocio').textContent    = data.negocio       || '';
       document.getElementById('ciudad').textContent     = formatCiudad(data.ciudad);
@@ -416,8 +418,12 @@
     if (!waId) {
       show('error');
     } else {
+      // Saltamos caché si URL tiene ?refresh o si el parámetro noCache existe
+      var forceRefresh = new URLSearchParams(window.location.search).has('refresh');
+      if (forceRefresh) { try { localStorage.removeItem('review_' + waId); } catch(e) {} }
+
       // Intentar caché primero
-      var cached = getCached(waId);
+      var cached = forceRefresh ? null : getCached(waId);
       if (cached) {
         renderData(cached);
       } else {
