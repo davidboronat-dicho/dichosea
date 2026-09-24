@@ -344,9 +344,9 @@
       // Primero: param ?lang= en la URL
       var paramLang = params.get('lang');
       if (paramLang && TR[paramLang]) return paramLang;
-      // Segundo: idioma del navegador
+      // Segundo: idioma del navegador (catalán solo por ?lang=ca, no por navigator,
+      // porque los templates de WATI no incluyen ?lang= en la URL)
       var nav = navigator.language || navigator.userLanguage || 'es';
-      if (nav.startsWith('ca')) return 'ca';
       if (nav.startsWith('en')) return 'en';
       return 'es';
     }
@@ -418,26 +418,18 @@
     if (!waId) {
       show('error');
     } else {
-      // Saltamos caché si URL tiene ?refresh o si el parámetro noCache existe
-      var forceRefresh = new URLSearchParams(window.location.search).has('refresh');
-      if (forceRefresh) { try { localStorage.removeItem('review_' + waId); } catch(e) {} }
-
-      // Intentar caché primero
-      var cached = forceRefresh ? null : getCached(waId);
-      if (cached) {
-        renderData(cached);
-      } else {
-        var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-        var tid = controller ? setTimeout(function() { controller.abort(); }, 12000) : null;
-        fetch(GAS_URL + '?page=reviewData&id=' + encodeURIComponent(waId), controller ? { signal: controller.signal } : {})
-          .then(function(r) { if (tid) clearTimeout(tid); return r.json(); })
-          .then(function(data) {
-            if (!data.ok) { show('error'); return; }
-            setCache(waId, data);
-            renderData(data);
-          })
-          .catch(function() { show('error'); });
-      }
+      // Sin caché localStorage: cada apertura consulta GAS directamente.
+      // El CacheService de GAS responde en <100ms para llamadas repetidas,
+      // así que el localStorage solo causaba datos obsoletos cuando cambiaba la reseña.
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var tid = controller ? setTimeout(function() { controller.abort(); }, 12000) : null;
+      fetch(GAS_URL + '?page=reviewData&id=' + encodeURIComponent(waId), controller ? { signal: controller.signal } : {})
+        .then(function(r) { if (tid) clearTimeout(tid); return r.json(); })
+        .then(function(data) {
+          if (!data.ok) { show('error'); return; }
+          renderData(data);
+        })
+        .catch(function() { show('error'); });
     }
 
     function copyAndToast() {
