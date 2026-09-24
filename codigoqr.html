@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dicho · Código QR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Jost:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --green-deep: #14532D;
+  --green:      #16A34A;
+  --green-mid:  #15803d;
+  --green-l:    #F0FDF4;
+  --green-b:    #D1FAE5;
+  --surface:    #F5F1E8;
+  --card:       #FFFFFF;
+  --border:     #D8D2C3;
+  --border-l:   #E8E4DA;
+  --text:       #1C2B20;
+  --muted:      #6B7A6E;
+  --muted-l:    #9AAA9E;
+  font-family: 'Jost', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--surface); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+/* ── HEADER ── */
+.header {
+  background: var(--green-deep);
+  height: 54px;
+  display: flex;
+  align-items: stretch;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.header-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding-right: 24px;
+  border-right: 1px solid rgba(255,255,255,.14);
+  flex-shrink: 0;
+}
+.logo {
+  width: 28px; height: 28px;
+  background: #fff; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800; color: var(--green-deep);
+  font-family: 'Jost', sans-serif; letter-spacing: -.03em; flex-shrink: 0;
+}
+.brand-name { font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -.03em; }
+.brand-name span { color: #86efac; }
+.nav { display: flex; align-items: stretch; gap: 2px; flex: 1; }
+.nav-item {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 0 15px; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,.62); font-family: 'Jost', sans-serif;
+  cursor: pointer; border: none; background: none;
+  border-bottom: 2px solid transparent; transition: .15s;
+  text-decoration: none; white-space: nowrap;
+}
+.nav-item:hover { color: rgba(255,255,255,.88); }
+.nav-item.active {
+  color: #fff; font-weight: 700;
+  border-bottom-color: #86efac; background: rgba(255,255,255,.07);
+}
+.nav-item svg { flex-shrink: 0; opacity: .7; }
+.nav-item.active svg { opacity: 1; }
+.header-right {
+  display: flex; align-items: center;
+  padding-left: 6px;
+  margin-left: auto; flex-shrink: 0;
+}
+.header-biz {
+  font-size: 13px; color: rgba(255,255,255,.65); font-weight: 500;
+  white-space: nowrap;
+  padding-right: 16px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px;
+}
+.header-biz strong { color: #fff; }
+
+/* ── PAGE ── */
+.page { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
+
+.page-top {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 16px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.page-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--green); margin-bottom: 4px;
+}
+.page-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 26px; font-weight: 800;
+  color: var(--text); letter-spacing: -.03em; line-height: 1.1;
+}
+.btn-new-loc {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px; font-size: 13px; font-weight: 700;
+  font-family: 'Jost', sans-serif;
+  background: var(--green); color: #fff;
+  border: none; border-radius: 9px; cursor: pointer; transition: .15s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.btn-new-loc:hover { background: var(--green-mid); }
+
+/* ── LOADING / EMPTY ── */
+.loading {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--muted); font-size: 14px;
+  padding: 60px 0; justify-content: center;
+}
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%; animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-wrap {
+  text-align: center; padding: 80px 20px;
+  color: var(--muted);
+}
+.empty-wrap svg { opacity: .25; margin-bottom: 16px; }
+.empty-wrap h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 6px;
+}
+.empty-wrap p { font-size: 13px; }
+
+/* ── LOC MODULE ── */
+.loc-module {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(20,83,45,.06);
+}
+.loc-module-header {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-l);
+}
+.loc-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px; font-weight: 800;
+  color: var(--text); letter-spacing: -.02em;
+}
+.loc-meta {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 3px; flex-wrap: wrap;
+}
+.loc-meta-item { font-size: 12px; color: var(--muted); }
+.loc-code {
+  font-size: 11px; font-family: monospace;
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 2px 7px; border-radius: 5px; color: var(--muted);
+}
+.loc-module-body {
+  display: flex; align-items: flex-start; gap: 32px;
+  padding: 28px 24px;
+}
+
+/* ── QR CARD ── */
+.qr-card {
+  background: #F0FDF4;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 6px 28px rgba(0,0,0,.10);
+  border: 1px solid #D1FAE5;
+  display: flex; flex-direction: row;
+  max-width: 340px; flex-shrink: 0;
+}
+.card-left {
+  flex: 1;
+  padding: 18px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.card-right {
+  width: 134px; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: 18px 23px 14px 8px;
+  gap: 10px;
+}
+.cl-stars { color: #FACC15; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 7px; }
+.cl-headline {
+  font-size: 18px; font-weight: 900; color: #1C2B20;
+  line-height: 1.18; letter-spacing: -.02em; margin-bottom: 14px;
+}
+.cl-headline em { font-style: normal; color: #16A34A; display: block; }
+.cl-scan-label {
+  font-size: 9.5px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .14em; color: #16A34A; margin-bottom: 6px;
+}
+.cl-via-row {
+  display: flex; align-items: center; gap: 5px; margin-top: 2px;
+}
+.cl-via { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #9CA3AF; }
+.cl-wa {
+  background: #16A34A; color: #fff;
+  font-size: 8px; font-weight: 800; letter-spacing: .04em;
+  padding: 2px 7px; border-radius: 20px;
+}
+.cl-footer { display: flex; align-items: center; padding-top: 10px; margin-top: 14px; }
+.cr-top { display: flex; align-items: center; gap: 5px; }
+.cr-via { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #9CA3AF; }
+.cr-wa {
+  background: #16A34A; color: #fff;
+  font-size: 8px; font-weight: 800; letter-spacing: .04em;
+  padding: 2px 7px; border-radius: 20px;
+}
+.cr-qr { background: #fff; border-radius: 14px; padding: 9px; }
+/* QR: img de api.qrserver + canvas overlay para el micrófono */
+.qr-wrap { position: relative; width: 110px; height: 110px; }
+.qr-wrap img { width: 110px; height: 110px; display: block; }
+.qr-mic-svg { position: absolute; top: 0; left: 0; width: 110px; height: 110px; pointer-events: none; }
+.cr-powered { font-size: 9px; font-weight: 600; color: #6B7A6E; }
+.cr-powered strong { color: #1C2B20; font-weight: 800; }
+
+/* ── ACTIONS COL ── */
+.actions-col {
+  display: flex; flex-direction: column; gap: 10px;
+  padding-top: 4px;
+}
+.act-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px; font-size: 13px; font-weight: 600;
+  font-family: 'Jost', sans-serif;
+  color: var(--text); background: #fff;
+  border: 1.5px solid var(--border); border-radius: 9px;
+  cursor: pointer; transition: .15s; white-space: nowrap;
+  text-decoration: none;
+}
+.act-btn:hover {
+  border-color: var(--green); background: var(--green-l); color: var(--green-mid);
+}
+.act-btn svg { flex-shrink: 0; opacity: .65; }
+.act-btn:hover svg { opacity: 1; }
+.act-btn.primary { color: var(--green); border-color: var(--green-b); background: var(--green-l); }
+.act-btn.primary:hover { background: #d1fae5; border-color: var(--green); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(20,83,45,.28); backdrop-filter: blur(4px);
+  z-index: 200; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: #fff; border-radius: 16px;
+  max-width: 460px; width: 100%;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(20,83,45,.18);
+}
+.modal-header {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--border-l);
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px;
+}
+.modal-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px; font-weight: 800;
+  color: var(--text); letter-spacing: -.02em;
+}
+.modal-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.modal-close {
+  background: none; border: none; color: var(--muted);
+  font-size: 18px; cursor: pointer; line-height: 1; padding: 2px; flex-shrink: 0;
+}
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+  font-size: 12px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--muted);
+}
+.form-input {
+  padding: 10px 12px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 14px; font-family: 'Jost', sans-serif;
+  color: var(--text); background: #fff;
+  transition: .15s; width: 100%;
+}
+.form-input:focus {
+  outline: none; border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(22,163,74,.1);
+}
+.modal-footer {
+  padding: 16px 24px; border-top: 1px solid var(--border-l);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+.btn-ghost {
+  padding: 9px 18px; font-size: 13px; font-weight: 600;
+  font-family: 'Jost', sans-serif; color: var(--muted);
+  background: none; border: 1.5px solid var(--border);
+  border-radius: 8px; cursor: pointer; transition: .15s;
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--text); }
+.btn-primary {
+  padding: 9px 20px; font-size: 13px; font-weight: 700;
+  font-family: 'Jost', sans-serif; color: #fff;
+  background: var(--green); border: none;
+  border-radius: 8px; cursor: pointer; transition: .15s;
+}
+.btn-primary:hover { background: var(--green-mid); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+.form-alert {
+  display: none; padding: 10px 13px; border-radius: 8px;
+  font-size: 13px; margin-bottom: 4px;
+}
+.form-alert.show { display: block; }
+.form-alert.error   { background: #fee2e2; color: #b91c1c; }
+.form-alert.success { background: var(--green-b); color: var(--green-deep); }
+
+/* ── AUTOCOMPLETE ── */
+.autocomplete-wrap { position: relative; }
+.ac-list {
+  display: none; position: absolute; top: calc(100% + 3px); left: 0; right: 0;
+  background: #fff; border: 1.5px solid var(--border); border-radius: 8px;
+  z-index: 400; max-height: 200px; overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(20,83,45,.12);
+}
+.ac-list.open { display: block; }
+.ac-item { padding: 9px 12px; font-size: 13px; cursor: pointer; color: var(--text); }
+.ac-item:hover { background: var(--green-l); color: var(--green-mid); }
+.ac-empty { padding: 9px 12px; font-size: 13px; color: var(--muted-l); }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center; padding: 24px 20px;
+  font-size: 12px; color: var(--muted-l);
+}
+
+@media (max-width: 720px) {
+  .loc-module-body { flex-direction: column; gap: 20px; }
+  .qr-card { min-width: unset; width: 100%; }
+  .actions-col { flex-direction: row; flex-wrap: wrap; }
+  .page { padding: 20px 16px 48px; }
+}
+@media (max-width: 480px) {
+  .card-left { padding: 16px 14px; }
+  .card-right { min-width: 120px; padding: 14px 10px; }
+  .card-qr { width: 90px; height: 90px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="header-brand">
+    <div class="logo">D</div>
+    <span class="brand-name">dicho<span>.</span></span>
+  </div>
+  <nav class="nav">
+    <a id="nav-dashboard" class="nav-item" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span data-i18n="nav_dashboard">Dashboard</span>
+    </a>
+    <a class="nav-item active" href="javascript:void(0)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="17" y="17" width="4" height="4" rx=".5"/><rect x="17" y="13" width="4" height="2" rx=".5"/><rect x="13" y="17" width="2" height="4" rx=".5"/></svg>
+      <span data-i18n="nav_qr">Código QR</span>
+    </a>
+    <a id="nav-ubicaciones" class="nav-item" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span data-i18n="nav_ubicaciones">Ubicaciones</span>
+    </a>
+    <a id="nav-config" class="nav-item" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span data-i18n="nav_config">Configuración</span>
+    </a>
+  </nav>
+  <div class="header-right">
+    <span class="header-biz"><strong id="header-biz-name"></strong></span>
+  </div>
+</header>
+
+<!-- ── PAGE ── -->
+<div class="page">
+  <div class="page-top">
+    <div>
+      <div class="page-eyebrow" data-i18n="eyebrow">Tus tarjetas de feedback</div>
+      <div class="page-title" data-i18n="page_title">Código QR</div>
+    </div>
+    <button class="btn-new-loc" onclick="openNewLocModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span data-i18n="btn_new_loc">Crear nueva ubicación</span>
+    </button>
+  </div>
+
+  <div id="modules-container">
+    <div class="loading"><div class="spinner"></div> <span data-i18n="loading">Cargando…</span></div>
+  </div>
+</div>
+
+<div class="footer" data-i18n="footer">Dicho — Feedback por voz via WhatsApp</div>
+
+<!-- ── MODAL: NUEVA UBICACIÓN ── -->
+<div class="modal-overlay" id="new-loc-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" data-i18n="new_loc_title">Nueva ubicación</div>
+        <div class="modal-sub" data-i18n="new_loc_sub">Se generará un código QR único para esta sede.</div>
+      </div>
+      <button class="modal-close" onclick="closeNewLocModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-alert" id="new-loc-alert"></div>
+      <div class="form-group">
+        <label class="form-label" for="new-loc-nombre" data-i18n="label_nombre">Nombre de la ubicación</label>
+        <input class="form-input" id="new-loc-nombre" type="text"
+               data-i18n-ph="ph_nombre" placeholder="Ej. Sucursal Centro">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="new-loc-ciudad" data-i18n="label_ciudad">Ciudad</label>
+        <div class="autocomplete-wrap" id="new-loc-ciudad-wrap">
+          <input class="form-input" id="new-loc-ciudad" type="text" autocomplete="off"
+                 data-i18n-ph="ph_ciudad" placeholder="Ej. Ciudad de México">
+          <div class="ac-list" id="new-loc-ciudad-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeNewLocModal()" data-i18n="btn_cancel">Cancelar</button>
+      <button class="btn-primary" id="new-loc-save" onclick="saveNewLocation()" data-i18n="btn_create">Crear ubicación</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Datos inyectados por el servidor ─────────────────────────
+var QR_DATA    = <?!= qrDataJson ?>;
+var TOKEN      = <?!= JSON.stringify(token) ?>;
+var SCRIPT_URL = <?!= JSON.stringify(scriptUrl) ?>;
+
+// ── Estado global ────────────────────────────────────────────
+var currentLang = 'es';
+
+// ── Traducciones ─────────────────────────────────────────────
+var TR = {
+  es: {
+    nav_dashboard: 'Dashboard', nav_qr: 'Código QR',
+    nav_ubicaciones: 'Ubicaciones', nav_config: 'Configuración',
+    eyebrow: 'Tus tarjetas de feedback',
+    page_title: 'Código QR',
+    btn_new_loc: 'Crear nueva ubicación',
+    loading: 'Cargando…',
+    cl_h1: 'Tu opinión', cl_h2: 'nos importa.', cl_hem: '¡Y mucho!',
+    cl_scan_label: 'Escáneame y envía audio',
+    cr_via: 'vía', cr_wa: 'WHATSAPP',
+    btn_save_img: 'Guardar como imagen',
+    btn_print: 'Imprimir tarjeta',
+    btn_dl_qr: 'Descargar solo QR',
+    btn_test: 'Probar enlace',
+    btn_copy: 'Copiar enlace',
+    new_loc_title: 'Nueva ubicación',
+    new_loc_sub: 'Se generará un código QR único para esta sede.',
+    label_nombre: 'Nombre de la ubicación',
+    ph_nombre: 'Ej. Sucursal Centro',
+    label_ciudad: 'Ciudad',
+    ph_ciudad: 'Ej. Ciudad de México',
+    btn_cancel: 'Cancelar',
+    btn_create: 'Crear ubicación',
+    creating: 'Creando…',
+    empty_title: 'Sin ubicaciones todavía',
+    empty_sub: 'Crea tu primera ubicación para generar su tarjeta QR.',
+    err_nombre: 'El nombre de la ubicación es obligatorio.',
+    footer: 'Dicho — Feedback por voz via WhatsApp',
+    generating: 'Generando…',
+    copied: '¡Copiado!'
+  },
+  ca: {
+    nav_dashboard: 'Dashboard', nav_qr: 'Codi QR',
+    nav_ubicaciones: 'Ubicacions', nav_config: 'Configuració',
+    eyebrow: 'Les teves targetes de feedback',
+    page_title: 'Codi QR',
+    btn_new_loc: 'Crear nova ubicació',
+    loading: 'Carregant…',
+    cl_h1: 'La teva opinió', cl_h2: 'ens importa.', cl_hem: 'I molt!',
+    cl_scan_label: "Escaneja i envia àudio",
+    cr_via: 'via', cr_wa: 'WHATSAPP',
+    btn_save_img: 'Desar com a imatge',
+    btn_print: 'Imprimir targeta',
+    btn_dl_qr: 'Descarregar sol QR',
+    btn_test: 'Provar enllaç',
+    btn_copy: 'Copiar enllaç',
+    new_loc_title: 'Nova ubicació',
+    new_loc_sub: "Es generarà un codi QR únic per a aquesta seu.",
+    label_nombre: 'Nom de la ubicació',
+    ph_nombre: 'Ex. Sucursal Centre',
+    label_ciudad: 'Ciutat',
+    ph_ciudad: 'Ex. Barcelona',
+    btn_cancel: "Cancel·lar",
+    btn_create: 'Crear ubicació',
+    creating: 'Creant…',
+    empty_title: 'Sense ubicacions encara',
+    empty_sub: 'Crea la teva primera ubicació per generar la targeta QR.',
+    err_nombre: "El nom de la ubicació és obligatori.",
+    footer: 'Dicho — Feedback per veu via WhatsApp',
+    generating: 'Generant…',
+    copied: 'Copiat!'
+  },
+  en: {
+    nav_dashboard: 'Dashboard', nav_qr: 'QR Code',
+    nav_ubicaciones: 'Locations', nav_config: 'Settings',
+    eyebrow: 'Your feedback cards',
+    page_title: 'QR Code',
+    btn_new_loc: 'Create new location',
+    loading: 'Loading…',
+    cl_h1: 'Your opinion', cl_h2: 'matters.', cl_hem: 'A lot!',
+    cl_scan_label: 'Scan & send audio',
+    cr_via: 'via', cr_wa: 'WHATSAPP',
+    btn_save_img: 'Save as image',
+    btn_print: 'Print card',
+    btn_dl_qr: 'Download QR only',
+    btn_test: 'Test link',
+    btn_copy: 'Copy link',
+    new_loc_title: 'New location',
+    new_loc_sub: 'A unique QR code will be generated for this branch.',
+    label_nombre: 'Location name',
+    ph_nombre: 'E.g. Downtown Branch',
+    label_ciudad: 'City',
+    ph_ciudad: 'E.g. New York',
+    btn_cancel: 'Cancel',
+    btn_create: 'Create location',
+    creating: 'Creating…',
+    empty_title: 'No locations yet',
+    empty_sub: 'Create your first location to generate its QR card.',
+    err_nombre: 'Location name is required.',
+    footer: 'Dicho — Voice feedback via WhatsApp',
+    generating: 'Generating…',
+    copied: 'Copied!'
+  }
+};
+
+function t(k) { return (TR[currentLang] || TR.es)[k] || k; }
+
+function applyLang(lang) {
+  currentLang = lang || 'es';
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+    el.placeholder = t(el.getAttribute('data-i18n-ph'));
+  });
+}
+
+// ── Init ─────────────────────────────────────────────────────
+(function init() {
+  var lang = (QR_DATA && QR_DATA.idioma) || 'es';
+  applyLang(lang);
+
+  var dashUrl   = SCRIPT_URL + '?page=dashboard&token=' + encodeURIComponent(TOKEN);
+  var ubUrl     = SCRIPT_URL + '?page=ubicaciones&token=' + encodeURIComponent(TOKEN);
+  var configUrl = SCRIPT_URL + '?page=configuracion&token=' + encodeURIComponent(TOKEN);
+  document.getElementById('nav-dashboard').href   = dashUrl;
+  document.getElementById('nav-ubicaciones').href = ubUrl;
+  document.getElementById('nav-config').href      = configUrl;
+
+  document.getElementById('header-biz-name').textContent =
+    (QR_DATA && QR_DATA.negocio) || '';
+
+  var container = document.getElementById('modules-container');
+  var locs = (QR_DATA && QR_DATA.ubicaciones) || [];
+  if (!locs.length) {
+    container.innerHTML =
+      '<div class="empty-wrap">' +
+        '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' +
+          '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>' +
+          '<rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="2.5"/>' +
+        '</svg>' +
+        '<h3>' + t('empty_title') + '</h3>' +
+        '<p>' + t('empty_sub') + '</p>' +
+      '</div>';
+    return;
+  }
+  container.innerHTML = locs.map(buildModule).join('');
+  locs.forEach(function(loc) { renderQRForLoc(loc.id); });
+})();
+
+// ── Construir módulo ─────────────────────────────────────────
+function buildModule(loc) {
+  var landingUrl = 'https://dichosea.com/landing.html?store_id=' + encodeURIComponent(loc.codigo || loc.id);
+  var qrSrc = loc.qrDataUrl || '';
+  var qrHtml =
+    '<div class="qr-wrap" id="qr-wrap-' + esc(loc.id) + '">' +
+      '<img id="qr-img-' + esc(loc.id) + '" src="' + esc(qrSrc) + '" alt="QR">' +
+      '<svg class="qr-mic-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">' +
+        '<circle cx="110" cy="110" r="44" fill="#ffffff"/>' +
+        '<circle cx="110" cy="110" r="38" fill="#14532D"/>' +
+        '<path d="M99,102 C99,119 121,119 121,102" stroke="#ffffff" stroke-width="3.9" stroke-linecap="round" fill="none"/>' +
+        '<rect x="108.2" y="119.3" width="3.5" height="5" rx="1.8" fill="#ffffff"/>' +
+        '<rect x="100.1" y="123.5" width="19.8" height="3.5" rx="1.8" fill="#ffffff"/>' +
+        '<rect x="104.3" y="88.8" width="11.4" height="19.5" rx="5.7" fill="#ffffff"/>' +
+      '</svg>' +
+    '</div>';
+
+  return (
+    '<div class="loc-module" id="mod-' + esc(loc.id) + '">' +
+      '<div class="loc-module-header">' +
+        '<div>' +
+          '<div class="loc-name">' + esc(loc.nombre) + '</div>' +
+          '<div class="loc-meta">' +
+            (loc.ciudad ? '<span class="loc-meta-item">' + esc(loc.ciudad) + '</span>' : '') +
+            '<span class="loc-code">' + esc(loc.codigo || loc.id) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="loc-module-body">' +
+        '<div class="qr-card">' +
+          '<div class="card-left">' +
+            '<div>' +
+              '<div class="cl-stars">★★★★★</div>' +
+              '<p class="cl-headline">' + t('cl_h1') + '<br>' + t('cl_h2') + '<em>' + t('cl_hem') + '</em></p>' +
+              '<div class="cl-scan-label">' + t('cl_scan_label') + '</div>' +
+              '<div class="cl-via-row">' +
+                '<span class="cl-via">' + t('cr_via') + '</span>' +
+                '<span class="cl-wa">' + t('cr_wa') + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="cl-footer"></div>' +
+          '</div>' +
+          '<div class="card-right">' +
+            '<div class="cr-qr">' + qrHtml + '</div>' +
+            '<div class="cr-powered">powered by <strong>dicho.</strong></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="actions-col">' +
+          '<button class="act-btn primary" id="btn-img-' + esc(loc.id) + '" onclick="saveAsImage(\'' + esc(loc.id) + '\')">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' +
+            '<span data-i18n="btn_save_img">' + t('btn_save_img') + '</span>' +
+          '</button>' +
+          '<button class="act-btn" onclick="printCard(\'' + esc(loc.id) + '\')">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>' +
+            '<span data-i18n="btn_print">' + t('btn_print') + '</span>' +
+          '</button>' +
+          '<button class="act-btn" onclick="downloadQR(\'' + esc(loc.id) + '\',\'' + esc(loc.nombre) + '\')">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+            '<span data-i18n="btn_dl_qr">' + t('btn_dl_qr') + '</span>' +
+          '</button>' +
+          '<a class="act-btn" href="' + esc(landingUrl) + '" target="_blank">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+            '<span data-i18n="btn_test">' + t('btn_test') + '</span>' +
+          '</a>' +
+          '<button class="act-btn" onclick="copyUrl(\'' + esc(landingUrl) + '\',\'' + esc(loc.id) + '\')" id="btn-copy-' + esc(loc.id) + '">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>' +
+            '<span data-i18n="btn_copy">' + t('btn_copy') + '</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+// ── QR + micrófono ───────────────────────────────────────────
+var QR_GREEN = '#14532D';
+var QR_SIZE  = 220, QR_CX = 110, QR_CY = 110, QR_R = 38;
+
+function rrPath(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y,     x + w, y + r,     r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x,      y + h, x,      y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x,      y,     x + r,  y,         r);
+  ctx.closePath();
+}
+
+function drawMic(ctx, centerX, centerY, totalHeight, color) {
+  var s  = totalHeight / 118;
+  var ox = centerX - 50 * s;
+  var oy = centerY - 59 * s;
+  ctx.save();
+  ctx.fillStyle   = color;
+  ctx.strokeStyle = color;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+  ctx.lineWidth = 11 * s;
+  ctx.beginPath();
+  ctx.moveTo(ox + 19*s, oy + 40*s);
+  ctx.bezierCurveTo(ox+19*s, oy+90*s, ox+81*s, oy+90*s, ox+81*s, oy+40*s);
+  ctx.stroke();
+  rrPath(ctx, ox + 45*s, oy + 90*s, 10*s, 14*s, 5*s); ctx.fill();
+  rrPath(ctx, ox + 22*s, oy + 102*s, 56*s, 10*s, 5*s); ctx.fill();
+  rrPath(ctx, ox + 34*s, oy + 4*s, 32*s, 55*s, 16*s); ctx.fill();
+  ctx.restore();
+}
+
+function drawMicOverlay(ctx, cx, cy, R) {
+  var haloR = R * (44 / 38);
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath(); ctx.arc(cx, cy, haloR, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = QR_GREEN;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+  var iconH = R * 1.1;
+  drawMic(ctx, cx, cy - iconH * 0.04, iconH, '#ffffff');
+}
+
+function renderQRForLoc(locId) { /* no-op: overlay es SVG */ }
+
+// ── downloadQR: composita QR + mic en un canvas temporal ────
+function downloadQR(locId, nombre) {
+  var qrImg = document.getElementById('qr-img-' + locId);
+  if (!qrImg) return;
+  var filename = 'qr-' + (nombre || 'dicho').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.png';
+  fetch(qrImg.src)
+    .then(function(r) { return r.blob(); })
+    .then(function(blob) {
+      var img = new Image();
+      img.onload = function() {
+        var tmpC = document.createElement('canvas');
+        tmpC.width = tmpC.height = 220;
+        var ctx = tmpC.getContext('2d');
+        ctx.drawImage(img, 0, 0, 220, 220);
+        drawMicOverlay(ctx, 110, 110, 38);
+        var a = document.createElement('a');
+        a.href = tmpC.toDataURL('image/png');
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(img.src);
+      };
+      img.src = URL.createObjectURL(blob);
+    })
+    .catch(function() {
+      var a = document.createElement('a');
+      a.href = qrImg.src;
+      a.download = filename;
+      a.click();
+    });
+}
+
+// ── saveAsImage: genera la tarjeta completa como imagen ─────
+function saveAsImage(locId) {
+  var loc = null;
+  var locs = (QR_DATA && QR_DATA.ubicaciones) || [];
+  for (var i = 0; i < locs.length; i++) {
+    if (locs[i].id === locId) { loc = locs[i]; break; }
+  }
+  if (!loc) return;
+
+  var btn = document.getElementById('btn-img-' + locId);
+  var origText = btn ? btn.querySelector('span').textContent : '';
+  if (btn) btn.querySelector('span').textContent = t('generating');
+
+  var qrImg = document.getElementById('qr-img-' + locId);
+  if (!qrImg) { if (btn) btn.querySelector('span').textContent = origText; return; }
+
+  fetch(qrImg.src)
+    .then(function(r) { return r.blob(); })
+    .then(function(blob) {
+      var img = new Image();
+      img.onload = function() {
+        var cw = 680, ch = 300;
+        var canvas = document.createElement('canvas');
+        canvas.width = cw * 2; canvas.height = ch * 2;
+        var ctx = canvas.getContext('2d');
+        ctx.scale(2, 2);
+
+        var r = 20;
+        // ── FIX: proporciones corregidas para que el QR no quede en el borde ──
+        var rightW = 280;
+        var leftW = cw - rightW;  // = 400
+
+        // Card background
+        roundRect(ctx, 0, 0, cw, ch, r, '#F0FDF4');
+        ctx.strokeStyle = '#D1FAE5';
+        ctx.lineWidth = 1.5;
+        roundRectStroke(ctx, 0, 0, cw, ch, r);
+
+        // card-left
+        var lx = 20, ly = 20;
+        ctx.font = '13px sans-serif';
+        ctx.fillStyle = '#FACC15';
+        ctx.fillText('★★★★★', lx, ly + 13);
+        ly += 24;
+
+        ctx.font = '900 20px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#1C2B20';
+        ctx.fillText(t('cl_h1'), lx, ly + 20);
+        ly += 26;
+        ctx.fillText(t('cl_h2'), lx, ly + 20);
+        ly += 26;
+        ctx.fillStyle = '#16A34A';
+        ctx.fillText(t('cl_hem'), lx, ly + 20);
+        ly += 32;
+
+        ctx.font = '800 9px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#16A34A';
+        ctx.fillText(t('cl_scan_label').toUpperCase(), lx, ly + 10);
+        ly += 18;
+
+        ctx.font = '700 8px "Jost", sans-serif';
+        ctx.fillStyle = '#9CA3AF';
+        ctx.fillText(t('cr_via').toUpperCase(), lx, ly + 9);
+        var pillX = lx + 22;
+        var pillText = t('cr_wa');
+        ctx.font = '800 8px "Jost", sans-serif';
+        var pillW = ctx.measureText(pillText).width + 14;
+        roundRect(ctx, pillX, ly, pillW, 16, 8, '#16A34A');
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.fillText(pillText, pillX + pillW / 2, ly + 11);
+        ctx.textAlign = 'left';
+
+        // card-right: QR + mic overlay
+        // ── FIX: qsize aumentado de 110 a 140 para aprovechar el espacio ──
+        var qboxPad = 10, qsize = 140;
+        var qboxW = qsize + qboxPad * 2;
+        var qboxH = qsize + qboxPad * 2;
+        var qboxX = leftW + (rightW - qboxW) / 2;
+        var qboxY = (ch - qboxH - 20) / 2;
+        roundRect(ctx, qboxX, qboxY, qboxW, qboxH, 14, '#ffffff');
+        ctx.drawImage(img, qboxX + qboxPad, qboxY + qboxPad, qsize, qsize);
+        drawMicOverlay(ctx, qboxX + qboxPad + qsize / 2, qboxY + qboxPad + qsize / 2, 38 * qsize / 220);
+
+        // powered by
+        ctx.font = '600 9px "Jost", sans-serif';
+        ctx.fillStyle = '#6B7A6E';
+        ctx.textAlign = 'center';
+        ctx.fillText('powered by dicho.', leftW + rightW / 2, qboxY + qboxH + 14);
+        ctx.textAlign = 'left';
+
+        var nombre = (loc.nombre || 'qr').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        var link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'dicho-qr-' + nombre + '.png';
+        link.click();
+        URL.revokeObjectURL(img.src);
+
+        if (btn) btn.querySelector('span').textContent = origText;
+      };
+      img.src = URL.createObjectURL(blob);
+    })
+    .catch(function() {
+      if (btn) btn.querySelector('span').textContent = origText;
+    });
+}
+
+function roundRect(ctx, x, y, w, h, r, fill) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.fillStyle = fill;
+  ctx.fill();
+}
+
+function roundRectStroke(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+// ── printCard ────────────────────────────────────────────────
+function printCard(locId) {
+  var loc = null;
+  var locs = (QR_DATA && QR_DATA.ubicaciones) || [];
+  for (var i = 0; i < locs.length; i++) {
+    if (locs[i].id === locId) { loc = locs[i]; break; }
+  }
+  if (!loc) return;
+
+  var landingUrl = 'https://dichosea.com/landing.html?store_id=' + encodeURIComponent(loc.codigo || loc.id);
+  var qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&color=14532D&bgcolor=ffffff&data=' +
+    encodeURIComponent(landingUrl);
+
+  var w = window.open('', '_blank', 'width=480,height=400');
+  w.document.write(
+    '<!DOCTYPE html><html><head><title>Dicho · ' + esc(loc.nombre) + '</title>' +
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Jost:wght@400;500;600;700&display=swap">' +
+    '<style>' +
+    'body{margin:0;padding:32px;background:#F5F1E8;font-family:"Jost",sans-serif;display:flex;justify-content:center;}' +
+    '.card{display:flex;background:#F0FDF4;border:1px solid #D1FAE5;border-radius:20px;overflow:hidden;box-shadow:0 6px 28px rgba(0,0,0,.10);max-width:340px;}' +
+    '.cl{flex:1;padding:18px;display:flex;flex-direction:column;justify-content:space-between;}' +
+    '.stars{color:#FACC15;font-size:11px;letter-spacing:1.5px;margin-bottom:7px;}' +
+    '.hl{font-family:"Plus Jakarta Sans",sans-serif;font-size:18px;font-weight:900;color:#1C2B20;line-height:1.18;letter-spacing:-.02em;margin-bottom:14px;}' +
+    '.hl em{font-style:normal;color:#16A34A;display:block;}' +
+    '.scan-lbl{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:#16A34A;margin-bottom:6px;}' +
+    '.via-row{display:flex;align-items:center;gap:5px;}' +
+    '.via{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9CA3AF;}' +
+    '.wa{background:#16A34A;color:#fff;font-size:8px;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:20px;}' +
+    '.cl-footer{padding-top:10px;margin-top:14px;}' +
+    '.cr{width:134px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 16px;gap:10px;}' +
+    '.cr-qr{background:#fff;border-radius:14px;padding:9px;}' +
+    '.cr-qr img{width:110px;height:110px;display:block;}' +
+    '.cr-pw{font-size:9px;font-weight:600;color:#6B7A6E;}' +
+    '.cr-pw strong{color:#1C2B20;font-weight:800;}' +
+    '@media print{body{padding:8px;}.card{box-shadow:none;}}' +
+    '</style></head><body>' +
+    '<div class="card">' +
+    '<div class="cl">' +
+    '<div><div class="stars">★★★★★</div>' +
+    '<p class="hl">' + esc(t('cl_h1')) + '<br>' + esc(t('cl_h2')) + '<em>' + esc(t('cl_hem')) + '</em></p>' +
+    '<div class="scan-lbl">' + esc(t('cl_scan_label')) + '</div>' +
+    '<div class="via-row"><span class="via">' + esc(t('cr_via')) + '</span><span class="wa">' + esc(t('cr_wa')) + '</span></div></div>' +
+    '<div class="cl-footer"></div></div>' +
+    '<div class="cr">' +
+    '<div class="cr-qr"><img src="' + esc(qrSrc) + '" alt="QR"></div>' +
+    '<div class="cr-pw">powered by <strong>dicho.</strong></div>' +
+    '</div></div></body></html>'
+  );
+  w.document.close();
+  w.focus();
+  setTimeout(function() { w.print(); }, 600);
+}
+
+// ── copyUrl ──────────────────────────────────────────────────
+function copyUrl(url, locId) {
+  if (!url) return;
+  var btn = document.getElementById('btn-copy-' + locId);
+  var span = btn && btn.querySelector('span');
+  navigator.clipboard && navigator.clipboard.writeText(url)
+    .then(function() {
+      if (span) {
+        var orig = span.textContent;
+        span.textContent = t('copied');
+        setTimeout(function() { span.textContent = orig; }, 1800);
+      }
+    })
+    .catch(function() {});
+}
+
+// ── Modal nueva ubicación ────────────────────────────────────
+function openNewLocModal() {
+  document.getElementById('new-loc-nombre').value = '';
+  document.getElementById('new-loc-ciudad').value = '';
+  var alert = document.getElementById('new-loc-alert');
+  alert.className = 'form-alert';
+  var btn = document.getElementById('new-loc-save');
+  btn.disabled = false;
+  btn.textContent = t('btn_create');
+  document.getElementById('new-loc-modal').classList.add('open');
+  setTimeout(function() {
+    makeAutocomplete('new-loc-ciudad', 'new-loc-ciudad-list', 'new-loc-ciudad-wrap');
+  }, 80);
+}
+function closeNewLocModal() {
+  document.getElementById('new-loc-modal').classList.remove('open');
+}
+
+function saveNewLocation() {
+  var nombre = document.getElementById('new-loc-nombre').value.trim();
+  var ciudad = document.getElementById('new-loc-ciudad').value.trim();
+  if (!nombre) {
+    showAlert('new-loc-alert', t('err_nombre'), 'error');
+    return;
+  }
+  var btn = document.getElementById('new-loc-save');
+  btn.disabled = true;
+  btn.textContent = t('creating');
+  hideAlert('new-loc-alert');
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled = false;
+      btn.textContent = t('btn_create');
+      if (res && res.ok) {
+        closeNewLocModal();
+        var newLoc = res.ubicacion;
+        if (QR_DATA && QR_DATA.ubicaciones) QR_DATA.ubicaciones.push(newLoc);
+        var container = document.getElementById('modules-container');
+        var empty = container.querySelector('.empty-wrap');
+        if (empty) container.innerHTML = '';
+        var div = document.createElement('div');
+        div.innerHTML = buildModule(newLoc);
+        container.appendChild(div.firstElementChild);
+        var mod = document.getElementById('mod-' + newLoc.id);
+        if (mod) mod.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        renderQRForLoc(newLoc.id);
+      } else {
+        showAlert('new-loc-alert', (res && res.error) || 'Error al crear la ubicación.', 'error');
+      }
+    })
+    .withFailureHandler(function(err) {
+      btn.disabled = false;
+      btn.textContent = t('btn_create');
+      showAlert('new-loc-alert', 'Error: ' + (err.message || err), 'error');
+    })
+    .addLocation(TOKEN, nombre, ciudad);
+}
+
+// ── Nominatim autocomplete ───────────────────────────────────
+var _acInited = {};
+function makeAutocomplete(inputId, listId, wrapId) {
+  if (_acInited[inputId]) return;
+  _acInited[inputId] = true;
+  var input = document.getElementById(inputId);
+  var list  = document.getElementById(listId);
+  if (!input || !list) return;
+  var _timer = null, _ctrl = null;
+
+  input.addEventListener('input', function() {
+    clearTimeout(_timer);
+    var q = input.value.trim();
+    list.classList.remove('open');
+    if (q.length < 2) return;
+    _timer = setTimeout(function() {
+      if (_ctrl) _ctrl.abort();
+      _ctrl = new AbortController();
+      fetch(
+        'https://nominatim.openstreetmap.org/search?format=json&q=' +
+        encodeURIComponent(q) + '&limit=5&addressdetails=1',
+        {
+          signal: _ctrl.signal,
+          headers: { 'Accept-Language': currentLang === 'ca' ? 'ca,es' : currentLang === 'en' ? 'en' : 'es' }
+        }
+      )
+      .then(function(r) { return r.json(); })
+      .then(function(results) {
+        list.innerHTML = '';
+        if (!results.length) {
+          list.innerHTML = '<div class="ac-empty">Sin resultados</div>';
+          list.classList.add('open');
+          return;
+        }
+        results.forEach(function(r) {
+          var city = (r.address && (r.address.city || r.address.town || r.address.village || r.address.county)) || r.display_name;
+          var item = document.createElement('div');
+          item.className = 'ac-item';
+          item.textContent = r.display_name;
+          item.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            input.value = city;
+            list.classList.remove('open');
+          });
+          list.appendChild(item);
+        });
+        list.classList.add('open');
+      })
+      .catch(function() {});
+    }, 300);
+  });
+
+  input.addEventListener('blur', function() {
+    setTimeout(function() { list.classList.remove('open'); }, 150);
+  });
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function showAlert(id, msg, type) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'form-alert ' + type + ' show';
+}
+function hideAlert(id) {
+  var el = document.getElementById(id);
+  if (el) el.className = 'form-alert';
+}
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
