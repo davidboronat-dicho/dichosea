@@ -234,7 +234,7 @@
 
 <script>
   var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
-  var DASHBOARD_URL = GAS_URL + '?page=dashboard';
+  var DASHBOARD_URL = 'https://dichosea.com/dashboard.html';
 
   // ── Leer params de la URL ──────────────────────────────────────────────────
   var _p     = new URLSearchParams(window.location.search);
@@ -267,17 +267,32 @@
   }
 
   function gasCall(page, params) {
-    var url = GAS_URL + '?page=' + page;
-    for (var k in params) {
-      if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
-        url += '&' + k + '=' + encodeURIComponent(params[k]);
+    return new Promise(function(resolve, reject) {
+      var cb = 'gc_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+      var url = GAS_URL + '?page=' + encodeURIComponent(page) + '&callback=' + cb;
+      for (var k in params) {
+        if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
+          url += '&' + k + '=' + encodeURIComponent(params[k]);
+        }
       }
-    }
-    return fetch(url).then(function(r) { return r.json(); });
+      window[cb] = function(data) {
+        delete window[cb];
+        if (s.parentNode) s.parentNode.removeChild(s);
+        resolve(data);
+      };
+      var s = document.createElement('script');
+      s.src = url;
+      s.onerror = function() {
+        delete window[cb];
+        if (s.parentNode) s.parentNode.removeChild(s);
+        reject(new Error('JSONP failed'));
+      };
+      document.head.appendChild(s);
+    });
   }
 
   function onLoginSuccess(sessionToken) {
-    window.location.href = DASHBOARD_URL + '&session=' + encodeURIComponent(sessionToken);
+    window.location.href = DASHBOARD_URL + '?token=' + encodeURIComponent(TOKEN) + '&session=' + encodeURIComponent(sessionToken);
   }
 
   // ── Init: comprobar si hay token ───────────────────────────────────────────
