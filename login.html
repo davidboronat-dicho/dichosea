@@ -291,8 +291,9 @@
     });
   }
 
-  function onLoginSuccess(sessionToken) {
-    window.location.href = DASHBOARD_URL + '?token=' + encodeURIComponent(TOKEN) + '&session=' + encodeURIComponent(sessionToken);
+  function onLoginSuccess(sessionToken, clientToken) {
+    var tok = clientToken || TOKEN;
+    window.location.href = DASHBOARD_URL + '?token=' + encodeURIComponent(tok) + '&session=' + encodeURIComponent(sessionToken);
   }
 
   // ── Init: comprobar si hay token ───────────────────────────────────────────
@@ -337,7 +338,7 @@
       .then(function(data) {
         setLoading('setpass-btn', false);
         if (data.ok) {
-          onLoginSuccess(data.sessionToken);
+          onLoginSuccess(data.sessionToken, data.token);
         } else {
           showError('setpass-error', data.error || 'Error al crear la contraseña.');
         }
@@ -358,7 +359,7 @@
       .then(function(data) {
         setLoading('login-btn', false);
         if (data.ok) {
-          onLoginSuccess(data.sessionToken);
+          onLoginSuccess(data.sessionToken, data.token);
         } else {
           showError('login-error', data.error || 'Contraseña incorrecta.');
         }
@@ -381,7 +382,7 @@
       .then(function(data) {
         setLoading('general-btn', false);
         if (data.ok) {
-          onLoginSuccess(data.sessionToken);
+          onLoginSuccess(data.sessionToken, data.token);
         } else {
           showError('general-error', data.error || 'Email o contraseña incorrectos.');
         }
