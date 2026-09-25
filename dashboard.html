@@ -24,6 +24,7 @@
     --neg:     #DC2626;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
+  html { overflow-y: scroll; }
   body { font-family:'Jost',sans-serif; background:var(--surface); color:var(--text); min-height:100vh; }
 
   .header {
@@ -74,7 +75,7 @@
                 border-radius:6px; padding:5px 11px; cursor:pointer;
                 font-family:'Jost',sans-serif; transition:.15s; }
   .hdr-logout:hover { color:#fff; border-color:rgba(255,255,255,.5); background:rgba(255,255,255,.1); }
-  .main { max-width:1100px; margin:0 auto; padding:28px 20px; }
+  .main { max-width:680px; margin:0 auto; padding:28px 20px; }
 
   .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
   @media(max-width:760px){ .stats { grid-template-columns:repeat(2,1fr); } }
@@ -237,7 +238,7 @@
   .loc-action-btn.primary:hover { background:var(--green-l); }
 </style>
 </head>
-<body>
+<body style="visibility:hidden">
 
 <header class="header">
   <div class="header-brand">
@@ -635,6 +636,7 @@ function t(k) { return (TR[currentLang] || TR.es)[k] || k; }
 function applyLang(lang) {
   currentLang = lang || 'es';
   document.documentElement.lang = currentLang;
+  document.body.style.visibility = 'visible';
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     el.textContent = t(el.getAttribute('data-i18n'));
   });
@@ -649,6 +651,7 @@ try {
   var _cachedLang = sessionStorage.getItem('dicho_lang_' + TOKEN);
   if (_cachedLang) applyLang(_cachedLang);
 } catch(e) {}
+setTimeout(function() { document.body.style.visibility = 'visible'; }, 300);
 
 // ── Navegación ────────────────────────────────────────────────
 function goToQRPage() {
