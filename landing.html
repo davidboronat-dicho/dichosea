@@ -256,11 +256,13 @@
     var GAS_URL      = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
     var MAKE_WEBHOOK = 'https://hook.eu1.make.com/0gttn29vvsu1stgeb50g77wmu5punqgb';
 
+    // Mismo mapeo que Code.gs — símbolo por variante de idioma
+    var LANG_SYMBOLS = { 'es': '#', 'es-mx': '^', 'ca': '*', 'en': '~' };
+
     var params  = new URLSearchParams(window.location.search);
     var storeId = params.get('store_id') || params.get('id');
-    var waData    = {};
-    var waLink    = '#';
-    var waDeepLink = '#';
+    var waData  = {};
+    var waLink  = '#';
 
     var copy = {
       'ca': {
@@ -269,8 +271,7 @@
         cta:           'Obrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">i enviar àudio</span>',
         confidential:  '🔒 100% confidencial',
         loading:       'Un moment…',
-        preTextPrefix: 'Opina de ',
-        preText:       'Toca primer el botó verd'
+        preTextPrefix: 'Opina de '
       },
       'es': {
         headline:      'Tu opinión,',
@@ -278,8 +279,7 @@
         cta:           'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y enviar audio</span>',
         confidential:  '🔒 100% confidencial',
         loading:       'Un momento…',
-        preTextPrefix: 'Opina sobre ',
-        preText:       'Toca primero el botón verde'
+        preTextPrefix: 'Opina sobre '
       },
       'es-mx': {
         headline:      'Tu opinión,',
@@ -287,8 +287,7 @@
         cta:           'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y enviar audio</span>',
         confidential:  '🔒 100% confidencial',
         loading:       'Un momento…',
-        preTextPrefix: 'Cuéntanos sobre ',
-        preText:       'Toca primero el botón verde'
+        preTextPrefix: 'Cuéntanos sobre '
       },
       'en': {
         headline:      'Your opinion,',
@@ -296,8 +295,7 @@
         cta:           'Open WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">and send audio</span>',
         confidential:  '🔒 100% confidential',
         loading:       'One moment…',
-        preTextPrefix: 'Review ',
-        preText:       'Tap the green button first'
+        preTextPrefix: 'Review '
       }
     };
 
@@ -338,10 +336,11 @@
       document.getElementById('bizName').textContent = data.negocio || '';
       document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
 
-      var preText  = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + t.preText);
-      waLink       = 'https://wa.me/'    + data.wa_number + '?text=' + preText;
-      // whatsapp:// abre la app directamente sin pasar por la web de WhatsApp
-      waDeepLink   = 'whatsapp://send?phone=' + data.wa_number + '&text=' + preText;
+      // Símbolo de idioma + storeId: el webhook lo identifica de forma fiable
+      // "Cuéntanos sobre Hacienda Laborcilla\n^abc123"
+      var sym     = LANG_SYMBOLS[data.idioma] || LANG_SYMBOLS['es'];
+      var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + sym + storeId);
+      waLink      = 'https://wa.me/' + data.wa_number + '?text=' + preText;
 
       document.getElementById('ctaBtn').href = waLink;
     }
@@ -404,9 +403,8 @@
         } else {
           clearInterval(countdownInterval);
           badge.style.display = 'none';
-          if (waDeepLink && waDeepLink !== '#') {
-            // whatsapp:// abre la app directamente, sin la página intermedia de api.whatsapp.com
-            window.location.href = waDeepLink;
+          if (waLink && waLink !== '#') {
+            window.location.href = waLink;
           }
         }
       }, 1000);
