@@ -163,7 +163,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 }
 </style>
 </head>
-<body>
+<body style="visibility:hidden">
 
 <!-- ── HEADER ── -->
 <header class="header">
@@ -608,6 +608,8 @@ var TR = {
 // ── APPLY LANGUAGE ────────────────────────────────────────────────
 function applyLang(lang) {
   var tr = TR[lang] || TR['es'];
+  CURRENT_LANG = lang;
+  document.body.style.visibility = 'visible';
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     var key = el.getAttribute('data-i18n');
     if (tr[key] !== undefined) el.textContent = tr[key];
@@ -622,7 +624,15 @@ function applyLang(lang) {
   });
   document.documentElement.lang = lang === 'en' ? 'en' : lang === 'ca' ? 'ca' : 'es';
   renderTipos(lang);
+  try { sessionStorage.setItem('dicho_lang_' + TOKEN, lang); } catch(e) {}
 }
+
+// Aplicar idioma cacheado inmediatamente (evita flash)
+try {
+  var _cachedLang = sessionStorage.getItem('dicho_lang_' + TOKEN);
+  if (_cachedLang && TR[_cachedLang]) applyLang(_cachedLang);
+} catch(e) {}
+setTimeout(function() { document.body.style.visibility = 'visible'; }, 300);
 
 function changeLang(lang) {
   CURRENT_LANG = lang;
