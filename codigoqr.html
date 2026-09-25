@@ -79,6 +79,8 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   padding-right: 16px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px;
 }
 .header-biz strong { color: #fff; }
+.hdr-logout { font-size: 12px; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.6); background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: .15s; }
+.hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); }
 
 /* ── PAGE ── */
 .page { max-width: 680px; margin: 0 auto; padding: 28px 24px 60px; }
@@ -382,6 +384,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   </nav>
   <div class="header-right">
     <span class="header-biz"><strong id="header-biz-name"></strong></span>
+    <button class="hdr-logout" onclick="doLogout()" data-i18n="logout">Salir</button>
   </div>
 </header>
 
@@ -761,6 +764,11 @@ function drawMic(ctx, centerX, centerY, totalHeight, color) {
   ctx.restore();
 }
 
+function doLogout() {
+  gasCall('api_logout', { session: SESSION }).catch(function() {});
+  window.location.href = 'https://dichosea.com/login.html';
+}
+
 function drawMicOverlay(ctx, cx, cy, R) {
   var haloR = R * (44 / 38);
   ctx.fillStyle = '#ffffff';
@@ -895,10 +903,10 @@ function saveAsImage(locId) {
         ctx.fillText('powered by dicho.', leftW + rightW / 2, qboxY + qboxH + 14);
         ctx.textAlign = 'left';
 
-        var nombre = (loc.nombre || 'qr').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        var bizName = (QR_DATA && QR_DATA.negocio) || 'dicho';
         var link = document.createElement('a');
         link.href = canvas.toDataURL('image/png');
-        link.download = 'dicho-qr-' + nombre + '.png';
+        link.download = 'QR.' + bizName + '.' + (loc.nombre || 'ubicacion') + '.png';
         link.click();
         URL.revokeObjectURL(img.src);
 
