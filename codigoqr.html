@@ -833,16 +833,16 @@ function saveAsImage(locId) {
     .then(function(blob) {
       var img = new Image();
       img.onload = function() {
-        var cw = 680, ch = 300;
+        // Proporciones ~2.5:1 (ratio similar al preview en pantalla)
+        var cw = 560, ch = 230;
         var canvas = document.createElement('canvas');
         canvas.width = cw * 2; canvas.height = ch * 2;
         var ctx = canvas.getContext('2d');
         ctx.scale(2, 2);
 
         var r = 20;
-        // ── FIX: proporciones corregidas para que el QR no quede en el borde ──
         var rightW = 280;
-        var leftW = cw - rightW;  // = 400
+        var leftW = cw - rightW;  // = 280
 
         // Card background
         roundRect(ctx, 0, 0, cw, ch, r, '#F0FDF4');
@@ -851,26 +851,26 @@ function saveAsImage(locId) {
         roundRectStroke(ctx, 0, 0, cw, ch, r);
 
         // card-left
-        var lx = 20, ly = 20;
+        var lx = 20, ly = 18;
         ctx.font = '13px sans-serif';
         ctx.fillStyle = '#FACC15';
         ctx.fillText('★★★★★', lx, ly + 13);
-        ly += 24;
+        ly += 22;
 
         ctx.font = '900 20px "Plus Jakarta Sans", sans-serif';
         ctx.fillStyle = '#1C2B20';
         ctx.fillText(t('cl_h1'), lx, ly + 20);
-        ly += 26;
+        ly += 25;
         ctx.fillText(t('cl_h2'), lx, ly + 20);
-        ly += 26;
+        ly += 25;
         ctx.fillStyle = '#16A34A';
         ctx.fillText(t('cl_hem'), lx, ly + 20);
-        ly += 32;
+        ly += 30;
 
         ctx.font = '800 9px "Plus Jakarta Sans", sans-serif';
         ctx.fillStyle = '#16A34A';
         ctx.fillText(t('cl_scan_label').toUpperCase(), lx, ly + 10);
-        ly += 18;
+        ly += 17;
 
         ctx.font = '700 8px "Jost", sans-serif';
         ctx.fillStyle = '#9CA3AF';
@@ -885,9 +885,8 @@ function saveAsImage(locId) {
         ctx.fillText(pillText, pillX + pillW / 2, ly + 11);
         ctx.textAlign = 'left';
 
-        // card-right: QR + mic overlay
-        // ── FIX: qsize aumentado de 110 a 140 para aprovechar el espacio ──
-        var qboxPad = 10, qsize = 140;
+        // card-right: QR + mic overlay — QR grande, casi toda la altura
+        var qboxPad = 10, qsize = 175;
         var qboxW = qsize + qboxPad * 2;
         var qboxH = qsize + qboxPad * 2;
         var qboxX = leftW + (rightW - qboxW) / 2;
