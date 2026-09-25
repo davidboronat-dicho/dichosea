@@ -367,7 +367,7 @@
       document.getElementById('bizName').textContent = data.negocio || '';
       document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
       var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + t.preText);
-      waLink = 'whatsapp://send?phone=' + data.wa_number + '&text=' + preText;
+      waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
       document.getElementById('ctaBtn').href = waLink;
     }
 
