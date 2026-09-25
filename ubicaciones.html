@@ -368,7 +368,7 @@ var TR = {
 var LANG = 'es';
 
 function applyLang(lang) {
-  LANG = lang;
+  LANG = TR[lang] ? lang : 'es';
   document.body.style.visibility = 'visible';
   var tr = TR[lang] || TR['es'];
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
@@ -518,7 +518,7 @@ function escHtml(s) {
       var atLimit   = locs.length >= maxLocs;
       var bannerEl  = document.getElementById('plan-banner');
       if (atLimit && plan !== 'enterprise') {
-        document.getElementById('plan-banner-text').innerHTML = TR[LANG].plan_limit || TR['es'].plan_limit;
+        document.getElementById('plan-banner-text').innerHTML = (TR[LANG] || TR['es']).plan_limit;
         bannerEl.style.display = 'flex';
         document.getElementById('btn-add-loc').disabled = true;
         document.getElementById('btn-add-loc').style.opacity = '.5';
