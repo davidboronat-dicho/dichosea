@@ -1,471 +1,430 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dicho · Acceder</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap">
-<style>
-  :root {
-    --green:  #16A34A;
-    --green2: #15803d;
-    --glight: #dcfce7;
-    --border: #E0E6EF;
-    --text:   #1A2A4A;
-    --muted:  #6B7A8D;
-    --danger: #B53A2E;
-    --bg:     #F0F3F8;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Jost',sans-serif; background:var(--bg); color:var(--text);
-         min-height:100vh; display:flex; flex-direction:column; align-items:center;
-         justify-content:center; padding:20px; }
-  .card { background:#fff; border:1px solid var(--border); border-radius:16px;
-          padding:40px 36px; width:100%; max-width:400px; }
-  .logo { font-size:26px; font-weight:900; color:var(--green); letter-spacing:-1px; margin-bottom:24px; }
-  .logo span { color:#a7f3d0; }
-  h1 { font-size:21px; font-weight:700; margin-bottom:4px; }
-  .sub { font-size:13.5px; color:var(--muted); margin-bottom:28px; }
-  .biz-name { color:var(--green); font-weight:600; }
-  label { display:block; font-size:11px; font-weight:700; text-transform:uppercase;
-          letter-spacing:.06em; color:var(--muted); margin-bottom:5px; }
-  input { width:100%; padding:11px 14px; border:1px solid var(--border); border-radius:9px;
-          font-family:'Jost',sans-serif; font-size:14px; color:var(--text);
-          outline:none; transition:.15s; margin-bottom:14px; }
-  input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(42,112,85,.1); }
-  .btn { width:100%; padding:12px; background:var(--green); color:#fff; border:none;
-         border-radius:9px; font-family:'Jost',sans-serif; font-size:15px; font-weight:600;
-         cursor:pointer; transition:.15s; margin-top:4px; }
-  .btn:hover { background:var(--green2); }
-  .btn:disabled { opacity:.5; cursor:not-allowed; }
-  .link-btn { background:none; border:none; color:var(--green); font-family:'Jost',sans-serif;
-              font-size:13px; cursor:pointer; padding:0; text-decoration:underline; }
-  .footer-links { margin-top:18px; text-align:center; font-size:13px; color:var(--muted); }
-  .error { background:#fee2e2; color:#b91c1c; padding:10px 14px; border-radius:8px;
-           font-size:13px; margin-bottom:14px; display:none; }
-  .error.show { display:block; }
-  .success { background:var(--glight); color:var(--green); padding:10px 14px; border-radius:8px;
-             font-size:13px; margin-bottom:14px; }
-  .spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.4);
-             border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  .hint { font-size:12px; color:var(--muted); margin-top:-8px; margin-bottom:14px; }
-  [hidden] { display:none!important; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dicho · Acceder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Language selector */
-  .lang-row { display:flex; gap:6px; margin-bottom:20px; }
-  .lang-btn { flex:1; padding:5px; border:1px solid var(--border); border-radius:6px;
-              background:#fff; cursor:pointer; font-family:'Jost',sans-serif;
-              font-size:11px; font-weight:600; color:var(--muted); transition:.15s; letter-spacing:.04em; }
-  .lang-btn:hover { border-color:var(--green); color:var(--green); }
-  .lang-btn.active { border-color:var(--green); color:var(--green); background:var(--glight); }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #F0F7F3;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 16px;
+    }
 
-  @media(max-width:480px) {
-    .card { padding:32px 20px; border-radius:12px; }
-  }
-</style>
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 32px rgba(22, 163, 74, 0.10);
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 900;
+      color: #16A34A;
+      letter-spacing: -1px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .logo span { color: #A7F3D0; }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1C2B20;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #6B7A6E;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #D1D5DB;
+      border-radius: 10px;
+      font-size: 15px;
+      color: #1C2B20;
+      background: #fff;
+      transition: border-color .15s;
+      margin-bottom: 18px;
+      outline: none;
+    }
+    input:focus { border-color: #16A34A; }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: #16A34A;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn:hover { opacity: .88; }
+    .btn:disabled { opacity: .55; cursor: default; }
+
+    .error {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #B91C1C;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .error.show { display: block; }
+
+    .success {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      color: #15803D;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .success.show { display: block; }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: #16A34A;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    }
+    .link-btn:hover { opacity: .75; }
+
+    .footer-links {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #6B7A6E;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .negocio-badge {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      color: #15803D;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+  </style>
 </head>
 <body>
-
 <div class="card">
   <div class="logo">dicho<span>.</span></div>
 
-  <!-- Loading -->
-  <div id="s-loading">
-    <p id="txt-loading" style="color:var(--muted);font-size:14px">Verificando acceso…</p>
-  </div>
-
-  <!-- Error grave -->
-  <div id="s-notfound" hidden>
-    <h1 id="txt-nf-title">Enlace inválido</h1>
-    <p class="sub" id="txt-nf-sub">Este enlace no corresponde a ninguna cuenta. Verifica el correo que recibiste.</p>
-  </div>
-
-  <!-- Set password (primera vez) -->
-  <div id="s-setpass" hidden>
-    <h1 id="txt-sp-title">Crea tu contraseña</h1>
-    <p class="sub">Para acceder al panel de <span class="biz-name" id="biz-setpass"></span></p>
-    <div class="lang-row">
-      <button class="lang-btn" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" onclick="setLang('ca')">CA</button>
-      <button class="lang-btn" onclick="setLang('en')">EN</button>
+  <!-- ── PANTALLA: cargando ── -->
+  <div id="screen-loading" class="screen active">
+    <div style="text-align:center;color:#6B7A6E;padding:20px 0">
+      <span class="spinner" style="border-top-color:#16A34A;border-color:rgba(22,163,74,.3);"></span>
+      Verificando acceso…
     </div>
-    <div class="error" id="err-setpass"></div>
-    <label id="lbl-sp-p1">Nueva contraseña</label>
-    <input type="password" id="new-pass" placeholder="Mínimo 6 caracteres">
-    <label id="lbl-sp-p2">Repetir contraseña</label>
-    <input type="password" id="new-pass2" placeholder="Repite la contraseña">
-    <p class="hint" id="txt-sp-hint">Usa esta contraseña cada vez que quieras entrar a tu panel.</p>
-    <button class="btn" id="btn-setpass" onclick="doSetPassword()">Crear contraseña y entrar</button>
   </div>
 
-  <!-- Login con token (volver a entrar) -->
-  <div id="s-login" hidden>
-    <h1 id="txt-l-title">Bienvenido de nuevo</h1>
-    <p class="sub">Panel de <span class="biz-name" id="biz-login"></span></p>
-    <div class="lang-row">
-      <button class="lang-btn" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" onclick="setLang('ca')">CA</button>
-      <button class="lang-btn" onclick="setLang('en')">EN</button>
+  <!-- ── PANTALLA: crear contraseña (primer acceso con token) ── -->
+  <div id="screen-setpass" class="screen">
+    <h2 id="setpass-title">¡Bienvenido!</h2>
+    <p class="subtitle" id="setpass-subtitle">Crea tu contraseña para acceder a tu panel de Dicho.</p>
+    <div id="setpass-badge" class="negocio-badge" style="display:none"></div>
+    <div id="setpass-error" class="error"></div>
+    <label for="setpass-pwd1">Nueva contraseña</label>
+    <input id="setpass-pwd1" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+    <label for="setpass-pwd2">Confirmar contraseña</label>
+    <input id="setpass-pwd2" type="password" placeholder="Repite la contraseña" autocomplete="new-password">
+    <button class="btn" id="setpass-btn" onclick="doSetPassword()">Crear contraseña y entrar</button>
+  </div>
+
+  <!-- ── PANTALLA: login con token (ya tiene contraseña) ── -->
+  <div id="screen-login" class="screen">
+    <h2>Acceder</h2>
+    <p class="subtitle">Introduce tu contraseña para continuar.</p>
+    <div id="login-badge" class="negocio-badge" style="display:none"></div>
+    <div id="login-error" class="error"></div>
+    <label for="login-pwd">Contraseña</label>
+    <input id="login-pwd" type="password" placeholder="Tu contraseña" autocomplete="current-password"
+           onkeydown="if(event.key==='Enter')doLoginToken()">
+    <button class="btn" id="login-btn" onclick="doLoginToken()">Entrar</button>
+    <div class="footer-links" style="margin-top:14px">
+      <button class="link-btn" onclick="showForgot()">¿Olvidaste tu contraseña?</button>
     </div>
-    <div class="error" id="err-login"></div>
-    <label id="lbl-l-pass">Contraseña</label>
-    <input type="password" id="pass" placeholder="Tu contraseña" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="btn" id="btn-login" onclick="doLogin()">Entrar</button>
+  </div>
+
+  <!-- ── PANTALLA: login general (email + contraseña) ── -->
+  <div id="screen-general" class="screen">
+    <h2>Acceder</h2>
+    <p class="subtitle">Introduce tu email y contraseña.</p>
+    <div id="general-error" class="error"></div>
+    <label for="general-email">Email</label>
+    <input id="general-email" type="email" placeholder="tu@email.com" autocomplete="email">
+    <label for="general-pwd">Contraseña</label>
+    <input id="general-pwd" type="password" placeholder="Tu contraseña" autocomplete="current-password"
+           onkeydown="if(event.key==='Enter')doLoginGeneral()">
+    <button class="btn" id="general-btn" onclick="doLoginGeneral()">Entrar</button>
     <div class="footer-links">
-      <button class="link-btn" id="lnk-l-forgot" onclick="showForgot('login')">Olvidé mi contraseña</button>
+      <button class="link-btn" onclick="showForgot()">¿Olvidaste tu contraseña?</button>
     </div>
   </div>
 
-  <!-- Login general (sin token, desde la landing) -->
-  <div id="s-login-general" hidden>
-    <h1 id="txt-lg-title">Accede a tu panel</h1>
-    <p class="sub" id="txt-lg-sub">Introduce tus credenciales para entrar</p>
-    <div class="lang-row">
-      <button class="lang-btn" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" onclick="setLang('ca')">CA</button>
-      <button class="lang-btn" onclick="setLang('en')">EN</button>
-    </div>
-    <div class="error" id="err-lg"></div>
-    <label id="lbl-lg-email">Correo electrónico</label>
-    <input type="email" id="lg-email" placeholder="correo@negocio.com" onkeydown="if(event.key==='Enter')document.getElementById('lg-pass').focus()">
-    <label id="lbl-lg-pass">Contraseña</label>
-    <input type="password" id="lg-pass" placeholder="Tu contraseña" onkeydown="if(event.key==='Enter')doLoginGeneral()">
-    <button class="btn" id="btn-lg" onclick="doLoginGeneral()">Entrar</button>
+  <!-- ── PANTALLA: recuperar contraseña ── -->
+  <div id="screen-forgot" class="screen">
+    <h2>Recuperar contraseña</h2>
+    <p class="subtitle">Te enviamos un enlace a tu correo para restablecer la contraseña.</p>
+    <div id="forgot-error" class="error"></div>
+    <div id="forgot-success" class="success"></div>
+    <label for="forgot-email">Email</label>
+    <input id="forgot-email" type="email" placeholder="tu@email.com" autocomplete="email"
+           onkeydown="if(event.key==='Enter')doForgot()">
+    <button class="btn" id="forgot-btn" onclick="doForgot()">Enviar enlace</button>
     <div class="footer-links">
-      <button class="link-btn" id="lnk-lg-forgot" onclick="showForgot('login-general')">Olvidé mi contraseña</button>
-    </div>
-  </div>
-
-  <!-- Forgot password -->
-  <div id="s-forgot" hidden>
-    <h1 id="txt-fg-title">Recuperar acceso</h1>
-    <p class="sub" id="txt-fg-sub">Te enviaremos un enlace a tu correo para crear una nueva contraseña.</p>
-    <div class="lang-row">
-      <button class="lang-btn" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" onclick="setLang('ca')">CA</button>
-      <button class="lang-btn" onclick="setLang('en')">EN</button>
-    </div>
-    <div class="error" id="err-forgot"></div>
-    <label id="lbl-fg-email">Correo electrónico</label>
-    <input type="email" id="reset-email" placeholder="correo@negocio.com" onkeydown="if(event.key==='Enter')doForgot()">
-    <button class="btn" id="btn-forgot" onclick="doForgot()">Enviar enlace de recuperación</button>
-    <div class="footer-links">
-      <button class="link-btn" id="lnk-fg-back" onclick="showState(FORGOT_BACK)">← Volver</button>
-    </div>
-  </div>
-
-  <!-- Reset sent -->
-  <div id="s-sent" hidden>
-    <h1 id="txt-sent-title">Correo enviado</h1>
-    <div class="success" id="txt-sent-body">Revisa tu bandeja de entrada — te hemos enviado un enlace para restablecer tu contraseña. Expira en 2 horas.</div>
-    <div class="footer-links">
-      <button class="link-btn" id="lnk-sent-back" onclick="showState(FORGOT_BACK)">← Volver al inicio de sesión</button>
+      <button class="link-btn" onclick="showScreen('screen-general')">← Volver</button>
     </div>
   </div>
 </div>
 
 <script>
-var TOKEN      = <?!= JSON.stringify(token) ?>;
-var SCRIPT_URL = <?!= JSON.stringify(scriptUrl) ?>;
-var FORGOT_BACK = 'login'; // which state to go back to from forgot/sent
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+  var DASHBOARD_URL = 'https://dichosea.com/dashboard.html';
 
-// ── i18n ─────────────────────────────────────────────────────────────────────
-var TR = {
-  es: {
-    loading: 'Verificando acceso…',
-    nf_title: 'Enlace inválido',
-    nf_sub: 'Este enlace no corresponde a ninguna cuenta. Verifica el correo que recibiste.',
-    sp_title: 'Crea tu contraseña',
-    sp_p1: 'Nueva contraseña', sp_p1_ph: 'Mínimo 6 caracteres',
-    sp_p2: 'Repetir contraseña', sp_p2_ph: 'Repite la contraseña',
-    sp_hint: 'Usa esta contraseña cada vez que quieras entrar a tu panel.',
-    btn_setpass: 'Crear contraseña y entrar', btn_setpass_loading: 'Guardando…',
-    l_title: 'Bienvenido de nuevo',
-    l_pass: 'Contraseña', l_pass_ph: 'Tu contraseña',
-    btn_login: 'Entrar', btn_login_loading: 'Verificando…',
-    l_forgot: 'Olvidé mi contraseña',
-    lg_title: 'Accede a tu panel',
-    lg_sub: 'Introduce tus credenciales para entrar',
-    lg_email: 'Correo electrónico', lg_email_ph: 'correo@negocio.com',
-    lg_pass: 'Contraseña', lg_pass_ph: 'Tu contraseña',
-    btn_lg: 'Entrar',
-    lg_forgot: 'Olvidé mi contraseña',
-    fg_title: 'Recuperar acceso',
-    fg_sub: 'Te enviaremos un enlace a tu correo para crear una nueva contraseña.',
-    fg_email: 'Correo electrónico', fg_email_ph: 'correo@negocio.com',
-    btn_forgot: 'Enviar enlace de recuperación', btn_forgot_loading: 'Enviando…',
-    fg_back: '← Volver',
-    sent_title: 'Correo enviado',
-    sent_body: 'Revisa tu bandeja de entrada — te hemos enviado un enlace para restablecer tu contraseña. Expira en 2 horas.',
-    sent_back: '← Volver al inicio de sesión',
-    err_no_pass: 'Introduce una contraseña',
-    err_min6: 'Mínimo 6 caracteres',
-    err_nomatch: 'Las contraseñas no coinciden',
-    err_no_email: 'Introduce tu correo electrónico',
-    err_no_pass2: 'Introduce tu contraseña',
-  },
-  ca: {
-    loading: 'Verificant accés…',
-    nf_title: 'Enllaç invàlid',
-    nf_sub: 'Aquest enllaç no correspon a cap compte. Verifica el correu que vas rebre.',
-    sp_title: 'Crea la teva contrasenya',
-    sp_p1: 'Nova contrasenya', sp_p1_ph: 'Mínim 6 caràcters',
-    sp_p2: 'Repetir contrasenya', sp_p2_ph: 'Repeteix la contrasenya',
-    sp_hint: 'Utilitza aquesta contrasenya cada cop que vulguis entrar al tauler.',
-    btn_setpass: 'Crear contrasenya i entrar', btn_setpass_loading: 'Desant…',
-    l_title: 'Benvingut de nou',
-    l_pass: 'Contrasenya', l_pass_ph: 'La teva contrasenya',
-    btn_login: 'Entrar', btn_login_loading: 'Verificant…',
-    l_forgot: 'He oblidat la contrasenya',
-    lg_title: 'Accedeix al teu tauler',
-    lg_sub: 'Introdueix les teves credencials per entrar',
-    lg_email: 'Correu electrònic', lg_email_ph: 'correu@negoci.com',
-    lg_pass: 'Contrasenya', lg_pass_ph: 'La teva contrasenya',
-    btn_lg: 'Entrar',
-    lg_forgot: 'He oblidat la contrasenya',
-    fg_title: 'Recuperar accés',
-    fg_sub: 'T\'enviarem un enllaç al teu correu per crear una nova contrasenya.',
-    fg_email: 'Correu electrònic', fg_email_ph: 'correu@negoci.com',
-    btn_forgot: 'Enviar enllaç de recuperació', btn_forgot_loading: 'Enviant…',
-    fg_back: '← Tornar',
-    sent_title: 'Correu enviat',
-    sent_body: 'Comprova la teva safata d\'entrada — t\'hem enviat un enllaç per restablir la contrasenya. Expira en 2 hores.',
-    sent_back: '← Tornar a l\'inici de sessió',
-    err_no_pass: 'Introdueix una contrasenya',
-    err_min6: 'Mínim 6 caràcters',
-    err_nomatch: 'Les contrasenyes no coincideixen',
-    err_no_email: 'Introdueix el teu correu electrònic',
-    err_no_pass2: 'Introdueix la teva contrasenya',
-  },
-  en: {
-    loading: 'Checking access…',
-    nf_title: 'Invalid link',
-    nf_sub: 'This link doesn\'t match any account. Check the email you received.',
-    sp_title: 'Create your password',
-    sp_p1: 'New password', sp_p1_ph: 'At least 6 characters',
-    sp_p2: 'Repeat password', sp_p2_ph: 'Repeat your password',
-    sp_hint: 'Use this password every time you want to access your dashboard.',
-    btn_setpass: 'Create password and log in', btn_setpass_loading: 'Saving…',
-    l_title: 'Welcome back',
-    l_pass: 'Password', l_pass_ph: 'Your password',
-    btn_login: 'Log in', btn_login_loading: 'Checking…',
-    l_forgot: 'Forgot my password',
-    lg_title: 'Access your dashboard',
-    lg_sub: 'Enter your credentials to log in',
-    lg_email: 'Email', lg_email_ph: 'you@business.com',
-    lg_pass: 'Password', lg_pass_ph: 'Your password',
-    btn_lg: 'Log in',
-    lg_forgot: 'Forgot my password',
-    fg_title: 'Recover access',
-    fg_sub: 'We\'ll send you a link to your email to create a new password.',
-    fg_email: 'Email', fg_email_ph: 'you@business.com',
-    btn_forgot: 'Send recovery link', btn_forgot_loading: 'Sending…',
-    fg_back: '← Back',
-    sent_title: 'Email sent',
-    sent_body: 'Check your inbox — we\'ve sent you a link to reset your password. It expires in 2 hours.',
-    sent_back: '← Back to log in',
-    err_no_pass: 'Enter a password',
-    err_min6: 'At least 6 characters',
-    err_nomatch: 'Passwords do not match',
-    err_no_email: 'Enter your email address',
-    err_no_pass2: 'Enter your password',
+  // ── Leer params de la URL ──────────────────────────────────────────────────
+  var _p     = new URLSearchParams(window.location.search);
+  var TOKEN  = _p.get('token') || '';
+  var LANG   = _p.get('lang')  || 'es';
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
   }
-};
 
-var LANG = 'es';
-
-function detectLang() {
-  var p = new URLSearchParams(window.location.search);
-  if (p.get('lang') && TR[p.get('lang')]) return p.get('lang');
-  var bl = (navigator.language || 'es').toLowerCase();
-  if (bl.startsWith('ca')) return 'ca';
-  if (bl.startsWith('en')) return 'en';
-  return 'es';
-}
-
-function setLang(lang) {
-  if (!TR[lang]) lang = 'es';
-  LANG = lang;
-  var t = TR[lang];
-
-  // update all text nodes
-  var M = {
-    'txt-loading': t.loading,
-    'txt-nf-title': t.nf_title, 'txt-nf-sub': t.nf_sub,
-    'txt-sp-title': t.sp_title, 'lbl-sp-p1': t.sp_p1, 'lbl-sp-p2': t.sp_p2,
-    'txt-sp-hint': t.sp_hint,
-    'txt-l-title': t.l_title, 'lbl-l-pass': t.l_pass,
-    'lnk-l-forgot': t.l_forgot,
-    'txt-lg-title': t.lg_title, 'txt-lg-sub': t.lg_sub,
-    'lbl-lg-email': t.lg_email, 'lbl-lg-pass': t.lg_pass,
-    'lnk-lg-forgot': t.lg_forgot,
-    'txt-fg-title': t.fg_title, 'txt-fg-sub': t.fg_sub,
-    'lbl-fg-email': t.fg_email,
-    'lnk-fg-back': t.fg_back,
-    'txt-sent-title': t.sent_title, 'txt-sent-body': t.sent_body,
-    'lnk-sent-back': t.sent_back,
-    'btn-setpass': t.btn_setpass, 'btn-login': t.btn_login,
-    'btn-lg': t.btn_lg, 'btn-forgot': t.btn_forgot,
-  };
-  Object.keys(M).forEach(function(id) {
+  function showError(id, msg) {
     var el = document.getElementById(id);
-    if (el) el.textContent = M[id];
-  });
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+  function hideError(id) { document.getElementById(id).classList.remove('show'); }
 
-  // placeholders
-  var PH = {
-    'new-pass': t.sp_p1_ph, 'new-pass2': t.sp_p2_ph,
-    'pass': t.l_pass_ph,
-    'lg-email': t.lg_email_ph, 'lg-pass': t.lg_pass_ph,
-    'reset-email': t.fg_email_ph,
-  };
-  Object.keys(PH).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.placeholder = PH[id];
-  });
+  function setLoading(btnId, loading) {
+    var btn = document.getElementById(btnId);
+    if (loading) {
+      btn.disabled = true;
+      btn.dataset.orig = btn.textContent;
+      btn.innerHTML = '<span class="spinner"></span>Espera…';
+    } else {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.orig || btn.textContent;
+    }
+  }
 
-  // lang buttons
-  document.querySelectorAll('.lang-btn').forEach(function(b) {
-    b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang);
-  });
-}
-
-// ── State machine ─────────────────────────────────────────────────────────────
-function showState(s) {
-  ['loading','notfound','setpass','login','login-general','forgot','sent'].forEach(function(id){
-    document.getElementById('s-'+id).hidden = (id !== s);
-  });
-}
-
-function showErr(id, msg) {
-  var el = document.getElementById(id);
-  el.textContent = msg; el.classList.add('show');
-}
-function clearErr(id) { var el=document.getElementById(id); if(el) el.classList.remove('show'); }
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-LANG = detectLang();
-setLang(LANG);
-
-if (TOKEN) {
-  google.script.run
-    .withSuccessHandler(function(info) {
-      if (!info.found) { showState('notfound'); return; }
-      if (info.hasPassword) {
-        document.getElementById('biz-login').textContent = info.negocio || 'tu negocio';
-        showState('login');
-      } else {
-        document.getElementById('biz-setpass').textContent = info.negocio || 'tu negocio';
-        showState('setpass');
+  function gasCall(page, params) {
+    return new Promise(function(resolve, reject) {
+      var cb = 'gc_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+      var url = GAS_URL + '?page=' + encodeURIComponent(page) + '&callback=' + cb;
+      for (var k in params) {
+        if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
+          url += '&' + k + '=' + encodeURIComponent(params[k]);
+        }
       }
-    })
-    .withFailureHandler(function() { showState('notfound'); })
-    .checkPasswordSet(TOKEN);
-} else {
-  // No token — acceso desde la landing
-  FORGOT_BACK = 'login-general';
-  showState('login-general');
-}
+      window[cb] = function(data) {
+        delete window[cb];
+        if (s.parentNode) s.parentNode.removeChild(s);
+        resolve(data);
+      };
+      var s = document.createElement('script');
+      s.src = url;
+      s.onerror = function() {
+        delete window[cb];
+        if (s.parentNode) s.parentNode.removeChild(s);
+        reject(new Error('JSONP failed'));
+      };
+      document.head.appendChild(s);
+    });
+  }
 
-// ── Actions ───────────────────────────────────────────────────────────────────
-function doSetPassword() {
-  clearErr('err-setpass');
-  var p1 = document.getElementById('new-pass').value;
-  var p2 = document.getElementById('new-pass2').value;
-  var t  = TR[LANG];
-  if (!p1)         { showErr('err-setpass', t.err_no_pass);  return; }
-  if (p1.length<6) { showErr('err-setpass', t.err_min6);     return; }
-  if (p1 !== p2)   { showErr('err-setpass', t.err_nomatch);  return; }
-  var btn = document.getElementById('btn-setpass');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> ' + t.btn_setpass_loading;
-  google.script.run
-    .withSuccessHandler(function(res) {
-      btn.disabled = false; btn.textContent = t.btn_setpass;
-      if (res.ok) {
-        window.location.href = SCRIPT_URL + '?page=dashboard&session=' + res.sessionToken;
-      } else { showErr('err-setpass', res.error || 'Error al guardar'); }
-    })
-    .withFailureHandler(function(e) {
-      btn.disabled = false; btn.textContent = t.btn_setpass;
-      showErr('err-setpass', e.message || 'Error inesperado');
-    })
-    .setPassword(TOKEN, p1);
-}
+  function onLoginSuccess(sessionToken) {
+    window.location.href = DASHBOARD_URL + '?token=' + encodeURIComponent(TOKEN) + '&session=' + encodeURIComponent(sessionToken);
+  }
 
-function doLogin() {
-  clearErr('err-login');
-  var p = document.getElementById('pass').value;
-  var t = TR[LANG];
-  if (!p) { showErr('err-login', t.err_no_pass2); return; }
-  var btn = document.getElementById('btn-login');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> ' + t.btn_login_loading;
-  google.script.run
-    .withSuccessHandler(function(res) {
-      btn.disabled = false; btn.textContent = t.btn_login;
-      if (res.ok) {
-        window.location.href = SCRIPT_URL + '?page=dashboard&session=' + res.sessionToken;
-      } else { showErr('err-login', res.error || 'Error al iniciar sesión'); }
-    })
-    .withFailureHandler(function(e) {
-      btn.disabled = false; btn.textContent = t.btn_login;
-      showErr('err-login', e.message || 'Error inesperado');
-    })
-    .loginWithPassword(TOKEN, p);
-}
+  // ── Init: comprobar si hay token ───────────────────────────────────────────
+  (function init() {
+    if (!TOKEN) {
+      showScreen('screen-general');
+      return;
+    }
+    gasCall('checkPasswordSet', { token: TOKEN })
+      .then(function(data) {
+        if (!data.found) {
+          showError('general-error', 'Enlace inválido o expirado. Usa tu email y contraseña.');
+          showScreen('screen-general');
+          return;
+        }
+        if (data.negocio) {
+          var badge = document.getElementById(data.hasPassword ? 'login-badge' : 'setpass-badge');
+          badge.textContent = '🏪 ' + data.negocio;
+          badge.style.display = 'block';
+        }
+        if (data.hasPassword) {
+          showScreen('screen-login');
+        } else {
+          showScreen('screen-setpass');
+        }
+      })
+      .catch(function() {
+        showError('general-error', 'Error de conexión. Inténtalo de nuevo.');
+        showScreen('screen-general');
+      });
+  })();
 
-function doLoginGeneral() {
-  clearErr('err-lg');
-  var email = document.getElementById('lg-email').value.trim();
-  var pass  = document.getElementById('lg-pass').value;
-  var t = TR[LANG];
-  if (!email) { showErr('err-lg', t.err_no_email); return; }
-  if (!pass)  { showErr('err-lg', t.err_no_pass2); return; }
-  var btn = document.getElementById('btn-lg');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> ' + t.btn_login_loading;
-  google.script.run
-    .withSuccessHandler(function(res) {
-      btn.disabled = false; btn.textContent = t.btn_lg;
-      if (res.ok) {
-        window.location.href = SCRIPT_URL + '?page=dashboard&session=' + res.sessionToken;
-      } else { showErr('err-lg', res.error || 'Error al iniciar sesión'); }
-    })
-    .withFailureHandler(function(e) {
-      btn.disabled = false; btn.textContent = t.btn_lg;
-      showErr('err-lg', e.message || 'Error inesperado');
-    })
-    .loginWithEmail(email, pass);
-}
+  // ── Crear contraseña ───────────────────────────────────────────────────────
+  function doSetPassword() {
+    hideError('setpass-error');
+    var p1 = document.getElementById('setpass-pwd1').value.trim();
+    var p2 = document.getElementById('setpass-pwd2').value.trim();
+    if (!p1 || p1.length < 6) { showError('setpass-error', 'La contraseña debe tener al menos 6 caracteres.'); return; }
+    if (p1 !== p2)             { showError('setpass-error', 'Las contraseñas no coinciden.'); return; }
+    setLoading('setpass-btn', true);
+    gasCall('setPassword', { token: TOKEN, password: p1 })
+      .then(function(data) {
+        setLoading('setpass-btn', false);
+        if (data.ok) {
+          onLoginSuccess(data.sessionToken);
+        } else {
+          showError('setpass-error', data.error || 'Error al crear la contraseña.');
+        }
+      })
+      .catch(function() {
+        setLoading('setpass-btn', false);
+        showError('setpass-error', 'Error de conexión. Inténtalo de nuevo.');
+      });
+  }
 
-function showForgot(backState) {
-  FORGOT_BACK = backState || 'login';
-  clearErr('err-forgot');
-  showState('forgot');
-}
+  // ── Login con token ────────────────────────────────────────────────────────
+  function doLoginToken() {
+    hideError('login-error');
+    var pwd = document.getElementById('login-pwd').value;
+    if (!pwd) { showError('login-error', 'Introduce tu contraseña.'); return; }
+    setLoading('login-btn', true);
+    gasCall('loginWithPassword', { token: TOKEN, password: pwd })
+      .then(function(data) {
+        setLoading('login-btn', false);
+        if (data.ok) {
+          onLoginSuccess(data.sessionToken);
+        } else {
+          showError('login-error', data.error || 'Contraseña incorrecta.');
+        }
+      })
+      .catch(function() {
+        setLoading('login-btn', false);
+        showError('login-error', 'Error de conexión. Inténtalo de nuevo.');
+      });
+  }
 
-function doForgot() {
-  clearErr('err-forgot');
-  var email = document.getElementById('reset-email').value.trim();
-  var t = TR[LANG];
-  if (!email) { showErr('err-forgot', t.err_no_email); return; }
-  var btn = document.getElementById('btn-forgot');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> ' + t.btn_forgot_loading;
-  google.script.run
-    .withSuccessHandler(function(res) {
-      btn.disabled = false; btn.textContent = t.btn_forgot;
-      if (res.ok) showState('sent');
-      else showErr('err-forgot', res.error || 'Error al enviar');
-    })
-    .withFailureHandler(function(e) {
-      btn.disabled = false; btn.textContent = t.btn_forgot;
-      showErr('err-forgot', e.message || 'Error inesperado');
-    })
-    .sendPasswordReset(email);
-}
+  // ── Login general (email + pass) ───────────────────────────────────────────
+  function doLoginGeneral() {
+    hideError('general-error');
+    var email = document.getElementById('general-email').value.trim();
+    var pwd   = document.getElementById('general-pwd').value;
+    if (!email) { showError('general-error', 'Introduce tu email.'); return; }
+    if (!pwd)   { showError('general-error', 'Introduce tu contraseña.'); return; }
+    setLoading('general-btn', true);
+    gasCall('loginWithEmail', { email: email, password: pwd })
+      .then(function(data) {
+        setLoading('general-btn', false);
+        if (data.ok) {
+          onLoginSuccess(data.sessionToken);
+        } else {
+          showError('general-error', data.error || 'Email o contraseña incorrectos.');
+        }
+      })
+      .catch(function() {
+        setLoading('general-btn', false);
+        showError('general-error', 'Error de conexión. Inténtalo de nuevo.');
+      });
+  }
+
+  // ── Recuperar contraseña ───────────────────────────────────────────────────
+  function showForgot() {
+    var email = document.getElementById('general-email');
+    if (email && email.value) {
+      document.getElementById('forgot-email').value = email.value;
+    }
+    hideError('forgot-error');
+    document.getElementById('forgot-success').classList.remove('show');
+    showScreen('screen-forgot');
+  }
+
+  function doForgot() {
+    hideError('forgot-error');
+    document.getElementById('forgot-success').classList.remove('show');
+    var email = document.getElementById('forgot-email').value.trim();
+    if (!email) { showError('forgot-error', 'Introduce tu email.'); return; }
+    setLoading('forgot-btn', true);
+    gasCall('sendPasswordReset', { email: email })
+      .then(function(data) {
+        setLoading('forgot-btn', false);
+        if (data.ok) {
+          var s = document.getElementById('forgot-success');
+          s.textContent = 'Enlace enviado a ' + email + '. Revisa tu bandeja de entrada.';
+          s.classList.add('show');
+        } else {
+          showError('forgot-error', data.error || 'No encontramos una cuenta con ese correo.');
+        }
+      })
+      .catch(function() {
+        setLoading('forgot-btn', false);
+        showError('forgot-error', 'Error de conexión. Inténtalo de nuevo.');
+      });
+  }
 </script>
 </body>
 </html>
