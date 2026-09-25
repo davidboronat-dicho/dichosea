@@ -438,10 +438,37 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 </div>
 
 <script>
-// ── Datos inyectados por el servidor ─────────────────────────
-var QR_DATA    = <?!= qrDataJson ?>;
-var TOKEN      = <?!= JSON.stringify(token) ?>;
-var SCRIPT_URL = <?!= JSON.stringify(scriptUrl) ?>;
+// ── Datos (GitHub Pages: JSONP al API de GAS) ─────────────────
+var GAS_URL    = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+var _p         = new URLSearchParams(window.location.search);
+var TOKEN      = _p.get('token') || '';
+var SCRIPT_URL = GAS_URL;
+var QR_DATA    = null; // se carga abajo via JSONP
+
+function gasCall(page, params) {
+  return new Promise(function(resolve, reject) {
+    var cb = 'gc_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+    var url = GAS_URL + '?page=' + encodeURIComponent(page) + '&callback=' + cb;
+    for (var k in params) {
+      if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
+        url += '&' + k + '=' + encodeURIComponent(params[k]);
+      }
+    }
+    window[cb] = function(data) {
+      delete window[cb];
+      if (s.parentNode) s.parentNode.removeChild(s);
+      resolve(data);
+    };
+    var s = document.createElement('script');
+    s.src = url;
+    s.onerror = function() {
+      delete window[cb];
+      if (s.parentNode) s.parentNode.removeChild(s);
+      reject(new Error('JSONP failed'));
+    };
+    document.head.appendChild(s);
+  });
+}
 
 // ── Estado global ────────────────────────────────────────────
 var currentLang = 'es';
@@ -558,41 +585,56 @@ function applyLang(lang) {
 
 // ── Init ─────────────────────────────────────────────────────
 (function init() {
-  var lang = (QR_DATA && QR_DATA.idioma) || 'es';
-  applyLang(lang);
+  // Nav links directamente a GitHub Pages
+  document.getElementById('nav-dashboard').href   = 'https://dichosea.com/dashboard.html?token=' + encodeURIComponent(TOKEN);
+  document.getElementById('nav-ubicaciones').href = 'https://dichosea.com/ubicaciones.html?token=' + encodeURIComponent(TOKEN);
+  document.getElementById('nav-config').href      = 'https://dichosea.com/configuracion.html?token=' + encodeURIComponent(TOKEN);
 
-  var dashUrl   = SCRIPT_URL + '?page=dashboard&token=' + encodeURIComponent(TOKEN);
-  var ubUrl     = SCRIPT_URL + '?page=ubicaciones&token=' + encodeURIComponent(TOKEN);
-  var configUrl = SCRIPT_URL + '?page=configuracion&token=' + encodeURIComponent(TOKEN);
-  document.getElementById('nav-dashboard').href   = dashUrl;
-  document.getElementById('nav-ubicaciones').href = ubUrl;
-  document.getElementById('nav-config').href      = configUrl;
-
-  document.getElementById('header-biz-name').textContent =
-    (QR_DATA && QR_DATA.negocio) || '';
-
-  var container = document.getElementById('modules-container');
-  var locs = (QR_DATA && QR_DATA.ubicaciones) || [];
-  if (!locs.length) {
-    container.innerHTML =
-      '<div class="empty-wrap">' +
-        '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' +
-          '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>' +
-          '<rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="2.5"/>' +
-        '</svg>' +
-        '<h3>' + t('empty_title') + '</h3>' +
-        '<p>' + t('empty_sub') + '</p>' +
-      '</div>';
+  if (!TOKEN) {
+    document.getElementById('modules-container').innerHTML =
+      '<div class="empty-wrap"><h3>Token no encontrado</h3><p>Accede desde tu panel de Dicho.</p></div>';
     return;
   }
-  container.innerHTML = locs.map(buildModule).join('');
-  locs.forEach(function(loc) { renderQRForLoc(loc.id); });
+
+  // Cargar datos vía API (JSONP)
+  gasCall('api_qr', { token: TOKEN })
+    .then(function(data) {
+      if (!data || !data.ok) {
+        document.getElementById('modules-container').innerHTML =
+          '<div class="empty-wrap"><h3>Error al cargar datos</h3><p>' + (data && data.error || 'Token inválido.') + '</p></div>';
+        return;
+      }
+      QR_DATA = data;
+      var lang = data.idioma || 'es';
+      applyLang(lang);
+      document.getElementById('header-biz-name').textContent = data.negocio || '';
+      var container = document.getElementById('modules-container');
+      var locs = data.ubicaciones || [];
+      if (!locs.length) {
+        container.innerHTML =
+          '<div class="empty-wrap">' +
+            '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' +
+              '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>' +
+              '<rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="2.5"/>' +
+            '</svg>' +
+            '<h3>' + t('empty_title') + '</h3>' +
+            '<p>' + t('empty_sub') + '</p>' +
+          '</div>';
+        return;
+      }
+      container.innerHTML = locs.map(buildModule).join('');
+      locs.forEach(function(loc) { renderQRForLoc(loc.id); });
+    })
+    .catch(function(err) {
+      document.getElementById('modules-container').innerHTML =
+        '<div class="empty-wrap"><h3>Error de conexión</h3><p>' + err + '</p></div>';
+    });
 })();
 
 // ── Construir módulo ─────────────────────────────────────────
 function buildModule(loc) {
   var landingUrl = 'https://dichosea.com/landing.html?store_id=' + encodeURIComponent(loc.codigo || loc.id);
-  var qrSrc = loc.qrDataUrl || '';
+  var qrSrc = loc.qrDataUrl || loc.qrUrl || '';
   var qrHtml =
     '<div class="qr-wrap" id="qr-wrap-' + esc(loc.id) + '">' +
       '<img id="qr-img-' + esc(loc.id) + '" src="' + esc(qrSrc) + '" alt="QR">' +
