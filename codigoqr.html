@@ -353,7 +353,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 }
 </style>
 </head>
-<body>
+<body style="visibility:hidden">
 
 <!-- ── HEADER ── -->
 <header class="header">
@@ -575,13 +575,22 @@ function t(k) { return (TR[currentLang] || TR.es)[k] || k; }
 function applyLang(lang) {
   currentLang = lang || 'es';
   document.documentElement.lang = currentLang;
+  document.body.style.visibility = 'visible';
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     el.textContent = t(el.getAttribute('data-i18n'));
   });
   document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
     el.placeholder = t(el.getAttribute('data-i18n-ph'));
   });
+  try { sessionStorage.setItem('dicho_lang_' + TOKEN, currentLang); } catch(e) {}
 }
+
+// Aplicar idioma cacheado inmediatamente (evita flash)
+try {
+  var _cachedLang = sessionStorage.getItem('dicho_lang_' + TOKEN);
+  if (_cachedLang) applyLang(_cachedLang);
+} catch(e) {}
+setTimeout(function() { document.body.style.visibility = 'visible'; }, 300);
 
 // ── Init ─────────────────────────────────────────────────────
 (function init() {
@@ -589,6 +598,12 @@ function applyLang(lang) {
   document.getElementById('nav-dashboard').href   = 'https://dichosea.com/dashboard.html?token=' + encodeURIComponent(TOKEN);
   document.getElementById('nav-ubicaciones').href = 'https://dichosea.com/ubicaciones.html?token=' + encodeURIComponent(TOKEN);
   document.getElementById('nav-config').href      = 'https://dichosea.com/configuracion.html?token=' + encodeURIComponent(TOKEN);
+
+  // Pre-populate business name from sessionStorage while API loads
+  try {
+    var _cachedBiz = sessionStorage.getItem('dicho_biz_' + TOKEN);
+    if (_cachedBiz) document.getElementById('header-biz-name').textContent = _cachedBiz;
+  } catch(e) {}
 
   if (!TOKEN) {
     document.getElementById('modules-container').innerHTML =
@@ -608,6 +623,7 @@ function applyLang(lang) {
       var lang = data.idioma || 'es';
       applyLang(lang);
       document.getElementById('header-biz-name').textContent = data.negocio || '';
+      if (data.negocio) try { sessionStorage.setItem('dicho_biz_' + TOKEN, data.negocio); } catch(e) {}
       var container = document.getElementById('modules-container');
       var locs = data.ubicaciones || [];
       if (!locs.length) {
