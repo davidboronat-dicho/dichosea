@@ -545,7 +545,7 @@ var TR = {
     fb_title_loc: 'Feedbacks · '
   },
   ca: {
-    nav_dashboard: 'Tauler', nav_qr: 'Codi QR',
+    nav_dashboard: 'Dashboard', nav_qr: 'Codi QR',
     nav_ubicaciones: 'Ubicacions', nav_config: 'Configuració', logout: 'Sortir',
     loading: 'Carregant el tauler…',
     stat_total: 'Total Feedbacks', stat_total_sub: 'Registres totals',
@@ -641,7 +641,14 @@ function applyLang(lang) {
   document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
     el.placeholder = t(el.getAttribute('data-i18n-ph'));
   });
+  try { sessionStorage.setItem('dicho_lang_' + TOKEN, currentLang); } catch(e) {}
 }
+
+// Aplicar idioma cacheado inmediatamente (evita flash)
+try {
+  var _cachedLang = sessionStorage.getItem('dicho_lang_' + TOKEN);
+  if (_cachedLang) applyLang(_cachedLang);
+} catch(e) {}
 
 // ── Navegación ────────────────────────────────────────────────
 function goToQRPage() {
@@ -653,6 +660,12 @@ function goToUbicaciones() {
 function goToConfig() {
   window.top.location.href = 'https://dichosea.com/configuracion.html?token=' + encodeURIComponent(TOKEN);
 }
+
+// Pre-populate business name from sessionStorage while API loads
+try {
+  var _cachedBiz = sessionStorage.getItem('dicho_biz_' + TOKEN);
+  if (_cachedBiz) document.getElementById('header-biz').textContent = _cachedBiz;
+} catch(e) {}
 
 gasCall('api_dashboard', { token: TOKEN })
   .then(function(data) {
@@ -681,7 +694,9 @@ gasCall('api_dashboard', { token: TOKEN })
 // ── Render principal ─────────────────────────────────────────
 function renderDashboard() {
   var d = dashData;
-  document.getElementById('header-biz').textContent = d.clientInfo.negocio || '';
+  var negocioName = d.clientInfo.negocio || '';
+  document.getElementById('header-biz').textContent = negocioName;
+  if (negocioName) try { sessionStorage.setItem('dicho_biz_' + TOKEN, negocioName); } catch(e) {}
   document.getElementById('s-total').textContent = d.total;
   document.getElementById('s-pos').textContent   = d.pctPositivo + '%';
   document.getElementById('s-avg').textContent   = d.total > 0 ? d.avgScore : '—';
