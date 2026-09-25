@@ -131,7 +131,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 }
 </style>
 </head>
-<body>
+<body style="visibility:hidden">
 
 <!-- ── HEADER ── -->
 <header class="header">
@@ -368,6 +368,7 @@ var LANG = 'es';
 
 function applyLang(lang) {
   LANG = lang;
+  document.body.style.visibility = 'visible';
   var tr = TR[lang] || TR['es'];
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     var key = el.getAttribute('data-i18n');
@@ -382,6 +383,8 @@ try {
   var _cachedLang = sessionStorage.getItem('dicho_lang_' + TOKEN);
   if (_cachedLang && TR[_cachedLang]) applyLang(_cachedLang);
 } catch(e) {}
+// Fallback: si no hay caché, mostrar igual en 300ms para no bloquear
+setTimeout(function() { document.body.style.visibility = 'visible'; }, 300);
 
 // ── BUILD MODULE CARD ────────────────────────────────────────────
 function buildModule(loc) {
@@ -441,9 +444,7 @@ function buildModule(loc) {
     +   '</div>'
     +   '<div class="stat">'
     +     '<div class="stat-lbl">' + tr.lbl_tema + '</div>'
-    +     (topTopic
-    +       ? '<div class="stat-chip">' + escHtml(topTopic) + '</div><div class="stat-sub">' + tr.lbl_mencionat + ' ' + topCount + ' ' + tr.lbl_vegades + '</div>'
-    +       : '<div class="stat-val">—</div>')
+    +     (topTopic ? '<div class="stat-chip">' + escHtml(topTopic) + '</div><div class="stat-sub">' + tr.lbl_mencionat + ' ' + topCount + ' ' + tr.lbl_vegades + '</div>' : '<div class="stat-val">—</div>')
     +   '</div>'
     + '</div>'
 
