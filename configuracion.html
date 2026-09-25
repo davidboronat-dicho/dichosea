@@ -387,13 +387,28 @@ var CFG_DATA   = {};
 var CURRENT_LANG = 'es';
 
 function gasCall(page, params) {
-  var url = GAS_URL + '?page=' + page;
-  for (var k in params) {
-    if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
-      url += '&' + k + '=' + encodeURIComponent(params[k]);
+  return new Promise(function(resolve, reject) {
+    var cb = 'gc_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+    var url = GAS_URL + '?page=' + encodeURIComponent(page) + '&callback=' + cb;
+    for (var k in params) {
+      if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
+        url += '&' + k + '=' + encodeURIComponent(params[k]);
+      }
     }
-  }
-  return fetch(url).then(function(r) { return r.json(); });
+    window[cb] = function(data) {
+      delete window[cb];
+      if (s.parentNode) s.parentNode.removeChild(s);
+      resolve(data);
+    };
+    var s = document.createElement('script');
+    s.src = url;
+    s.onerror = function() {
+      delete window[cb];
+      if (s.parentNode) s.parentNode.removeChild(s);
+      reject(new Error('JSONP failed'));
+    };
+    document.head.appendChild(s);
+  });
 }
 
 // ── TIPOS DE NEGOCIO ─────────────────────────────────────────────
@@ -717,6 +732,12 @@ function renderPlan(planKey) {
   document.getElementById('nav-qr').href          = 'https://dichosea.com/codigoqr.html?token='    + encodeURIComponent(TOKEN);
   document.getElementById('nav-ubicaciones').href = 'https://dichosea.com/ubicaciones.html?token=' + encodeURIComponent(TOKEN);
 
+  // Pre-populate business name from sessionStorage while API loads
+  try {
+    var _cachedBiz = sessionStorage.getItem('dicho_biz_' + TOKEN);
+    if (_cachedBiz) document.getElementById('hdr-biz').textContent = _cachedBiz;
+  } catch(e) {}
+
   gasCall('api_config', { token: TOKEN })
     .then(function(data) {
       if (!data.ok) {
@@ -727,6 +748,7 @@ function renderPlan(planKey) {
       CURRENT_LANG = data.idioma || 'es';
 
       document.getElementById('hdr-biz').textContent      = data.negocio   || '';
+      if (data.negocio) try { sessionStorage.setItem('dicho_biz_' + TOKEN, data.negocio); } catch(e) {}
       document.getElementById('f-contacto').value         = data.contacto  || '';
       document.getElementById('f-negocio').value          = data.negocio   || '';
       document.getElementById('f-ciudad').value           = data.ciudad    || '';
@@ -778,6 +800,7 @@ function savePerfil() {
     if (res && res.ok) {
       Object.assign(CFG_DATA, payload);
       document.getElementById('hdr-biz').textContent = payload.negocio;
+      if (payload.negocio) try { sessionStorage.setItem('dicho_biz_' + TOKEN, payload.negocio); } catch(e) {}
       showChip('chip-perfil');
     }
   })
