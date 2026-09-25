@@ -187,14 +187,17 @@
       text-align: center;
     }
 
-    .countdown {
-      font-size: 13px;
-      color: #9ab8a8;
-      text-align: center;
-    }
-    .countdown strong {
-      color: #2DB67D;
-      font-weight: 800;
+    .countdown-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.22);
+      border-radius: 50%;
+      width: 26px; height: 26px;
+      font-size: 13px; font-weight: 900;
+      margin-left: 10px;
+      vertical-align: middle;
+      line-height: 1;
     }
   </style>
 </head>
@@ -235,78 +238,64 @@
         </div>
       </div>
 
-      <div class="headline" id="headline">La teva opinió,</div>
-      <div class="headline-sub" id="headlineSub">enviant <em>només</em> un àudio<br>de WhatsApp</div>
+      <div class="headline" id="headline">Tu opinión,</div>
+      <div class="headline-sub" id="headlineSub">enviando <em>solo</em> un audio<br>de WhatsApp</div>
       <div class="confidential" id="confidentialText">🔒 100% confidencial</div>
 
       <div class="cta-wrap">
         <a class="cta" id="ctaBtn" href="#" onclick="handleCta(event)">
-          <div class="cta-main" id="ctaText">Obrir WhatsApp<br><span style="font-weight:700; font-size:13px; opacity:0.85;">i enviar àudio</span></div>
+          <div class="cta-main" id="ctaText">Abrir WhatsApp<br><span style="font-weight:700; font-size:13px; opacity:0.85;">y enviar audio</span></div>
+          <span class="countdown-badge" id="countdownBadge" style="display:none"></span>
         </a>
-        <div class="countdown" id="countdown"></div>
       </div>
     </div>
 
   </div>
 
   <script>
-    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+    var GAS_URL      = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
     var MAKE_WEBHOOK = 'https://hook.eu1.make.com/0gttn29vvsu1stgeb50g77wmu5punqgb';
+
+    // Mismo mapeo que Code.gs — símbolo por variante de idioma
+    var LANG_SYMBOLS = { 'es': '#', 'es-mx': '^', 'ca': '*', 'en': '~' };
 
     var params  = new URLSearchParams(window.location.search);
     var storeId = params.get('store_id') || params.get('id');
     var waData  = {};
     var waLink  = '#';
-    var countdownInterval = null;
 
     var copy = {
       'ca': {
-        headline:       'La teva opinió,',
-        headlineSub:    'enviant <em>només</em> un àudio<br>de WhatsApp',
-        cta:            'Obrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">i enviar àudio</span>',
-        countdown:      "S'obrirà en",
-        countdownUnit:  'segons',
-        countdownReady: 'Obrint WhatsApp…',
-        confidential:   '🔒 100% confidencial',
-        loading:        'Un moment…',
-        preTextPrefix:  'Opina de ',
-        preText:        'Toca primer el botó verd ▶'
+        headline:      'La teva opinió,',
+        headlineSub:   'enviant <em>només</em> un àudio<br>de WhatsApp',
+        cta:           'Obrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">i enviar àudio</span>',
+        confidential:  '🔒 100% confidencial',
+        loading:       'Un moment…',
+        preTextPrefix: 'Opina de '
       },
       'es': {
-        headline:       'Tu opinión,',
-        headlineSub:    'enviando <em>solo</em> un audio<br>de WhatsApp',
-        cta:            'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y enviar audio</span>',
-        countdown:      'Se abrirá en',
-        countdownUnit:  'segundos',
-        countdownReady: 'Abriendo WhatsApp…',
-        confidential:   '🔒 100% confidencial',
-        loading:        'Un momento…',
-        preTextPrefix:  'Opina sobre ',
-        preText:        'Toca primero el botón verde ▶'
+        headline:      'Tu opinión,',
+        headlineSub:   'enviando <em>solo</em> un audio<br>de WhatsApp',
+        cta:           'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y enviar audio</span>',
+        confidential:  '🔒 100% confidencial',
+        loading:       'Un momento…',
+        preTextPrefix: 'Opina sobre '
       },
       'es-mx': {
-        headline:       'Tu opinión,',
-        headlineSub:    'enviando <em>solo</em> un audio<br>de WhatsApp',
-        cta:            'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y enviar audio</span>',
-        countdown:      'Se abrirá en',
-        countdownUnit:  'segundos',
-        countdownReady: 'Abriendo WhatsApp…',
-        confidential:   '🔒 100% confidencial',
-        loading:        'Un momento…',
-        preTextPrefix:  'Cuéntanos sobre ',
-        preText:        'Toca primero el botón verde ▶'
+        headline:      'Tu opinión,',
+        headlineSub:   'enviando <em>solo</em> un audio<br>de WhatsApp',
+        cta:           'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y enviar audio</span>',
+        confidential:  '🔒 100% confidencial',
+        loading:       'Un momento…',
+        preTextPrefix: 'Cuéntanos sobre '
       },
       'en': {
-        headline:       'Your opinion,',
-        headlineSub:    'by sending <em>just</em> a WhatsApp<br>voice message',
-        cta:            'Open WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">and send audio</span>',
-        countdown:      'WhatsApp opens in',
-        countdownUnit:  'seconds',
-        countdownReady: 'Opening WhatsApp…',
-        confidential:   '🔒 100% confidential',
-        loading:        'One moment…',
-        preTextPrefix:  'Review ',
-        preText:        'Tap the green button first ▶'
+        headline:      'Your opinion,',
+        headlineSub:   'by sending <em>just</em> a WhatsApp<br>voice message',
+        cta:           'Open WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">and send audio</span>',
+        confidential:  '🔒 100% confidential',
+        loading:       'One moment…',
+        preTextPrefix: 'Review '
       }
     };
 
@@ -317,26 +306,6 @@
       });
     }
 
-    function startCountdown(t) {
-      var secs = 5;
-      var cdEl = document.getElementById('countdown');
-      cdEl.innerHTML = t.countdown + ' <strong>' + secs + '</strong> ' + t.countdownUnit;
-
-      countdownInterval = setInterval(function() {
-        secs--;
-        if (secs <= 0) {
-          clearInterval(countdownInterval);
-          cdEl.textContent = t.countdownReady;
-          window.location.href = waLink;
-        } else {
-          cdEl.innerHTML = t.countdown + ' <strong>' + secs + '</strong> ' + t.countdownUnit;
-        }
-      }, 1000);
-    }
-
-    // ── Detectar idioma inicial por browser (para el texto de carga) ──
-    // Catalán solo se activa cuando el negocio lo configura (data.idioma='ca'),
-    // no por navigator.language, para evitar mostrar catalán a clientes en español.
     function detectBrowserLang() {
       var paramLang = params.get('lang');
       if (paramLang && copy[paramLang]) return paramLang;
@@ -347,12 +316,12 @@
     }
 
     function applyLang(idioma) {
-      var t = copy[idioma] || copy['es']; // fallback 'es', nunca 'ca'
-      document.getElementById('headline').innerHTML       = t.headline;
-      document.getElementById('headlineSub').innerHTML    = t.headlineSub;
-      document.getElementById('ctaText').innerHTML        = t.cta;
+      var t = copy[idioma] || copy['es'];
+      document.getElementById('headline').innerHTML          = t.headline;
+      document.getElementById('headlineSub').innerHTML       = t.headlineSub;
+      document.getElementById('ctaText').innerHTML           = t.cta;
       document.getElementById('confidentialText').textContent = t.confidential;
-      document.getElementById('loadingText').textContent  = t.loading;
+      document.getElementById('loadingText').textContent     = t.loading;
       return t;
     }
 
@@ -366,8 +335,13 @@
       waData = data;
       document.getElementById('bizName').textContent = data.negocio || '';
       document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
-      var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + t.preText);
-      waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
+
+      // Símbolo de idioma + storeId: el webhook lo identifica de forma fiable
+      // "Cuéntanos sobre Hacienda Laborcilla\n^abc123"
+      var sym     = LANG_SYMBOLS[data.idioma] || LANG_SYMBOLS['es'];
+      var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + sym + storeId);
+      waLink      = 'https://wa.me/' + data.wa_number + '?text=' + preText;
+
       document.getElementById('ctaBtn').href = waLink;
     }
 
@@ -395,29 +369,53 @@
       } catch(e) {}
 
       if (cached) {
-        // Render instantly from cache
         var idioma = cached.idioma || 'es';
         var t = applyLang(idioma);
         renderData(cached, t);
         show('page');
-        startCountdown(t);
-        // Refresh cache silently in background
+        startCountdown();
+        // Refresh silente en background
         fetchAndCache(null, null);
       } else {
-        // No cache — fetch normally
         fetchAndCache(function(data) {
           var idioma = data.idioma || 'es';
           var t = applyLang(idioma);
           renderData(data, t);
           show('page');
-          startCountdown(t);
+          startCountdown();
         }, function() { show('error'); });
       }
     }
 
+    var countdownInterval = null;
+    var COUNTDOWN_SECS = 5;
+
+    function startCountdown() {
+      var badge = document.getElementById('countdownBadge');
+      badge.style.display = 'inline-flex';
+      var secs = COUNTDOWN_SECS;
+      badge.textContent = secs;
+
+      countdownInterval = setInterval(function() {
+        secs--;
+        if (secs > 0) {
+          badge.textContent = secs;
+        } else {
+          clearInterval(countdownInterval);
+          badge.style.display = 'none';
+          if (waLink && waLink !== '#') {
+            window.location.href = waLink;
+          }
+        }
+      }, 1000);
+    }
+
     function handleCta(e) {
+      // El usuario tocó el botón — cancela el countdown y deja que el <a href> actúe
       clearInterval(countdownInterval);
-      document.getElementById('countdown').textContent = '';
+      var badge = document.getElementById('countdownBadge');
+      if (badge) badge.style.display = 'none';
+      // NO preventDefault → iOS trata el tap directo como Universal Link
       if (MAKE_WEBHOOK && MAKE_WEBHOOK.indexOf('TU_WEBHOOK') === -1) {
         navigator.sendBeacon(MAKE_WEBHOOK, JSON.stringify({
           store_id:  storeId,
