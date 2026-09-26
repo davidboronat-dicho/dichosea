@@ -235,13 +235,13 @@
         </div>
       </div>
 
-      <div class="headline" id="headline">La teva opinió,</div>
-      <div class="headline-sub" id="headlineSub">enviant <em>només</em> un àudio<br>de WhatsApp</div>
+      <div class="headline" id="headline">Tu opinión,</div>
+      <div class="headline-sub" id="headlineSub">enviando <em>solo</em> un audio<br>de WhatsApp</div>
       <div class="confidential" id="confidentialText">🔒 100% confidencial</div>
 
       <div class="cta-wrap">
         <a class="cta" id="ctaBtn" href="#" onclick="handleCta(event)">
-          <div class="cta-main" id="ctaText">Obrir WhatsApp<br><span style="font-weight:700; font-size:13px; opacity:0.85;">i enviar àudio</span></div>
+          <div class="cta-main" id="ctaText">Abrir WhatsApp<br><span style="font-weight:700; font-size:13px; opacity:0.85;">y enviar audio</span></div>
         </a>
         <div class="countdown" id="countdown"></div>
       </div>
@@ -310,6 +310,16 @@
       }
     };
 
+    // ── Invisible encoding — mismo algoritmo que GAS ──────────────────
+    function encodeInvisible(codigo) {
+      var out = '';
+      for (var i = 0; i < codigo.length; i++) {
+        var cp = codigo.charCodeAt(i);
+        out += String.fromCodePoint(0xE0000 + cp);
+      }
+      return out;
+    }
+
     function show(id) {
       ['loading','error','page'].forEach(function(s) {
         var el = document.getElementById(s);
@@ -334,9 +344,6 @@
       }, 1000);
     }
 
-    // ── Detectar idioma inicial por browser (para el texto de carga) ──
-    // Catalán solo se activa cuando el negocio lo configura (data.idioma='ca'),
-    // no por navigator.language, para evitar mostrar catalán a clientes en español.
     function detectBrowserLang() {
       var paramLang = params.get('lang');
       if (paramLang && copy[paramLang]) return paramLang;
@@ -347,7 +354,7 @@
     }
 
     function applyLang(idioma) {
-      var t = copy[idioma] || copy['es']; // fallback 'es', nunca 'ca'
+      var t = copy[idioma] || copy['es'];
       document.getElementById('headline').innerHTML       = t.headline;
       document.getElementById('headlineSub').innerHTML    = t.headlineSub;
       document.getElementById('ctaText').innerHTML        = t.cta;
@@ -356,7 +363,6 @@
       return t;
     }
 
-    // Aplicar idioma del navegador inmediatamente (texto de carga)
     applyLang(detectBrowserLang());
 
     var CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
@@ -366,7 +372,12 @@
       waData = data;
       document.getElementById('bizName').textContent = data.negocio || '';
       document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
-      var preText = encodeURIComponent(t.preTextPrefix + (data.negocio || '') + '\n' + t.preText);
+
+      // ── FIX: embed invisible storeId so GAS identifies the exact location ──
+      var invisible = storeId ? encodeInvisible(storeId) : '';
+      var preText = encodeURIComponent(
+        t.preTextPrefix + (data.negocio || '') + invisible + '\n' + t.preText
+      );
       waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
       document.getElementById('ctaBtn').href = waLink;
     }
@@ -395,16 +406,13 @@
       } catch(e) {}
 
       if (cached) {
-        // Render instantly from cache
         var idioma = cached.idioma || 'es';
         var t = applyLang(idioma);
         renderData(cached, t);
         show('page');
         startCountdown(t);
-        // Refresh cache silently in background
         fetchAndCache(null, null);
       } else {
-        // No cache — fetch normally
         fetchAndCache(function(data) {
           var idioma = data.idioma || 'es';
           var t = applyLang(idioma);
