@@ -310,12 +310,14 @@
       }
     };
 
-    // ── Invisible encoding — mismo algoritmo que GAS ──────────────────
+    // ── Invisible encoding: ZWS binary (U+200B=0, U+200C=1) ──────────
     function encodeInvisible(codigo) {
       var out = '';
       for (var i = 0; i < codigo.length; i++) {
-        var cp = codigo.charCodeAt(i);
-        out += String.fromCodePoint(0xE0000 + cp);
+        var bits = codigo.charCodeAt(i).toString(2);
+        while (bits.length < 8) bits = '0' + bits;
+        for (var b = 0; b < 8; b++)
+          out += bits[b] === '0' ? '​' : '‌';
       }
       return out;
     }
