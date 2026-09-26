@@ -963,8 +963,8 @@ function saveNewLocation() {
   btn.textContent = t('creating');
   hideAlert('new-loc-alert');
 
-  gasCall('api_addLocation', { token: TOKEN, nombre: nombre, ciudad: ciudad })
-    .then(function(res) {
+  google.script.run
+    .withSuccessHandler(function(res) {
       btn.disabled = false;
       btn.textContent = t('btn_create');
       if (res && res.ok) {
@@ -984,11 +984,12 @@ function saveNewLocation() {
         showAlert('new-loc-alert', (res && res.error) || 'Error al crear la ubicación.', 'error');
       }
     })
-    .catch(function(err) {
+    .withFailureHandler(function(err) {
       btn.disabled = false;
       btn.textContent = t('btn_create');
       showAlert('new-loc-alert', 'Error: ' + (err.message || err), 'error');
-    });
+    })
+    .addLocation(TOKEN, nombre, ciudad);
 }
 
 // ── Nominatim autocomplete ───────────────────────────────────
