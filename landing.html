@@ -310,17 +310,6 @@
       }
     };
 
-    // ── Invisible encoding: ZWS binary (U+200B=0, U+200C=1) ──────────
-    function encodeInvisible(codigo) {
-      var out = '';
-      for (var i = 0; i < codigo.length; i++) {
-        var bits = codigo.charCodeAt(i).toString(2);
-        while (bits.length < 8) bits = '0' + bits;
-        for (var b = 0; b < 8; b++)
-          out += bits[b] === '0' ? '​' : '‌';
-      }
-      return out;
-    }
 
     function show(id) {
       ['loading','error','page'].forEach(function(s) {
@@ -375,10 +364,9 @@
       document.getElementById('bizName').textContent = data.negocio || '';
       document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
 
-      // ── FIX: embed invisible storeId so GAS identifies the exact location ──
-      var invisible = storeId ? encodeInvisible(storeId) : '';
+      var suffix = data.locationLabel ? ' (' + data.locationLabel + ')' : '';
       var preText = encodeURIComponent(
-        t.preTextPrefix + (data.negocio || '') + invisible + '\n' + t.preText
+        t.preTextPrefix + (data.negocio || '') + suffix + '\n' + t.preText
       );
       waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
       document.getElementById('ctaBtn').href = waLink;
