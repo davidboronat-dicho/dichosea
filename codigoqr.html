@@ -6,6 +6,7 @@
 <title>Dicho · Código QR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Jost:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root {
   --green-deep: #14532D;
@@ -23,7 +24,6 @@
   font-family: 'Jost', sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { overflow-y: scroll; }
 body { background: var(--surface); color: var(--text); min-height: 100vh; font-size: 14px; }
 
 /* ── HEADER ── */
@@ -79,11 +79,9 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   padding-right: 16px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px;
 }
 .header-biz strong { color: #fff; }
-.hdr-logout { font-size: 12px; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.6); background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: .15s; }
-.hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); }
 
 /* ── PAGE ── */
-.page { max-width: 680px; margin: 0 auto; padding: 28px 24px 60px; }
+.page { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
 
 .page-top {
   display: flex; align-items: flex-start;
@@ -218,10 +216,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   padding: 2px 7px; border-radius: 20px;
 }
 .cr-qr { background: #fff; border-radius: 14px; padding: 9px; }
-/* QR: img de api.qrserver + canvas overlay para el micrófono */
-.qr-wrap { position: relative; width: 110px; height: 110px; }
-.qr-wrap img { width: 110px; height: 110px; display: block; }
-.qr-mic-svg { position: absolute; top: 0; left: 0; width: 110px; height: 110px; pointer-events: none; }
+.cr-qr img, .cr-qr canvas { width: 110px; height: 110px; display: block; }
 .cr-powered { font-size: 9px; font-weight: 600; color: #6B7A6E; }
 .cr-powered strong { color: #1C2B20; font-weight: 800; }
 
@@ -356,7 +351,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 }
 </style>
 </head>
-<body style="visibility:hidden">
+<body>
 
 <!-- ── HEADER ── -->
 <header class="header">
@@ -384,7 +379,6 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   </nav>
   <div class="header-right">
     <span class="header-biz"><strong id="header-biz-name"></strong></span>
-    <button class="hdr-logout" onclick="doLogout()" data-i18n="logout">Salir</button>
   </div>
 </header>
 
@@ -442,37 +436,10 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 </div>
 
 <script>
-// ── Datos (GitHub Pages: JSONP al API de GAS) ─────────────────
-var GAS_URL    = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
-var _p         = new URLSearchParams(window.location.search);
-var TOKEN      = _p.get('token') || '';
-var SCRIPT_URL = GAS_URL;
-var QR_DATA    = null; // se carga abajo via JSONP
-
-function gasCall(page, params) {
-  return new Promise(function(resolve, reject) {
-    var cb = 'gc_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
-    var url = GAS_URL + '?page=' + encodeURIComponent(page) + '&callback=' + cb;
-    for (var k in params) {
-      if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
-        url += '&' + k + '=' + encodeURIComponent(params[k]);
-      }
-    }
-    window[cb] = function(data) {
-      delete window[cb];
-      if (s.parentNode) s.parentNode.removeChild(s);
-      resolve(data);
-    };
-    var s = document.createElement('script');
-    s.src = url;
-    s.onerror = function() {
-      delete window[cb];
-      if (s.parentNode) s.parentNode.removeChild(s);
-      reject(new Error('JSONP failed'));
-    };
-    document.head.appendChild(s);
-  });
-}
+// ── Datos inyectados por el servidor ─────────────────────────
+var QR_DATA    = <?!= qrDataJson ?>;
+var TOKEN      = <?!= JSON.stringify(token) ?>;
+var SCRIPT_URL = <?!= JSON.stringify(scriptUrl) ?>;
 
 // ── Estado global ────────────────────────────────────────────
 var currentLang = 'es';
@@ -579,94 +546,51 @@ function t(k) { return (TR[currentLang] || TR.es)[k] || k; }
 function applyLang(lang) {
   currentLang = lang || 'es';
   document.documentElement.lang = currentLang;
-  document.body.style.visibility = 'visible';
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     el.textContent = t(el.getAttribute('data-i18n'));
   });
   document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
     el.placeholder = t(el.getAttribute('data-i18n-ph'));
   });
-  try { sessionStorage.setItem('dicho_lang_' + TOKEN, currentLang); } catch(e) {}
 }
-
-// Aplicar idioma cacheado inmediatamente (evita flash)
-try {
-  var _cachedLang = sessionStorage.getItem('dicho_lang_' + TOKEN);
-  if (_cachedLang) applyLang(_cachedLang);
-} catch(e) {}
-setTimeout(function() { document.body.style.visibility = 'visible'; }, 300);
 
 // ── Init ─────────────────────────────────────────────────────
 (function init() {
-  // Nav links directamente a GitHub Pages
-  document.getElementById('nav-dashboard').href   = 'https://dichosea.com/dashboard.html?token=' + encodeURIComponent(TOKEN);
-  document.getElementById('nav-ubicaciones').href = 'https://dichosea.com/ubicaciones.html?token=' + encodeURIComponent(TOKEN);
-  document.getElementById('nav-config').href      = 'https://dichosea.com/configuracion.html?token=' + encodeURIComponent(TOKEN);
+  var lang = (QR_DATA && QR_DATA.idioma) || 'es';
+  applyLang(lang);
 
-  // Pre-populate business name from sessionStorage while API loads
-  try {
-    var _cachedBiz = sessionStorage.getItem('dicho_biz_' + TOKEN);
-    if (_cachedBiz) document.getElementById('header-biz-name').textContent = _cachedBiz;
-  } catch(e) {}
+  var dashUrl   = SCRIPT_URL + '?page=dashboard&token=' + encodeURIComponent(TOKEN);
+  var ubUrl     = SCRIPT_URL + '?page=ubicaciones&token=' + encodeURIComponent(TOKEN);
+  var configUrl = SCRIPT_URL + '?page=configuracion&token=' + encodeURIComponent(TOKEN);
+  document.getElementById('nav-dashboard').href   = dashUrl;
+  document.getElementById('nav-ubicaciones').href = ubUrl;
+  document.getElementById('nav-config').href      = configUrl;
 
-  if (!TOKEN) {
-    document.getElementById('modules-container').innerHTML =
-      '<div class="empty-wrap"><h3>Token no encontrado</h3><p>Accede desde tu panel de Dicho.</p></div>';
+  document.getElementById('header-biz-name').textContent =
+    (QR_DATA && QR_DATA.negocio) || '';
+
+  var container = document.getElementById('modules-container');
+  var locs = (QR_DATA && QR_DATA.ubicaciones) || [];
+  if (!locs.length) {
+    container.innerHTML =
+      '<div class="empty-wrap">' +
+        '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' +
+          '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>' +
+          '<rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="2.5"/>' +
+        '</svg>' +
+        '<h3>' + t('empty_title') + '</h3>' +
+        '<p>' + t('empty_sub') + '</p>' +
+      '</div>';
     return;
   }
-
-  // Cargar datos vía API (JSONP)
-  gasCall('api_qr', { token: TOKEN })
-    .then(function(data) {
-      if (!data || !data.ok) {
-        document.getElementById('modules-container').innerHTML =
-          '<div class="empty-wrap"><h3>Error al cargar datos</h3><p>' + (data && data.error || 'Token inválido.') + '</p></div>';
-        return;
-      }
-      QR_DATA = data;
-      var lang = data.idioma || 'es';
-      applyLang(lang);
-      document.getElementById('header-biz-name').textContent = data.negocio || '';
-      if (data.negocio) try { sessionStorage.setItem('dicho_biz_' + TOKEN, data.negocio); } catch(e) {}
-      var container = document.getElementById('modules-container');
-      var locs = data.ubicaciones || [];
-      if (!locs.length) {
-        container.innerHTML =
-          '<div class="empty-wrap">' +
-            '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' +
-              '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>' +
-              '<rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="2.5"/>' +
-            '</svg>' +
-            '<h3>' + t('empty_title') + '</h3>' +
-            '<p>' + t('empty_sub') + '</p>' +
-          '</div>';
-        return;
-      }
-      container.innerHTML = locs.map(buildModule).join('');
-      locs.forEach(function(loc) { renderQRForLoc(loc.id); });
-    })
-    .catch(function(err) {
-      document.getElementById('modules-container').innerHTML =
-        '<div class="empty-wrap"><h3>Error de conexión</h3><p>' + err + '</p></div>';
-    });
+  container.innerHTML = locs.map(buildModule).join('');
+  locs.forEach(function(loc) { renderQRForLoc(loc.id); });
 })();
 
 // ── Construir módulo ─────────────────────────────────────────
 function buildModule(loc) {
   var landingUrl = 'https://dichosea.com/landing.html?store_id=' + encodeURIComponent(loc.codigo || loc.id);
-  var qrSrc = loc.qrDataUrl || loc.qrUrl || '';
-  var qrHtml =
-    '<div class="qr-wrap" id="qr-wrap-' + esc(loc.id) + '">' +
-      '<img id="qr-img-' + esc(loc.id) + '" src="' + esc(qrSrc) + '" alt="QR">' +
-      '<svg class="qr-mic-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">' +
-        '<circle cx="110" cy="110" r="44" fill="#ffffff"/>' +
-        '<circle cx="110" cy="110" r="38" fill="#14532D"/>' +
-        '<path d="M99,102 C99,119 121,119 121,102" stroke="#ffffff" stroke-width="3.9" stroke-linecap="round" fill="none"/>' +
-        '<rect x="108.2" y="119.3" width="3.5" height="5" rx="1.8" fill="#ffffff"/>' +
-        '<rect x="100.1" y="123.5" width="19.8" height="3.5" rx="1.8" fill="#ffffff"/>' +
-        '<rect x="104.3" y="88.8" width="11.4" height="19.5" rx="5.7" fill="#ffffff"/>' +
-      '</svg>' +
-    '</div>';
+  var qrCanvas = '<canvas id="qr-canvas-' + esc(loc.id) + '" width="220" height="220" data-url="' + esc(landingUrl) + '"></canvas>';
 
   return (
     '<div class="loc-module" id="mod-' + esc(loc.id) + '">' +
@@ -694,7 +618,7 @@ function buildModule(loc) {
             '<div class="cl-footer"></div>' +
           '</div>' +
           '<div class="card-right">' +
-            '<div class="cr-qr">' + qrHtml + '</div>' +
+            '<div class="cr-qr">' + qrCanvas + '</div>' +
             '<div class="cr-powered">powered by <strong>dicho.</strong></div>' +
           '</div>' +
         '</div>' +
@@ -764,55 +688,45 @@ function drawMic(ctx, centerX, centerY, totalHeight, color) {
   ctx.restore();
 }
 
-function doLogout() {
-  gasCall('api_logout', { session: SESSION }).catch(function() {});
-  window.location.href = 'https://dichosea.com/login.html';
-}
-
-function drawMicOverlay(ctx, cx, cy, R) {
-  var haloR = R * (44 / 38);
+function paintQROnCanvas(destCanvas, qrSrc) {
+  var ctx = destCanvas.getContext('2d');
+  ctx.drawImage(qrSrc, 0, 0, QR_SIZE, QR_SIZE);
   ctx.fillStyle = '#ffffff';
-  ctx.beginPath(); ctx.arc(cx, cy, haloR, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(QR_CX, QR_CY, QR_R + 6, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = QR_GREEN;
-  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
-  var iconH = R * 1.1;
-  drawMic(ctx, cx, cy - iconH * 0.04, iconH, '#ffffff');
+  ctx.beginPath(); ctx.arc(QR_CX, QR_CY, QR_R, 0, Math.PI * 2); ctx.fill();
+  var iconH = QR_R * 1.1;
+  drawMic(ctx, QR_CX, QR_CY - iconH * 0.04, iconH, '#ffffff');
 }
 
-function renderQRForLoc(locId) { /* no-op: overlay es SVG */ }
-
-// ── downloadQR: composita QR + mic en un canvas temporal ────
-function downloadQR(locId, nombre) {
-  var qrImg = document.getElementById('qr-img-' + locId);
-  if (!qrImg) return;
-  var filename = 'qr-' + (nombre || 'dicho').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.png';
-  fetch(qrImg.src)
-    .then(function(r) { return r.blob(); })
-    .then(function(blob) {
+function renderQRForLoc(locId) {
+  var canvas = document.getElementById('qr-canvas-' + locId);
+  if (!canvas) return;
+  var url = canvas.getAttribute('data-url');
+  if (!url) return;
+  var tmp = document.createElement('div');
+  tmp.style.display = 'none';
+  document.body.appendChild(tmp);
+  new QRCode(tmp, {
+    text: url, width: QR_SIZE, height: QR_SIZE,
+    colorDark: QR_GREEN, colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+  setTimeout(function() {
+    var src = tmp.querySelector('canvas') || tmp.querySelector('img');
+    if (!src) { document.body.removeChild(tmp); return; }
+    if (src.tagName === 'CANVAS') {
+      paintQROnCanvas(canvas, src);
+      document.body.removeChild(tmp);
+    } else {
       var img = new Image();
-      img.onload = function() {
-        var tmpC = document.createElement('canvas');
-        tmpC.width = tmpC.height = 220;
-        var ctx = tmpC.getContext('2d');
-        ctx.drawImage(img, 0, 0, 220, 220);
-        drawMicOverlay(ctx, 110, 110, 38);
-        var a = document.createElement('a');
-        a.href = tmpC.toDataURL('image/png');
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(img.src);
-      };
-      img.src = URL.createObjectURL(blob);
-    })
-    .catch(function() {
-      var a = document.createElement('a');
-      a.href = qrImg.src;
-      a.download = filename;
-      a.click();
-    });
+      img.onload = function() { paintQROnCanvas(canvas, img); document.body.removeChild(tmp); };
+      img.src = src.src;
+    }
+  }, 250);
 }
 
-// ── saveAsImage: genera la tarjeta completa como imagen ─────
+// ── saveAsImage ──────────────────────────────────────────────
 function saveAsImage(locId) {
   var loc = null;
   var locs = (QR_DATA && QR_DATA.ubicaciones) || [];
@@ -825,97 +739,88 @@ function saveAsImage(locId) {
   var origText = btn ? btn.querySelector('span').textContent : '';
   if (btn) btn.querySelector('span').textContent = t('generating');
 
-  var qrImg = document.getElementById('qr-img-' + locId);
-  if (!qrImg) { if (btn) btn.querySelector('span').textContent = origText; return; }
+  var qrCanvas = document.getElementById('qr-canvas-' + locId);
+  if (!qrCanvas) { if (btn) btn.querySelector('span').textContent = origText; return; }
 
-  fetch(qrImg.src)
-    .then(function(r) { return r.blob(); })
-    .then(function(blob) {
-      var img = new Image();
-      img.onload = function() {
-        // Proporciones ~2.5:1 (ratio similar al preview en pantalla)
-        var cw = 560, ch = 230;
-        var canvas = document.createElement('canvas');
-        canvas.width = cw * 2; canvas.height = ch * 2;
-        var ctx = canvas.getContext('2d');
-        ctx.scale(2, 2);
+  var cw = 680, ch = 300;
+  var canvas = document.createElement('canvas');
+  canvas.width = cw * 2; canvas.height = ch * 2;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(2, 2);
 
-        var r = 20;
-        var rightW = 280;
-        var leftW = cw - rightW;  // = 280
+  var r = 20;
+  var rightW = 148;
+  var leftW = cw - rightW;
 
-        // Card background
-        roundRect(ctx, 0, 0, cw, ch, r, '#F0FDF4');
-        ctx.strokeStyle = '#D1FAE5';
-        ctx.lineWidth = 1.5;
-        roundRectStroke(ctx, 0, 0, cw, ch, r);
+  // Card background
+  roundRect(ctx, 0, 0, cw, ch, r, '#F0FDF4');
+  ctx.strokeStyle = '#D1FAE5';
+  ctx.lineWidth = 1.5;
+  roundRectStroke(ctx, 0, 0, cw, ch, r);
 
-        // card-left
-        var lx = 20, ly = 18;
-        ctx.font = '13px sans-serif';
-        ctx.fillStyle = '#FACC15';
-        ctx.fillText('★★★★★', lx, ly + 13);
-        ly += 22;
+  // card-left
+  var lx = 20, ly = 20;
 
-        ctx.font = '900 20px "Plus Jakarta Sans", sans-serif';
-        ctx.fillStyle = '#1C2B20';
-        ctx.fillText(t('cl_h1'), lx, ly + 20);
-        ly += 25;
-        ctx.fillText(t('cl_h2'), lx, ly + 20);
-        ly += 25;
-        ctx.fillStyle = '#16A34A';
-        ctx.fillText(t('cl_hem'), lx, ly + 20);
-        ly += 30;
+  ctx.font = '13px sans-serif';
+  ctx.fillStyle = '#FACC15';
+  ctx.fillText('★★★★★', lx, ly + 13);
+  ly += 24;
 
-        ctx.font = '800 9px "Plus Jakarta Sans", sans-serif';
-        ctx.fillStyle = '#16A34A';
-        ctx.fillText(t('cl_scan_label').toUpperCase(), lx, ly + 10);
-        ly += 17;
+  ctx.font = '900 20px "Plus Jakarta Sans", sans-serif';
+  ctx.fillStyle = '#1C2B20';
+  ctx.fillText(t('cl_h1'), lx, ly + 20);
+  ly += 26;
 
-        ctx.font = '700 8px "Jost", sans-serif';
-        ctx.fillStyle = '#9CA3AF';
-        ctx.fillText(t('cr_via').toUpperCase(), lx, ly + 9);
-        var pillX = lx + 22;
-        var pillText = t('cr_wa');
-        ctx.font = '800 8px "Jost", sans-serif';
-        var pillW = ctx.measureText(pillText).width + 14;
-        roundRect(ctx, pillX, ly, pillW, 16, 8, '#16A34A');
-        ctx.fillStyle = '#fff';
-        ctx.textAlign = 'center';
-        ctx.fillText(pillText, pillX + pillW / 2, ly + 11);
-        ctx.textAlign = 'left';
+  ctx.fillText(t('cl_h2'), lx, ly + 20);
+  ly += 26;
 
-        // card-right: QR + mic overlay — QR grande, casi toda la altura
-        var qboxPad = 10, qsize = 175;
-        var qboxW = qsize + qboxPad * 2;
-        var qboxH = qsize + qboxPad * 2;
-        var qboxX = leftW + (rightW - qboxW) / 2;
-        var qboxY = (ch - qboxH - 20) / 2;
-        roundRect(ctx, qboxX, qboxY, qboxW, qboxH, 14, '#ffffff');
-        ctx.drawImage(img, qboxX + qboxPad, qboxY + qboxPad, qsize, qsize);
-        drawMicOverlay(ctx, qboxX + qboxPad + qsize / 2, qboxY + qboxPad + qsize / 2, 38 * qsize / 220);
+  ctx.fillStyle = '#16A34A';
+  ctx.fillText(t('cl_hem'), lx, ly + 20);
+  ly += 32;
 
-        // powered by
-        ctx.font = '600 9px "Jost", sans-serif';
-        ctx.fillStyle = '#6B7A6E';
-        ctx.textAlign = 'center';
-        ctx.fillText('powered by dicho.', leftW + rightW / 2, qboxY + qboxH + 14);
-        ctx.textAlign = 'left';
+  // Scan label
+  ctx.font = '800 9px "Plus Jakarta Sans", sans-serif';
+  ctx.fillStyle = '#16A34A';
+  ctx.fillText(t('cl_scan_label').toUpperCase(), lx, ly + 10);
+  ly += 18;
 
-        var bizName = (QR_DATA && QR_DATA.negocio) || 'dicho';
-        var link = document.createElement('a');
-        link.href = canvas.toDataURL('image/png');
-        link.download = 'QR.' + bizName + '.' + (loc.nombre || 'ubicacion') + '.png';
-        link.click();
-        URL.revokeObjectURL(img.src);
+  // Via WHATSAPP pill
+  ctx.font = '700 8px "Jost", sans-serif';
+  ctx.fillStyle = '#9CA3AF';
+  ctx.fillText(t('cr_via').toUpperCase(), lx, ly + 9);
+  var pillX = lx + 22;
+  var pillText = t('cr_wa');
+  ctx.font = '800 8px "Jost", sans-serif';
+  var pillW = ctx.measureText(pillText).width + 14;
+  roundRect(ctx, pillX, ly, pillW, 16, 8, '#16A34A');
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.fillText(pillText, pillX + pillW / 2, ly + 11);
+  ctx.textAlign = 'left';
 
-        if (btn) btn.querySelector('span').textContent = origText;
-      };
-      img.src = URL.createObjectURL(blob);
-    })
-    .catch(function() {
-      if (btn) btn.querySelector('span').textContent = origText;
-    });
+  // card-right: QR con micrófono (tomado del canvas ya renderizado)
+  var qboxPad = 9, qsize = 110;
+  var qboxW = qsize + qboxPad * 2;
+  var qboxH = qsize + qboxPad * 2;
+  var qboxX = leftW + (rightW - qboxW) / 2;
+  var qboxY = (ch - qboxH - 20) / 2;
+  roundRect(ctx, qboxX, qboxY, qboxW, qboxH, 14, '#ffffff');
+  ctx.drawImage(qrCanvas, qboxX + qboxPad, qboxY + qboxPad, qsize, qsize);
+
+  // powered by
+  ctx.font = '600 9px "Jost", sans-serif';
+  ctx.fillStyle = '#6B7A6E';
+  ctx.textAlign = 'center';
+  ctx.fillText('powered by dicho.', leftW + rightW / 2, qboxY + qboxH + 14);
+  ctx.textAlign = 'left';
+
+  var nombre = (loc.nombre || 'qr').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  var link = document.createElement('a');
+  link.href = canvas.toDataURL('image/png');
+  link.download = 'dicho-qr-' + nombre + '.png';
+  link.click();
+
+  if (btn) btn.querySelector('span').textContent = origText;
 }
 
 function roundRect(ctx, x, y, w, h, r, fill) {
@@ -947,6 +852,16 @@ function roundRectStroke(ctx, x, y, w, h, r) {
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
   ctx.stroke();
+}
+
+// ── downloadQR ───────────────────────────────────────────────
+function downloadQR(locId, nombre) {
+  var canvas = document.getElementById('qr-canvas-' + locId);
+  if (!canvas) return;
+  var link = document.createElement('a');
+  link.href = canvas.toDataURL('image/png');
+  link.download = 'qr-' + (nombre || 'dicho').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.png';
+  link.click();
 }
 
 // ── printCard ────────────────────────────────────────────────
@@ -1048,8 +963,8 @@ function saveNewLocation() {
   btn.textContent = t('creating');
   hideAlert('new-loc-alert');
 
-  google.script.run
-    .withSuccessHandler(function(res) {
+  gasCall('api_addLocation', { token: TOKEN, nombre: nombre, ciudad: ciudad })
+    .then(function(res) {
       btn.disabled = false;
       btn.textContent = t('btn_create');
       if (res && res.ok) {
@@ -1069,12 +984,11 @@ function saveNewLocation() {
         showAlert('new-loc-alert', (res && res.error) || 'Error al crear la ubicación.', 'error');
       }
     })
-    .withFailureHandler(function(err) {
+    .catch(function(err) {
       btn.disabled = false;
       btn.textContent = t('btn_create');
       showAlert('new-loc-alert', 'Error: ' + (err.message || err), 'error');
-    })
-    .addLocation(TOKEN, nombre, ciudad);
+    });
 }
 
 // ── Nominatim autocomplete ───────────────────────────────────
