@@ -361,12 +361,13 @@
 
     function renderData(data, t) {
       waData = data;
-      document.getElementById('bizName').textContent = data.negocio || '';
+      var displayName = data.nombre_ubicacion || data.negocio || '';
+      document.getElementById('bizName').textContent = displayName;
       document.getElementById('bizCity').textContent = (data.ciudad || '').split(',')[0].trim();
 
       var suffix = data.locationLabel ? ' (' + data.locationLabel + ')' : '';
       var preText = encodeURIComponent(
-        t.preTextPrefix + (data.negocio || '') + suffix + '\n' + t.preText
+        t.preTextPrefix + displayName + suffix + '\n' + t.preText
       );
       waLink = 'https://wa.me/' + data.wa_number + '?text=' + preText;
       document.getElementById('ctaBtn').href = waLink;
