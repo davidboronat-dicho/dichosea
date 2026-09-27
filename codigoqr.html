@@ -436,7 +436,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 </div>
 
 <script>
-// ── Datos (estático + fetch desde GAS) ───────────────────────
+// ── Config ───────────────────────────────────────────────────
 var QR_DATA    = null;
 var TOKEN      = new URLSearchParams(window.location.search).get('token') || '';
 var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
@@ -559,8 +559,9 @@ function renderPage() {
   var lang = (QR_DATA && QR_DATA.idioma) || 'es';
   applyLang(lang);
 
+  // Dashboard y Config siguen en GAS; Ubicaciones está en GitHub
   var dashUrl   = SCRIPT_URL + '?page=dashboard&token=' + encodeURIComponent(TOKEN);
-  var ubUrl     = SCRIPT_URL + '?page=ubicaciones&token=' + encodeURIComponent(TOKEN);
+  var ubUrl     = 'ubicaciones.html?token=' + encodeURIComponent(TOKEN);
   var configUrl = SCRIPT_URL + '?page=configuracion&token=' + encodeURIComponent(TOKEN);
   document.getElementById('nav-dashboard').href   = dashUrl;
   document.getElementById('nav-ubicaciones').href = ubUrl;
@@ -611,6 +612,8 @@ function renderPage() {
 
 // ── Construir módulo ─────────────────────────────────────────
 function buildModule(loc) {
+  // Soporte para nombre_ubicacion (nuevo campo) con fallback a nombre (campo anterior)
+  var displayName = loc.nombre_ubicacion || loc.nombre || '';
   var landingUrl = 'https://dichosea.com/landing.html?store_id=' + encodeURIComponent(loc.codigo || loc.id);
   var qrCanvas = '<canvas id="qr-canvas-' + esc(loc.id) + '" width="220" height="220" data-url="' + esc(landingUrl) + '"></canvas>';
 
@@ -618,7 +621,7 @@ function buildModule(loc) {
     '<div class="loc-module" id="mod-' + esc(loc.id) + '">' +
       '<div class="loc-module-header">' +
         '<div>' +
-          '<div class="loc-name">' + esc(loc.nombre) + '</div>' +
+          '<div class="loc-name">' + esc(displayName) + '</div>' +
           '<div class="loc-meta">' +
             (loc.ciudad ? '<span class="loc-meta-item">' + esc(loc.ciudad) + '</span>' : '') +
             '<span class="loc-code">' + esc(loc.codigo || loc.id) + '</span>' +
@@ -653,7 +656,7 @@ function buildModule(loc) {
             '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>' +
             '<span data-i18n="btn_print">' + t('btn_print') + '</span>' +
           '</button>' +
-          '<button class="act-btn" onclick="downloadQR(\'' + esc(loc.id) + '\',\'' + esc(loc.nombre) + '\')">' +
+          '<button class="act-btn" onclick="downloadQR(\'' + esc(loc.id) + '\',\'' + esc(displayName) + '\')">' +
             '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
             '<span data-i18n="btn_dl_qr">' + t('btn_dl_qr') + '</span>' +
           '</button>' +
@@ -757,6 +760,7 @@ function saveAsImage(locId) {
   }
   if (!loc) return;
 
+  var displayName = loc.nombre_ubicacion || loc.nombre || '';
   var btn = document.getElementById('btn-img-' + locId);
   var origText = btn ? btn.querySelector('span').textContent : '';
   if (btn) btn.querySelector('span').textContent = t('generating');
@@ -836,7 +840,7 @@ function saveAsImage(locId) {
   ctx.fillText('powered by dicho.', leftW + rightW / 2, qboxY + qboxH + 14);
   ctx.textAlign = 'left';
 
-  var nombre = (loc.nombre || 'qr').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  var nombre = (displayName || 'qr').replace(/[^a-z0-9]/gi, '_').toLowerCase();
   var link = document.createElement('a');
   link.href = canvas.toDataURL('image/png');
   link.download = 'dicho-qr-' + nombre + '.png';
@@ -895,13 +899,14 @@ function printCard(locId) {
   }
   if (!loc) return;
 
+  var displayName = loc.nombre_ubicacion || loc.nombre || '';
   var landingUrl = 'https://dichosea.com/landing.html?store_id=' + encodeURIComponent(loc.codigo || loc.id);
   var qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&color=14532D&bgcolor=ffffff&data=' +
     encodeURIComponent(landingUrl);
 
   var w = window.open('', '_blank', 'width=480,height=400');
   w.document.write(
-    '<!DOCTYPE html><html><head><title>Dicho · ' + esc(loc.nombre) + '</title>' +
+    '<!DOCTYPE html><html><head><title>Dicho · ' + esc(displayName) + '</title>' +
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Jost:wght@400;500;600;700&display=swap">' +
     '<style>' +
     'body{margin:0;padding:32px;background:#F5F1E8;font-family:"Jost",sans-serif;display:flex;justify-content:center;}' +
@@ -974,9 +979,9 @@ function closeNewLocModal() {
 }
 
 function saveNewLocation() {
-  var nombre = document.getElementById('new-loc-nombre').value.trim();
+  var nombre_ubicacion = document.getElementById('new-loc-nombre').value.trim();
   var ciudad = document.getElementById('new-loc-ciudad').value.trim();
-  if (!nombre) {
+  if (!nombre_ubicacion) {
     showAlert('new-loc-alert', t('err_nombre'), 'error');
     return;
   }
@@ -985,9 +990,10 @@ function saveNewLocation() {
   btn.textContent = t('creating');
   hideAlert('new-loc-alert');
 
+  // Enviamos nombre_ubicacion (col D) en lugar del antiguo 'nombre'
   var apiUrl = SCRIPT_URL + '?page=api&action=addLocation'
     + '&token=' + encodeURIComponent(TOKEN)
-    + '&nombre=' + encodeURIComponent(nombre)
+    + '&nombre_ubicacion=' + encodeURIComponent(nombre_ubicacion)
     + '&ciudad=' + encodeURIComponent(ciudad);
 
   fetch(apiUrl)
