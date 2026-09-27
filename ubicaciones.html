@@ -89,6 +89,32 @@
   .autocomplete-loading { padding: 12px 14px; font-size: 13px; color: #6b7280; text-align: center; }
   .autocomplete-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 
+  /* ── STEP INDICATOR ── */
+  .step-indicator { display: flex; align-items: center; padding: 14px 28px 0; gap: 0; }
+  .step-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; transition: background .25s, color .25s; }
+  .step-dot-active   { background: #16A34A; color: #fff; }
+  .step-dot-done     { background: #f0fdf4; color: #16A34A; border: 1.5px solid #bbf7d0; }
+  .step-dot-inactive { background: #e5e7eb; color: #6b7280; }
+  .step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 0 6px; position: relative; overflow: hidden; }
+  .step-line-fill { position: absolute; inset: 0; background: #16A34A; transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
+  .step-line-fill.filled { transform: scaleX(1); }
+  .step-panel { display: block; }
+  .step-panel.hidden { display: none; }
+
+  /* ── MAP PREVIEW ── */
+  .map-wrap { border-radius: 10px; overflow: hidden; border: 1px solid #e5e7eb; margin-bottom: 16px; line-height: 0; }
+  .map-wrap iframe { display: block; width: 100%; height: 150px; border: 0; }
+
+  /* ── CUSTOMER PREVIEW ── */
+  .customer-preview { background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
+  .customer-preview > span { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+  .cp-label { font-size: 10.5px; font-weight: 700; color: #15803d; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+  .cp-text { font-size: 13.5px; color: #14532D; line-height: 1.4; }
+
+  /* ── MISC ── */
+  .tag-editable { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 99px; margin-left: 6px; vertical-align: middle; }
+  .form-hint { font-size: 12px; color: #6b7280; margin-top: 6px; }
+
   .form-actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
   .btn-cancel { padding: 10px 20px; border: 1px solid #d1d5db; background: #fff; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
   .btn-cancel:hover { background: #f3f4f6; }
@@ -138,45 +164,73 @@
   </div>
 </div>
 
-<!-- MODAL NUEVA UBICACIÓN -->
+<!-- MODAL NUEVA UBICACIÓN — 2 pasos -->
 <div id="modal-new" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 id="new-modal-title">Nueva ubicación</h2>
+  <div class="modal" style="padding:0;overflow:hidden">
+
+    <!-- Cabecera -->
+    <div style="padding:22px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+      <h2 id="new-modal-title" style="font-size:18px;font-weight:700">Encuentra tu negocio</h2>
       <button class="modal-close" onclick="closeModal('modal-new')">×</button>
     </div>
 
-    <!-- Nota informativa -->
-    <div class="note-box">
-      <span class="icon">💬</span>
-      <div>
-        El <strong>nombre de la ubicación</strong> aparece en el mensaje de WhatsApp, la landing page y la página de reseña que verá cada cliente.
+    <!-- Indicador de pasos -->
+    <div class="step-indicator">
+      <div class="step-dot step-dot-active" id="sdot1">1</div>
+      <div class="step-line"><div class="step-line-fill" id="sline1"></div></div>
+      <div class="step-dot step-dot-inactive" id="sdot2">2</div>
+    </div>
+
+    <!-- PASO 1: Buscar -->
+    <div id="new-step1" class="step-panel" style="padding:18px 24px 24px">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Dirección o nombre de tu negocio</label>
+        <div class="autocomplete-wrap">
+          <input id="new-dir" class="form-input" type="text"
+            placeholder="ej. Restaurante Mar, Eixample…" autocomplete="off">
+          <div id="new-dir-dropdown" class="autocomplete-dropdown"></div>
+        </div>
+        <p class="form-hint">Selecciona tu local de la lista para continuar →</p>
       </div>
     </div>
 
-    <!-- Dirección (solo para 2ª+ ubicaciones) -->
-    <div id="new-dir-group" class="form-group" style="display:none">
-      <label class="form-label">Dirección <span class="hint">— para sugerirte un nombre</span></label>
-      <div class="autocomplete-wrap">
-        <input id="new-dir" class="form-input" type="text" placeholder="Busca la dirección de este local…" autocomplete="off">
-        <div id="new-dir-dropdown" class="autocomplete-dropdown"></div>
+    <!-- PASO 2: Confirmar -->
+    <div id="new-step2" class="step-panel hidden" style="padding:18px 24px 24px">
+      <!-- Mapa -->
+      <div class="map-wrap">
+        <iframe id="new-map-iframe" src="" title="Mapa" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+
+      <!-- Nombre editable -->
+      <div class="form-group">
+        <label class="form-label">
+          Nombre de la ubicación
+          <span class="tag-editable">Editable</span>
+        </label>
+        <input id="new-nombre" class="form-input" type="text"
+          placeholder="ej. Restaurante Mar · Eixample"
+          oninput="updateNewPreview()">
+      </div>
+
+      <!-- Preview cliente -->
+      <div class="customer-preview">
+        <span>💬</span>
+        <div>
+          <div class="cp-label">Así lo verá tu cliente</div>
+          <div class="cp-text">«<span id="new-preview-pretext"></span> <strong id="new-preview-name">…</strong>?»</div>
+        </div>
+      </div>
+
+      <!-- Hidden -->
+      <input type="hidden" id="new-ciudad">
+      <input type="hidden" id="new-mapsurl">
+
+      <div class="form-actions" style="margin-top:0">
+        <button class="btn-cancel" onclick="newGoBack()">← Atrás</button>
+        <button class="btn-save" id="new-save-btn" onclick="saveNewLocation()">Crear ubicación →</button>
       </div>
     </div>
 
-    <div class="form-group">
-      <label class="form-label" for="new-nombre">Nombre de la ubicación</label>
-      <input id="new-nombre" class="form-input" type="text" placeholder="ej. Restaurante El Rincón">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label" for="new-ciudad">Ciudad</label>
-      <input id="new-ciudad" class="form-input" type="text" placeholder="ej. Barcelona">
-    </div>
-
-    <div class="form-actions">
-      <button class="btn-cancel" onclick="closeModal('modal-new')">Cancelar</button>
-      <button class="btn-save" id="new-save-btn" onclick="saveNewLocation()">Crear ubicación</button>
-    </div>
   </div>
 </div>
 
@@ -357,51 +411,70 @@ function loadData() {
   });
 }
 
-// ── NUEVA UBICACIÓN ─────────────────────────────────────────────────
+// ── NUEVA UBICACIÓN — 2 PASOS ────────────────────────────────────────
 function openNewModal() {
-  var ubs = (UB_DATA && UB_DATA.ubicaciones) || [];
-  var isFirst = ubs.length === 0;
-  var negocio = (UB_DATA && UB_DATA.negocio) || '';
-
-  // Reset form
-  document.getElementById('new-nombre').value = isFirst ? negocio : '';
-  document.getElementById('new-ciudad').value  = '';
-  document.getElementById('new-dir').value     = '';
+  // Reset
+  document.getElementById('new-dir').value    = '';
+  document.getElementById('new-nombre').value = '';
+  document.getElementById('new-ciudad').value = '';
+  document.getElementById('new-mapsurl').value = '';
   document.getElementById('new-dir-dropdown').classList.remove('open');
+  document.getElementById('new-map-iframe').src = '';
 
-  // Mostrar/ocultar campo dirección
-  var dirGroup = document.getElementById('new-dir-group');
-  dirGroup.style.display = isFirst ? 'none' : 'block';
+  // Pretext del cliente (viene del backend con el idioma del cliente)
+  var pretext = (UB_DATA && UB_DATA.pretext) || '¿Cómo te fue en';
+  document.getElementById('new-preview-pretext').textContent = pretext;
 
-  // Título del modal
-  document.getElementById('new-modal-title').textContent =
-    isFirst ? 'Tu primera ubicación' : 'Nueva ubicación';
-
-  // Limpiar hidden mapsUrl
-  window._newMapsUrl = '';
-
+  newShowStep(1);
   openModal('modal-new');
-  setTimeout(function() {
-    document.getElementById('new-nombre').focus();
-  }, 100);
+  setTimeout(function() { document.getElementById('new-dir').focus(); }, 120);
+}
+
+function newShowStep(n) {
+  var s1 = document.getElementById('new-step1');
+  var s2 = document.getElementById('new-step2');
+  var dot1 = document.getElementById('sdot1');
+  var dot2 = document.getElementById('sdot2');
+  var line = document.getElementById('sline1');
+
+  if (n === 1) {
+    document.getElementById('new-modal-title').textContent = 'Encuentra tu negocio';
+    s1.classList.remove('hidden'); s2.classList.add('hidden');
+    dot1.className = 'step-dot step-dot-active'; dot1.textContent = '1';
+    dot2.className = 'step-dot step-dot-inactive'; dot2.textContent = '2';
+    line.classList.remove('filled');
+  } else {
+    document.getElementById('new-modal-title').textContent = 'Confirma y personaliza';
+    s1.classList.add('hidden'); s2.classList.remove('hidden');
+    dot1.className = 'step-dot step-dot-done'; dot1.textContent = '✓';
+    dot2.className = 'step-dot step-dot-active'; dot2.textContent = '2';
+    line.classList.add('filled');
+    setTimeout(function() { document.getElementById('new-nombre').focus(); }, 80);
+  }
+}
+
+function newGoBack() { newShowStep(1); }
+
+function updateNewPreview() {
+  var name = document.getElementById('new-nombre').value.trim();
+  document.getElementById('new-preview-name').textContent = name || '…';
 }
 
 function saveNewLocation() {
   var nombre  = document.getElementById('new-nombre').value.trim();
   var ciudad  = document.getElementById('new-ciudad').value.trim();
-  var mapsUrl = window._newMapsUrl || '';
+  var mapsUrl = document.getElementById('new-mapsurl').value;
 
   if (!nombre) { showToast('Escribe un nombre para la ubicación', 'error'); return; }
 
   var btn = document.getElementById('new-save-btn');
-  btn.disabled = true; btn.textContent = 'Guardando…';
+  btn.disabled = true; btn.textContent = 'Creando…';
 
   gasCall('api_addLocation', { token: getToken(), nombre: nombre, ciudad: ciudad, mapsUrl: mapsUrl }, function(data) {
-    btn.disabled = false; btn.textContent = 'Crear ubicación';
+    btn.disabled = false; btn.textContent = 'Crear ubicación →';
     if (!data || !data.ok) { showToast(data && data.error ? data.error : 'Error al crear', 'error'); return; }
     closeModal('modal-new');
     showToast('Ubicación "' + nombre + '" creada ✓', 'success');
-    // Recargar datos
     loadData();
   });
 }
@@ -546,7 +619,12 @@ function nominatimSearch(query, dropdown, input, opts) {
 
         el.addEventListener('click', function() {
           var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + r.lat + ',' + r.lon;
-          var result = { lat: r.lat, lon: r.lon, city: city, country: country, displayName: r.display_name, mapsUrl: mapsUrl };
+          var result = {
+            lat: r.lat, lon: r.lon, city: city, country: country, displayName: r.display_name, mapsUrl: mapsUrl,
+            neighbourhood: addr.neighbourhood || addr.suburb || addr.city_district || '',
+            suburb: addr.suburb || '',
+            district: addr.city_district || addr.district || ''
+          };
           input.value = shortAddr || r.display_name.split(',')[0];
           dropdown.classList.remove('open');
           if (opts && opts.onSelect) opts.onSelect(result);
@@ -563,13 +641,23 @@ function nominatimSearch(query, dropdown, input, opts) {
 // ── INIT AUTOCOMPLETES ──────────────────────────────────────────────
 initAutocomplete('new-dir', 'new-dir-dropdown', {
   onSelect: function(r) {
-    window._newMapsUrl = r.mapsUrl;
+    // Guardar mapsUrl y ciudad
+    document.getElementById('new-mapsurl').value = r.mapsUrl;
+    document.getElementById('new-ciudad').value  = r.city || '';
+
+    // Sugerir nombre: "Negocio · Barrio" (o Ciudad si no hay barrio)
     var negocio = (UB_DATA && UB_DATA.negocio) || '';
-    // Sugerir nombre: "Negocio (Ciudad)"
-    var sugerido = negocio + (r.city ? ' (' + r.city + ')' : '');
+    var zona = r.neighbourhood || r.suburb || r.district || r.city || '';
+    var sugerido = negocio + (zona ? ' · ' + zona : '');
     document.getElementById('new-nombre').value = sugerido;
-    document.getElementById('new-ciudad').value = r.city || '';
-    setTimeout(function() { document.getElementById('new-nombre').focus(); document.getElementById('new-nombre').select(); }, 50);
+
+    // Cargar iframe del mapa (embed sin API key)
+    var iframeSrc = 'https://maps.google.com/maps?q=' + r.lat + ',' + r.lon + '&z=16&output=embed';
+    document.getElementById('new-map-iframe').src = iframeSrc;
+
+    // Actualizar preview y avanzar al paso 2
+    updateNewPreview();
+    newShowStep(2);
   }
 });
 
