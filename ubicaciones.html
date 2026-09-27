@@ -25,7 +25,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { overflow-y: scroll; }
-body { background: var(--surface); color: var(--text); min-height: 100vh; font-size: 14px; }
+body { background: var(--surface); color: var(--text); min-height: 100vh; font-size: 14px; zoom: 1.25; }
 
 /* ── HEADER ── */
 .header {
@@ -47,7 +47,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); }
 
 /* ── PAGE ── */
-.page { max-width: 680px; margin: 0 auto; padding: 32px 24px 64px; }
+.page { max-width: 680px; margin: 0; padding: 32px 28px 64px; }
 .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
 .page-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
 .page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 900; color: var(--text); letter-spacing: -.02em; line-height: 1.15; }
@@ -308,7 +308,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
           <span>💬</span>
           <div>
             <div class="cp-label">Así lo verá tu cliente</div>
-            <div class="cp-text">«<span id="new-preview-pretext"></span> <strong id="new-preview-name">…</strong>?»</div>
+            <div class="cp-text">«<span id="new-preview-pretext"></span> <strong id="new-preview-name">…</strong>»</div>
           </div>
         </div>
         <input type="hidden" id="new-ciudad">
@@ -639,7 +639,7 @@ function openNewModal() {
   document.getElementById('new-mapsurl').value  = '';
   document.getElementById('new-map-iframe').src = '';
   // Pretext from UB_DATA
-  var pretext = (UB_DATA && UB_DATA.pretext) || '¿Cómo te fue en';
+  var pretext = (UB_DATA && UB_DATA.pretext) || 'Opina sobre';
   document.getElementById('new-preview-pretext').textContent = pretext;
   document.getElementById('new-preview-name').textContent    = '…';
   document.getElementById('chip-new').classList.remove('visible');
@@ -830,14 +830,14 @@ initAutocomplete('new-dir', 'new-dir-dropdown', {
     document.getElementById('new-mapsurl').value = r.mapsUrl;
     document.getElementById('new-ciudad').value  = r.city || '';
 
-    // Nombre sugerido: "Negocio · Barrio"
-    var negocio = (UB_DATA && UB_DATA.negocio) || '';
-    var zona    = r.neighbourhood || r.suburb || r.district || r.city || '';
-    document.getElementById('new-nombre').value = negocio + (zona ? ' · ' + zona : '');
+    // Nombre sugerido: primer segmento del display_name de Nominatim (el lugar, sin el negocio)
+    var placeName = r.displayName ? r.displayName.split(',')[0].trim() : (r.neighbourhood || r.suburb || r.district || r.city || '');
+    document.getElementById('new-nombre').value = placeName;
 
-    // Cargar iframe del mapa
+    // Cargar iframe del mapa con OpenStreetMap (no requiere API key)
+    var lat = parseFloat(r.lat), lon = parseFloat(r.lon), d = 0.005;
     document.getElementById('new-map-iframe').src =
-      'https://maps.google.com/maps?q=' + r.lat + ',' + r.lon + '&z=16&output=embed';
+      'https://www.openstreetmap.org/export/embed.html?bbox=' + (lon-d) + ',' + (lat-d) + ',' + (lon+d) + ',' + (lat+d) + '&layer=mapnik&marker=' + lat + ',' + lon;
 
     // Actualizar preview y avanzar al paso 2
     updateNewPreview();
