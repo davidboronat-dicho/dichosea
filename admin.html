@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dicho · Admin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap">
+<style>
+  :root {
+    --green:   #2A7055;
+    --green2:  #235e47;
+    --surface: #F0F3F8;
+    --card:    #FFFFFF;
+    --border:  #E0E6EF;
+    --text:    #1A2A4A;
+    --muted:   #6B7A8D;
+    --danger:  #B53A2E;
+    --accent:  #2E5FA3;
+    --rule:    #E8EDF4;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Jost',sans-serif; background:var(--surface); color:var(--text); min-height:100vh; }
+
+  /* ── Password gate ── */
+  .gate-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(15,26,20,.65); z-index:300;
+    align-items:center; justify-content:center;
+  }
+  .gate-overlay.open { display:flex; }
+  .gate-box {
+    background:#fff; border-radius:16px; padding:40px 36px;
+    width:100%; max-width:360px; text-align:center;
+    box-shadow:0 8px 40px rgba(20,83,45,.18);
+  }
+  .gate-logo {
+    width:44px; height:44px; background:var(--green); border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; font-weight:700; color:#fff;
+    margin:0 auto 16px;
+  }
+  .gate-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:4px; }
+  .gate-sub   { font-size:13px; color:var(--muted); margin-bottom:24px; }
+  .gate-input {
+    width:100%; padding:11px 14px; border:1.5px solid var(--border);
+    border-radius:9px; font-family:'Jost',sans-serif; font-size:15px;
+    color:var(--text); outline:none; margin-bottom:10px; transition:.15s;
+  }
+  .gate-input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(42,112,85,.1); }
+  .gate-btn {
+    width:100%; padding:12px; background:var(--green); color:#fff;
+    border:none; border-radius:9px; font-family:'Jost',sans-serif;
+    font-size:15px; font-weight:600; cursor:pointer; transition:.15s;
+  }
+  .gate-btn:hover { background:var(--green2); }
+  .gate-err { font-size:12px; color:var(--danger); margin-top:8px; display:none; }
+
+  /* Header */
+  .header {
+    background: var(--green);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-brand { display:flex; align-items:center; gap:10px; }
+  .logo { width:32px; height:32px; background:#fff; border-radius:8px;
+          display:flex; align-items:center; justify-content:center;
+          font-size:18px; font-weight:700; color:var(--green); }
+  .brand-name { font-size:18px; font-weight:600; color:#fff; letter-spacing:.5px; }
+  .header-badge { background:rgba(255,255,255,.2); color:#fff; font-size:12px;
+                  padding:4px 10px; border-radius:20px; }
+
+  /* Layout */
+  .main { max-width:1000px; margin:0 auto; padding:32px 24px; }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 24px; font-size: 13px; color: var(--muted);
+  }
+  .breadcrumb-link {
+    color: var(--green); cursor: pointer; font-weight: 500;
+    display: flex; align-items: center; gap: 4px;
+    background: none; border: none; font-family:'Jost',sans-serif;
+    font-size: 13px; padding: 0;
+  }
+  .breadcrumb-link:hover { text-decoration: underline; }
+  .breadcrumb-sep { color: var(--border); }
+  .breadcrumb-current { color: var(--text); font-weight: 500; }
+
+  /* Views */
+  .view { display:none; }
+  .view.active { display:block; }
+
+  /* Section title */
+  .section-header {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 20px;
+  }
+  .section-title { font-size: 20px; font-weight: 600; color: var(--text); }
+  .section-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* Cards */
+  .card { background:var(--card); border:1px solid var(--border); border-radius:12px;
+          padding:24px; margin-bottom:20px; }
+  .card-title { font-size:14px; font-weight:600; margin-bottom:16px; color:var(--muted);
+                text-transform:uppercase; letter-spacing:.06em; }
+
+  /* Forms */
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+  .form-row.single { grid-template-columns:1fr; }
+  .form-group { display:flex; flex-direction:column; gap:4px; }
+  label { font-size:11px; font-weight:600; color:var(--muted);
+          text-transform:uppercase; letter-spacing:.06em; }
+  input, select {
+    padding:9px 12px; border:1px solid var(--border); border-radius:8px;
+    font-family:'Jost',sans-serif; font-size:14px; color:var(--text);
+    background:#fff; outline:none; transition:.15s;
+  }
+  input:focus, select:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(42,112,85,.1); }
+  input::placeholder { color:#aab5c0; }
+
+  /* Buttons */
+  .btn { padding:10px 20px; border-radius:8px; border:none; cursor:pointer;
+         font-family:'Jost',sans-serif; font-size:14px; font-weight:500;
+         transition:.15s; display:inline-flex; align-items:center; gap:6px;
+         text-decoration:none; }
+  .btn-primary   { background:var(--green); color:#fff; }
+  .btn-primary:hover { background:var(--green2); }
+  .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+  .btn-danger    { background:none; border:1px solid var(--danger); color:var(--danger);
+                   padding:5px 12px; font-size:12px; border-radius:6px; }
+  .btn-danger:hover { background:var(--danger); color:#fff; }
+  .btn-outline   { background:none; border:1px solid var(--accent); color:var(--accent);
+                   padding:5px 12px; font-size:12px; border-radius:6px; }
+  .btn-outline:hover { background:var(--accent); color:#fff; }
+  .btn-green-outline { background:none; border:1px solid var(--green); color:var(--green);
+                       padding:5px 12px; font-size:12px; border-radius:6px; }
+  .btn-green-outline:hover { background:var(--green); color:#fff; }
+  .btn-ghost { background:none; border:1px solid var(--border); color:var(--text);
+               padding:5px 12px; font-size:12px; border-radius:6px; }
+  .btn-ghost:hover { border-color:var(--muted); }
+
+  /* Tables */
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; font-size:11px; font-weight:600; color:var(--muted);
+       text-transform:uppercase; letter-spacing:.06em; padding:9px 16px;
+       border-bottom:2px solid var(--border); background:#F8FAFD; }
+  td { padding:11px 16px; border-bottom:1px solid var(--rule); font-size:13.5px;
+       vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tbody tr:hover td { background:#F8FAFD; }
+  .td-actions { display:flex; gap:6px; align-items:center; }
+
+  /* Chips / Badges */
+  .badge { display:inline-block; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:600; }
+  .badge-blue  { background:#e8eef8; color:var(--accent); }
+  .badge-green { background:#eaf3ee; color:var(--green); }
+  .code-chip { font-family:monospace; font-size:11.5px; background:#f0f3f8;
+               padding:3px 7px; border-radius:4px; color:var(--text); border:1px solid var(--border); }
+
+  /* Empty / Loading */
+  .empty   { text-align:center; padding:40px 20px; color:var(--muted); font-size:14px; }
+  .loading { text-align:center; padding:32px; color:var(--muted); font-size:13px; }
+
+  /* Client row */
+  .client-row {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: center; gap: 16px;
+    padding: 14px 20px; border-bottom: 1px solid var(--rule); transition:.12s;
+  }
+  .client-row:last-child { border-bottom:none; }
+  .client-row:hover { background:#F8FAFD; }
+  .client-info { display:flex; flex-direction:column; gap:2px; }
+  .client-name { font-size:15px; font-weight:600; color:var(--text); }
+  .client-meta { font-size:12px; color:var(--muted); }
+
+  /* Location row */
+  .loc-name { font-weight:600; }
+  .loc-city { font-size:12px; color:var(--muted); margin-top:1px; }
+
+  /* QR Modal */
+  .qr-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+              z-index:100; align-items:center; justify-content:center; }
+  .qr-modal.open { display:flex; }
+  .qr-box { background:#fff; border-radius:16px; padding:32px; text-align:center;
+            max-width:380px; width:90%; position:relative; }
+  .qr-box h3 { margin-bottom:4px; font-size:16px; }
+  .qr-box .qr-sub { font-size:13px; color:var(--muted); margin-bottom:20px; }
+  .qr-box img { width:240px; height:240px; border:1px solid var(--border); border-radius:8px; }
+  .qr-actions { display:flex; gap:8px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
+  .qr-close { position:absolute; top:12px; right:16px; font-size:20px; cursor:pointer;
+              color:var(--muted); background:none; border:none; line-height:1; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:24px; right:24px; background:var(--green); color:#fff;
+           padding:12px 20px; border-radius:10px; font-size:14px; font-weight:500;
+           opacity:0; transform:translateY(8px); transition:.3s; pointer-events:none; z-index:200; }
+  .toast.show { opacity:1; transform:none; }
+
+  /* ── AUTOCOMPLETE CIUDAD ── */
+  .autocomplete-wrap { position:relative; }
+  .ac-list {
+    position:absolute; top:calc(100% + 4px); left:0; right:0;
+    background:#fff; border:1.5px solid var(--green);
+    border-radius:8px; max-height:200px; overflow-y:auto;
+    z-index:300; display:none;
+    box-shadow:0 8px 24px rgba(42,112,85,.14);
+  }
+  .ac-list.open { display:block; }
+  .ac-item {
+    padding:9px 12px; font-size:14px; color:var(--text);
+    cursor:pointer; font-family:'Jost',sans-serif; line-height:1.3;
+  }
+  .ac-item span { font-size:11px; color:var(--muted); display:block; }
+  .ac-item:hover, .ac-item.active { background:#edf7f2; }
+  .ac-loading {
+    padding:9px 12px; font-size:13px; color:var(--muted);
+    font-family:'Jost',sans-serif; font-style:italic;
+  }
+
+  @media (max-width:600px) {
+    .form-row { grid-template-columns:1fr; }
+    .client-row { grid-template-columns:1fr; }
+    .td-actions { flex-wrap:wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Password gate ── -->
+<div class="gate-overlay open" id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">D</div>
+    <div class="gate-title">Dicho Admin</div>
+    <div class="gate-sub">Introduce la contraseña para continuar</div>
+    <input class="gate-input" id="gate-input" type="password" placeholder="Contraseña"
+           onkeydown="if(event.key==='Enter') gateSubmit()">
+    <button class="gate-btn" onclick="gateSubmit()">Entrar</button>
+    <div class="gate-err" id="gate-err">Contraseña incorrecta</div>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="logo">D</div>
+    <span class="brand-name">Dicho</span>
+  </div>
+  <span class="header-badge">Admin</span>
+</div>
+
+<div class="main">
+
+  <!-- ══ VISTA: CLIENTES ══ -->
+  <div id="view-clientes" class="view active">
+
+    <div class="section-header">
+      <div>
+        <div class="section-title">Clientes</div>
+        <div class="section-sub">Gestiona los negocios registrados en Dicho</div>
+      </div>
+    </div>
+
+    <!-- Nuevo cliente -->
+    <div class="card">
+      <div class="card-title">Nuevo cliente</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre y apellidos</label>
+          <input id="c-nombre" type="text" placeholder="Ana García">
+        </div>
+        <div class="form-group">
+          <label>Nombre del negocio *</label>
+          <input id="c-negocio" type="text" placeholder="Restaurante El Mirador">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de negocio</label>
+          <select id="c-tipo">
+            <option value="">Selecciona una categoría…</option>
+            <option>Restaurante / Comida</option>
+            <option>Café / Cafetería</option>
+            <option>Bar / Cantina</option>
+            <option>Hotel / Hospedaje</option>
+            <option>Spa / Centro de bienestar</option>
+            <option>Clínica / Consultorio</option>
+            <option>Salón de belleza / Estética</option>
+            <option>Gimnasio / Fitness</option>
+            <option>Tienda / Retail</option>
+            <option>Entretenimiento / Ocio</option>
+            <option>Servicios profesionales</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input id="c-email" type="email" placeholder="ana@negocio.com">
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Ciudad</label>
+          <div class="autocomplete-wrap" id="c-ciudad-wrap">
+            <input id="c-ciudad" type="text" placeholder="Escribe una ciudad…" autocomplete="off">
+            <div class="ac-list" id="c-ciudad-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row single" style="margin-bottom:16px">
+        <div class="form-group">
+          <label>WhatsApp</label>
+          <input id="c-wa" type="tel" placeholder="+34 612 345 678">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="add-btn" onclick="addClient()">+ Añadir cliente</button>
+    </div>
+
+    <!-- Lista clientes -->
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="padding:16px 20px 12px; border-bottom:1px solid var(--rule)">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Clientes existentes</span>
+      </div>
+      <div id="clients-list">
+        <div class="loading">Cargando clientes…</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ VISTA: UBICACIONES DE UN CLIENTE ══ -->
+  <div id="view-ubicaciones" class="view">
+
+    <div class="breadcrumb">
+      <button class="breadcrumb-link" onclick="showClientes()">← Clientes</button>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current" id="bc-cliente"></span>
+    </div>
+
+    <div class="section-header">
+      <div>
+        <div class="section-title" id="ub-title">Ubicaciones</div>
+        <div class="section-sub" id="ub-sub"></div>
+      </div>
+    </div>
+
+    <!-- Nueva ubicación -->
+    <div class="card">
+      <div class="card-title">Nueva ubicación</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre de la ubicación</label>
+          <input id="l-nombre" type="text" placeholder="Ej: Sucursal Polanco">
+        </div>
+        <div class="form-group">
+          <label>Ciudad</label>
+          <div class="autocomplete-wrap" id="l-ciudad-wrap">
+            <input id="l-ciudad" type="text" placeholder="Escribe una ciudad…" autocomplete="off">
+            <div class="ac-list" id="l-ciudad-list"></div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addLocation()">+ Crear ubicación y generar QR</button>
+    </div>
+
+    <!-- Lista ubicaciones -->
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div id="locations-list">
+        <div class="loading">Cargando ubicaciones…</div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /.main -->
+
+<!-- QR Modal -->
+<div class="qr-modal" id="qr-modal">
+  <div class="qr-box">
+    <button class="qr-close" onclick="closeQR()">✕</button>
+    <h3 id="qr-title"></h3>
+    <div class="qr-sub" id="qr-code-text"></div>
+    <img id="qr-img" src="" alt="QR Code">
+    <div class="qr-actions">
+      <a id="qr-download" class="btn btn-primary" style="font-size:13px;padding:8px 16px" target="_blank">Abrir imagen QR</a>
+      <button class="btn btn-ghost" style="font-size:13px;padding:8px 14px" onclick="copyWaUrl()">Copiar enlace WA</button>
+      <button class="btn btn-ghost" style="font-size:13px;padding:8px 14px" onclick="copyCode()">Copiar código</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIGURACIÓN ─────────────────────────────────────────────────────────────
+var SCRIPT_URL     = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+var GAS_DASH_URL   = 'https://dichosea.com/dashboard.html';
+var ADMIN_PASSWORD = 'Dav920430!';
+
+var clients        = [];
+var locations      = [];
+var feedbackCounts = {};
+var activeClient   = null;
+var _adminKey      = '';
+
+// ── JSONP helper ──────────────────────────────────────────────────────────────
+function gasCall(action, params, successCb, errorCb) {
+  var cbName = 'gasAdminCb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+  var url = SCRIPT_URL + '?page=api_admin&action=' + encodeURIComponent(action)
+          + '&admin_key=' + encodeURIComponent(_adminKey);
+  if (params) {
+    Object.keys(params).forEach(function(k) {
+      url += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(params[k] == null ? '' : params[k]);
+    });
+  }
+  url += '&callback=' + cbName;
+
+  window[cbName] = function(data) {
+    try { document.head.removeChild(script); } catch(e) {}
+    delete window[cbName];
+    if (successCb) successCb(data);
+  };
+
+  var script = document.createElement('script');
+  script.onerror = function() {
+    try { document.head.removeChild(script); } catch(e) {}
+    delete window[cbName];
+    if (errorCb) errorCb(new Error('Error de red'));
+  };
+  // timeout
+  var t = setTimeout(function() {
+    if (window[cbName]) {
+      delete window[cbName];
+      try { document.head.removeChild(script); } catch(e) {}
+      if (errorCb) errorCb(new Error('Timeout'));
+    }
+  }, 20000);
+  var origCb = window[cbName];
+  window[cbName] = function(data) { clearTimeout(t); origCb(data); };
+
+  script.src = url;
+  document.head.appendChild(script);
+}
+
+// ── Gate ───────────────────────────────────────────────────
+function gateSubmit() {
+  var val = document.getElementById('gate-input').value;
+  if (val === ADMIN_PASSWORD) {
+    _adminKey = val;
+    try { localStorage.setItem('dicho_admin_key', val); } catch(e) {}
+    document.getElementById('gate').classList.remove('open');
+    init();
+  } else {
+    var err = document.getElementById('gate-err');
+    err.style.display = 'block';
+    document.getElementById('gate-input').value = '';
+    document.getElementById('gate-input').focus();
+    setTimeout(function() { err.style.display = 'none'; }, 2000);
+  }
+}
+
+function checkGate() {
+  var stored = '';
+  try { stored = localStorage.getItem('dicho_admin_key') || ''; } catch(e) {}
+  if (stored === ADMIN_PASSWORD) {
+    _adminKey = stored;
+    document.getElementById('gate').classList.remove('open');
+    init();
+  } else {
+    document.getElementById('gate-input').focus();
+  }
+}
+
+// ── Views ──────────────────────────────────────────────────
+function showClientes() {
+  document.getElementById('view-clientes').classList.add('active');
+  document.getElementById('view-ubicaciones').classList.remove('active');
+  activeClient = null;
+}
+
+function showUbicacionesById(id) {
+  var c = clients.find(function(cl) { return cl.id === id; });
+  if (c) showUbicaciones(c);
+}
+
+function showUbicaciones(client) {
+  activeClient = client;
+  document.getElementById('bc-cliente').textContent  = client.nombre;
+  document.getElementById('ub-title').textContent    = 'Ubicaciones de ' + client.nombre;
+  document.getElementById('ub-sub').textContent      = (client.email || '') + (client.plan ? ' · ' + client.plan : '');
+  document.getElementById('view-clientes').classList.remove('active');
+  document.getElementById('view-ubicaciones').classList.add('active');
+  document.getElementById('l-nombre').value = '';
+  document.getElementById('l-ciudad').value = '';
+  renderLocations();
+}
+
+// ── Data loaders ───────────────────────────────────────────
+function init() {
+  loadClients();
+  loadAllLocations();
+  loadFeedbackCounts();
+}
+
+function loadFeedbackCounts() {
+  gasCall('getFeedbackCounts', null, function(res) {
+    feedbackCounts = (res && res.data) ? res.data : {};
+    renderClients();
+  }, function() { feedbackCounts = {}; });
+}
+
+function loadClients() {
+  gasCall('getClients', null, function(res) {
+    clients = (res && res.data) ? res.data : [];
+    renderClients();
+  }, function(e) { toast('Error al cargar clientes: ' + e.message); });
+}
+
+function loadAllLocations() {
+  gasCall('getLocations', null, function(res) {
+    locations = (res && res.data) ? res.data : [];
+    renderClients();
+    if (activeClient) renderLocations();
+  }, function(e) { console.error(e); });
+}
+
+// ── Renderers ──────────────────────────────────────────────
+function renderClients() {
+  var el = document.getElementById('clients-list');
+  if (!clients.length) {
+    el.innerHTML = '<div class="empty">No hay clientes aún. Añade el primero arriba.</div>';
+    return;
+  }
+  var html = clients.map(function(c) {
+    var locCount = locations.filter(function(l) { return l.clienteId === c.id; }).length;
+    var fbCount  = (feedbackCounts[c.id] || 0);
+    var dashUrl  = GAS_DASH_URL + '?page=dashboard&token=' + encodeURIComponent(c.id);
+    var meta = [];
+    if (c.email)  meta.push(esc(c.email));
+    if (c.plan)   meta.push('<span class="badge badge-blue">' + esc(c.plan.split('/')[0].trim()) + '</span>');
+    if (c.ciudad) meta.push(esc(c.ciudad));
+    meta.push(fbCount + ' feedbacks');
+    meta.push(locCount + ' ubicaciones');
+    return '<div class="client-row">' +
+      '<div class="client-info">' +
+        '<span class="client-name">' + esc(c.nombre) + '</span>' +
+        '<span class="client-meta">' + meta.join(' · ') + '</span>' +
+      '</div>' +
+      '<div class="td-actions">' +
+        '<a class="btn btn-green-outline" href="' + dashUrl + '" target="_blank">Ver dashboard</a>' +
+        '<button class="btn btn-ghost" onclick="showUbicacionesById(\'' + esc(c.id) + '\')">Gestionar ubicaciones</button>' +
+        '<button class="btn btn-danger" onclick="removeClient(\'' + esc(c.id) + '\')">Eliminar</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  el.innerHTML = html;
+}
+
+function renderLocations() {
+  var el = document.getElementById('locations-list');
+  if (!activeClient) return;
+  var locs = locations.filter(function(l) { return l.clienteId === activeClient.id; });
+  if (!locs.length) {
+    el.innerHTML = '<div class="empty">Este cliente no tiene ubicaciones aún. Crea la primera arriba.</div>';
+    return;
+  }
+  var thead = '<thead><tr><th>Ubicación</th><th>Ciudad</th><th>Código</th><th>Alta</th><th></th></tr></thead>';
+  var rows = locs.map(function(l) {
+    return '<tr>' +
+      '<td><div class="loc-name">' + esc(l.nombre) + '</div></td>' +
+      '<td>' + esc(l.ciudad) + '</td>' +
+      '<td><span class="code-chip">' + esc(l.codigo) + '</span></td>' +
+      '<td style="color:var(--muted);font-size:12px">' + esc(l.fecha) + '</td>' +
+      '<td><div class="td-actions">' +
+        '<button class="btn btn-outline" onclick=\'showQR(' + JSON.stringify(l) + ')\'>Ver QR</button>' +
+        '<button class="btn btn-danger" onclick="removeLocation(\'' + esc(l.id) + '\')">Eliminar</button>' +
+      '</div></td>' +
+    '</tr>';
+  }).join('');
+  el.innerHTML = '<table>' + thead + '<tbody>' + rows + '</tbody></table>';
+}
+
+// ── Actions ────────────────────────────────────────────────
+function addClient() {
+  var negocio = document.getElementById('c-negocio').value.trim();
+  if (!negocio) { toast('El nombre del negocio es obligatorio'); return; }
+
+  var btn = document.getElementById('add-btn');
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+
+  var params = {
+    nombre:   document.getElementById('c-nombre').value.trim(),
+    negocio:  negocio,
+    tipo:     document.getElementById('c-tipo').value,
+    ciudad:   document.getElementById('c-ciudad').value.trim(),
+    email:    document.getElementById('c-email').value.trim(),
+    whatsapp: document.getElementById('c-wa').value.trim()
+  };
+
+  gasCall('createClient', params, function(res) {
+    btn.disabled = false;
+    btn.textContent = '+ Añadir cliente';
+    if (res && res.ok) {
+      toast('Cliente añadido ✓');
+      document.getElementById('c-nombre').value  = '';
+      document.getElementById('c-negocio').value = '';
+      document.getElementById('c-tipo').value    = '';
+      document.getElementById('c-ciudad').value  = '';
+      document.getElementById('c-email').value   = '';
+      document.getElementById('c-wa').value      = '';
+      loadClients();
+      loadAllLocations();
+    } else {
+      toast('Error: ' + (res && res.error ? res.error : 'inténtalo de nuevo'));
+    }
+  }, function(e) {
+    btn.disabled = false;
+    btn.textContent = '+ Añadir cliente';
+    toast('Error: ' + e.message);
+  });
+}
+
+function removeClient(id) {
+  if (!confirm('¿Eliminar este cliente y todas sus ubicaciones?')) return;
+  gasCall('deleteClient', { id: id }, function() {
+    toast('Cliente eliminado');
+    loadClients();
+    loadAllLocations();
+  }, function(e) { toast('Error: ' + e.message); });
+}
+
+function addLocation() {
+  if (!activeClient) return;
+  var nombre = document.getElementById('l-nombre').value.trim();
+  var ciudad = document.getElementById('l-ciudad').value.trim();
+  if (!nombre || !ciudad) { toast('Completa nombre y ciudad'); return; }
+  gasCall('createLocation', {
+    clienteId:     activeClient.id,
+    clienteNombre: activeClient.nombre,
+    nombre:        nombre,
+    ciudad:        ciudad
+  }, function(res) {
+    document.getElementById('l-nombre').value = '';
+    document.getElementById('l-ciudad').value = '';
+    toast('Ubicación creada ✓');
+    loadAllLocations();
+    if (res && res.qrUrl) setTimeout(function() { showQR(res); }, 600);
+  }, function(e) { toast('Error: ' + e.message); });
+}
+
+function removeLocation(id) {
+  if (!confirm('¿Eliminar esta ubicación?')) return;
+  gasCall('deleteLocation', { id: id }, function() {
+    toast('Ubicación eliminada');
+    loadAllLocations();
+  }, function(e) { toast('Error: ' + e.message); });
+}
+
+// ── QR Modal ───────────────────────────────────────────────
+function showQR(l) {
+  document.getElementById('qr-title').textContent     = l.nombre || l.nombreUbicacion || '';
+  document.getElementById('qr-code-text').textContent = 'Código: ' + (l.codigo || '');
+  document.getElementById('qr-img').src               = l.qrUrl || '';
+  document.getElementById('qr-download').href         = l.qrUrl || '#';
+  window._qrData = l;
+  document.getElementById('qr-modal').classList.add('open');
+}
+
+function closeQR() {
+  document.getElementById('qr-modal').classList.remove('open');
+}
+
+function copyCode() {
+  if (navigator.clipboard && window._qrData)
+    navigator.clipboard.writeText(window._qrData.codigo || '').then(function() { toast('Código copiado ✓'); });
+}
+
+function copyWaUrl() {
+  if (navigator.clipboard && window._qrData)
+    navigator.clipboard.writeText(window._qrData.waUrl || '').then(function() { toast('Enlace de WhatsApp copiado ✓'); });
+}
+
+// ── Utils ──────────────────────────────────────────────────
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2500);
+}
+
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── AUTOCOMPLETE CIUDAD (Nominatim) ────────────────────────
+function makeAutocomplete(inputId, listId, wrapId) {
+  var acInput = document.getElementById(inputId);
+  var acList  = document.getElementById(listId);
+  var acWrap  = document.getElementById(wrapId);
+  if (!acInput || !acList) return;
+  var acIdx   = -1;
+  var acTimer  = null;
+  var acAbort  = null;
+
+  function renderItems(items) {
+    acList.innerHTML = '';
+    acIdx = -1;
+    if (!items.length) { acList.classList.remove('open'); return; }
+    items.forEach(function(item) {
+      var el      = document.createElement('div');
+      el.className = 'ac-item';
+      var city    = item.name || item.display_name.split(',')[0];
+      var country = item.address && item.address.country ? item.address.country : '';
+      var state   = item.address && (item.address.state || item.address.county) ? (item.address.state || item.address.county) : '';
+      var sub     = [state, country].filter(Boolean).join(', ');
+      el.innerHTML = city + (sub ? '<span>' + sub + '</span>' : '');
+      el.addEventListener('mousedown', function(ev) {
+        ev.preventDefault();
+        acInput.value = city + (country ? ', ' + country : '');
+        acList.classList.remove('open');
+      });
+      acList.appendChild(el);
+    });
+    acList.classList.add('open');
+  }
+
+  function searchCities(q) {
+    if (acAbort) acAbort.abort();
+    acAbort = new AbortController();
+    acList.innerHTML = '<div class="ac-loading">Buscando…</div>';
+    acList.classList.add('open');
+    var url = 'https://nominatim.openstreetmap.org/search?q='
+      + encodeURIComponent(q)
+      + '&format=json&addressdetails=1&featuretype=city&limit=8&accept-language=es';
+    fetch(url, { signal: acAbort.signal, headers: { 'Accept-Language': 'es' } })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var cities = data.filter(function(r) {
+          return ['city','town','village','municipality'].indexOf(r.type) !== -1
+              || ['city','town','village','municipality'].indexOf(r.addresstype) !== -1;
+        });
+        if (!cities.length) cities = data;
+        renderItems(cities.slice(0, 8));
+      })
+      .catch(function(err) {
+        if (err.name !== 'AbortError') acList.classList.remove('open');
+      });
+  }
+
+  acInput.addEventListener('input', function() {
+    var q = this.value.trim();
+    clearTimeout(acTimer);
+    if (q.length < 2) { acList.classList.remove('open'); return; }
+    acTimer = setTimeout(function() { searchCities(q); }, 350);
+  });
+
+  acInput.addEventListener('keydown', function(e) {
+    var items = acList.querySelectorAll('.ac-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      acIdx = Math.min(acIdx + 1, items.length - 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      acIdx = Math.max(acIdx - 1, 0);
+    } else if (e.key === 'Enter' && acIdx >= 0) {
+      e.preventDefault();
+      acInput.value = items[acIdx].firstChild.textContent;
+      acList.classList.remove('open');
+      return;
+    } else if (e.key === 'Escape') {
+      acList.classList.remove('open');
+      return;
+    }
+    items.forEach(function(it, i) { it.classList.toggle('active', i === acIdx); });
+  });
+
+  document.addEventListener('click', function(e) {
+    if (acWrap && !acWrap.contains(e.target)) acList.classList.remove('open');
+  });
+}
+
+// Inicializar autocompletes y arrancar
+makeAutocomplete('c-ciudad', 'c-ciudad-list', 'c-ciudad-wrap');
+makeAutocomplete('l-ciudad', 'l-ciudad-list', 'l-ciudad-wrap');
+
+checkGate();
+</script>
+</body>
+</html>
