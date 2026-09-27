@@ -126,43 +126,6 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .plan-banner-text { flex: 1; font-size: 13px; color: var(--green-deep); line-height: 1.5; }
 .plan-banner-text strong { font-weight: 700; }
 
-/* ── NEW MODAL: 2-step extras ── */
-.step-indicator { display: flex; align-items: center; padding: 14px 24px 0; gap: 0; }
-.step-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; transition: background .25s, color .25s; }
-.step-dot-active   { background: var(--green); color: #fff; }
-.step-dot-done     { background: var(--green-l); color: var(--green-mid); border: 1.5px solid #bbf7d0; }
-.step-dot-inactive { background: #e5e7eb; color: #6b7280; }
-.step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 0 6px; position: relative; overflow: hidden; }
-.step-line-fill { position: absolute; inset: 0; background: var(--green); transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
-.step-line-fill.filled { transform: scaleX(1); }
-.step-panel { display: block; }
-.step-panel.hidden { display: none; }
-
-/* Autocomplete */
-.autocomplete-wrap { position: relative; }
-.autocomplete-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1.5px solid var(--border); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.1); z-index: 300; display: none; max-height: 220px; overflow-y: auto; margin-top: 3px; }
-.autocomplete-dropdown.open { display: block; }
-.autocomplete-item { padding: 10px 13px; cursor: pointer; border-bottom: 1px solid var(--border-l); transition: background .1s; }
-.autocomplete-item:last-child { border-bottom: none; }
-.autocomplete-item:hover { background: var(--green-l); }
-.autocomplete-item-main { font-size: 13px; font-weight: 600; color: var(--text); }
-.autocomplete-item-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.autocomplete-loading   { padding: 12px 13px; font-size: 13px; color: var(--muted); }
-
-/* Map preview */
-.map-wrap { border-radius: 10px; overflow: hidden; border: 1px solid var(--border-l); margin-bottom: 16px; line-height: 0; }
-.map-wrap iframe { display: block; width: 100%; height: 150px; border: 0; }
-
-/* Customer preview */
-.customer-preview { background: var(--green-l); border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px; }
-.cp-label { font-size: 10.5px; font-weight: 700; color: var(--green-mid); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
-.cp-text  { font-size: 13.5px; color: var(--green-deep); line-height: 1.4; }
-
-/* Editable tag */
-.tag-editable { background: var(--green-l); color: var(--green-mid); border: 1px solid #bbf7d0; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 99px; margin-left: 6px; vertical-align: middle; }
-
-.new-modal-hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
-
 @media (max-width: 560px) {
   #modules-container { grid-template-columns: 1fr; }
   .nav-item { padding: 0 10px; font-size: 12px; }
@@ -258,72 +221,31 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   </div>
 </div>
 
-<!-- ── MODAL NUEVA UBICACIÓN (2 pasos) ── -->
+<!-- ── MODAL NUEVA UBICACIÓN ── -->
 <div class="modal-bg" id="modal-new" onclick="if(event.target===this)closeModal('modal-new')">
   <div class="modal">
     <div class="modal-head">
-      <div class="modal-title" id="new-modal-title">Encuentra tu negocio</div>
+      <div class="modal-title" data-i18n="modal_new_title">Nueva ubicación</div>
       <button class="modal-close" onclick="closeModal('modal-new')">✕</button>
     </div>
-
-    <!-- Indicador de pasos -->
-    <div class="step-indicator">
-      <div class="step-dot step-dot-active" id="sdot1">1</div>
-      <div class="step-line"><div class="step-line-fill" id="sline1"></div></div>
-      <div class="step-dot step-dot-inactive" id="sdot2">2</div>
-    </div>
-
-    <!-- PASO 1: buscar dirección -->
-    <div id="new-step1" class="step-panel">
-      <div class="modal-body" style="padding-bottom:28px">
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Dirección o nombre de tu negocio</label>
-          <div class="autocomplete-wrap">
-            <input id="new-dir" class="form-input" type="text"
-                   placeholder="ej. Restaurante Mar, Eixample…" autocomplete="off">
-            <div id="new-dir-dropdown" class="autocomplete-dropdown"></div>
-          </div>
-          <p class="new-modal-hint">Selecciona tu local de la lista para continuar →</p>
-        </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" data-i18n="f_nombre">Nombre de la ubicación</label>
+        <input class="form-input" id="new-nombre" type="text" placeholder="Ej: Sucursal Centro">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-i18n="f_ciudad">Ciudad</label>
+        <input class="form-input" id="new-ciudad" type="text" placeholder="Ej: Barcelona">
       </div>
     </div>
-
-    <!-- PASO 2: confirmar y personalizar -->
-    <div id="new-step2" class="step-panel hidden">
-      <div class="modal-body">
-        <div class="map-wrap">
-          <iframe id="new-map-iframe" src="" title="Mapa" allowfullscreen
-                  loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-        <div class="form-group">
-          <label class="form-label">
-            Nombre de la ubicación
-            <span class="tag-editable">Editable</span>
-          </label>
-          <input id="new-nombre" class="form-input" type="text"
-                 placeholder="ej. Restaurante Mar · Eixample"
-                 oninput="updateNewPreview()">
-        </div>
-        <div class="customer-preview">
-          <span>💬</span>
-          <div>
-            <div class="cp-label">Así lo verá tu cliente</div>
-            <div class="cp-text">«<span id="new-preview-pretext"></span> <strong id="new-preview-name">…</strong>?»</div>
-          </div>
-        </div>
-        <input type="hidden" id="new-ciudad">
-        <input type="hidden" id="new-mapsurl">
-      </div>
-      <div class="modal-foot">
-        <span class="save-chip" id="chip-new">✓ Creada</span>
-        <button class="btn-ghost" onclick="newGoBack()">← Atrás</button>
-        <button class="btn-primary" id="btn-save-new" onclick="saveNewLocation()">
-          <span id="new-spinner" style="display:none" class="spinner"></span>
-          <span id="new-label" data-i18n="btn_create">Crear ubicación</span>
-        </button>
-      </div>
+    <div class="modal-foot">
+      <span class="save-chip" id="chip-new">✓ Creada</span>
+      <button class="btn-ghost" onclick="closeModal('modal-new')" data-i18n="btn_cancel">Cancelar</button>
+      <button class="btn-primary" id="btn-save-new" onclick="saveNewLocation()">
+        <span id="new-spinner" style="display:none" class="spinner"></span>
+        <span id="new-label" data-i18n="btn_create">Crear ubicación</span>
+      </button>
     </div>
-
   </div>
 </div>
 
@@ -391,7 +313,7 @@ var TR = {
     btn_edit:        'Editar',
     empty_title:     'Aún no tienes ubicaciones',
     empty_text:      'Crea tu primera ubicación y empieza a recibir feedback de tus clientes.',
-    plan_limit:      'Has alcanzado el límite de ubicaciones de tu plan. Actualiza a Profesional para agregar hasta 5 ubicaciones.',
+    plan_limit:      'Has alcanzado el límite de 3 ubicaciones del plan gratuito. Actualiza a Profesional para agregar hasta 5 ubicaciones.',
     chip_edit:       '✓ Guardado', chip_new: '✓ Creada'
   },
   ca: {
@@ -415,7 +337,7 @@ var TR = {
     btn_edit:        'Editar',
     empty_title:     'Encara no tens ubicacions',
     empty_text:      'Crea la teva primera ubicació i comença a rebre feedback dels teus clients.',
-    plan_limit:      "Has arribat al límit d'ubicacions del teu pla. Actualitza a Professional per afegir fins a 5 ubicacions.",
+    plan_limit:      "Has arribat al límit de 3 ubicacions del pla gratuït. Actualitza a Professional per afegir fins a 5 ubicacions.",
     chip_edit:       '✓ Desat', chip_new: '✓ Creada'
   },
   en: {
@@ -439,7 +361,7 @@ var TR = {
     btn_edit:        'Edit',
     empty_title:     'No locations yet',
     empty_text:      'Create your first location and start receiving feedback from your customers.',
-    plan_limit:      'You have reached your plan\'s location limit. Upgrade to Professional to add up to 5 locations.',
+    plan_limit:      'You have reached the 3-location limit of the free plan. Upgrade to Professional to add up to 5 locations.',
     chip_edit:       '✓ Saved', chip_new: '✓ Created'
   }
 };
@@ -592,7 +514,7 @@ function escHtml(s) {
       // Plan limit banner
       var plan      = data.plan || 'sin_costo';
       var locs      = data.ubicaciones || [];
-      var maxLocs   = plan === 'enterprise' ? Infinity : plan === 'profesional' ? 5 : 1;
+      var maxLocs   = plan === 'enterprise' ? Infinity : plan === 'profesional' ? 5 : 3;
       var atLimit   = locs.length >= maxLocs;
       var bannerEl  = document.getElementById('plan-banner');
       if (atLimit && plan !== 'enterprise') {
@@ -628,58 +550,11 @@ function openEditModal(locId) {
   openModal('modal-edit');
 }
 
-// ── NUEVA UBICACIÓN: modal de 2 pasos ────────────────────────────
 function openNewModal() {
-  // Reset step 1
-  document.getElementById('new-dir').value = '';
-  document.getElementById('new-dir-dropdown').classList.remove('open');
-  // Reset step 2
-  document.getElementById('new-nombre').value   = '';
-  document.getElementById('new-ciudad').value   = '';
-  document.getElementById('new-mapsurl').value  = '';
-  document.getElementById('new-map-iframe').src = '';
-  // Pretext from UB_DATA
-  var pretext = (UB_DATA && UB_DATA.pretext) || '¿Cómo te fue en';
-  document.getElementById('new-preview-pretext').textContent = pretext;
-  document.getElementById('new-preview-name').textContent    = '…';
+  document.getElementById('new-nombre').value = '';
+  document.getElementById('new-ciudad').value = '';
   document.getElementById('chip-new').classList.remove('visible');
-  newShowStep(1);
   openModal('modal-new');
-  setTimeout(function() { document.getElementById('new-dir').focus(); }, 120);
-}
-
-function newShowStep(n) {
-  var s1   = document.getElementById('new-step1');
-  var s2   = document.getElementById('new-step2');
-  var dot1 = document.getElementById('sdot1');
-  var dot2 = document.getElementById('sdot2');
-  var line = document.getElementById('sline1');
-  var title = document.getElementById('new-modal-title');
-  if (n === 1) {
-    title.textContent = 'Encuentra tu negocio';
-    s1.classList.remove('hidden'); s2.classList.add('hidden');
-    dot1.className = 'step-dot step-dot-active'; dot1.textContent = '1';
-    dot2.className = 'step-dot step-dot-inactive'; dot2.textContent = '2';
-    line.classList.remove('filled');
-    setTimeout(function() { document.getElementById('new-dir').focus(); }, 80);
-  } else {
-    title.textContent = 'Confirma y personaliza';
-    s1.classList.add('hidden'); s2.classList.remove('hidden');
-    dot1.className = 'step-dot step-dot-done'; dot1.textContent = '✓';
-    dot2.className = 'step-dot step-dot-active'; dot2.textContent = '2';
-    line.classList.add('filled');
-    setTimeout(function() {
-      var inp = document.getElementById('new-nombre');
-      inp.focus(); inp.select();
-    }, 80);
-  }
-}
-
-function newGoBack() { newShowStep(1); }
-
-function updateNewPreview() {
-  var name = document.getElementById('new-nombre').value.trim();
-  document.getElementById('new-preview-name').textContent = name || '…';
 }
 
 // ── SAVE EDIT LOCATION ───────────────────────────────────────────
@@ -698,6 +573,7 @@ function saveEditLocation() {
     .then(function(res) {
       btn.disabled = false; sp.style.display = 'none'; lbl.style.display = '';
       if (res && res.ok) {
+        // Update local cache
         var locs = UB_DATA.ubicaciones || [];
         for (var i = 0; i < locs.length; i++) {
           if (locs[i].id === locId) {
@@ -720,24 +596,27 @@ function saveNewLocation() {
   var btn = document.getElementById('btn-save-new');
   var sp  = document.getElementById('new-spinner');
   var lbl = document.getElementById('new-label');
+  btn.disabled = true; sp.style.display = 'inline-block'; lbl.style.display = 'none';
 
-  var nombre  = document.getElementById('new-nombre').value.trim();
-  var ciudad  = document.getElementById('new-ciudad').value.trim();
-  var mapsUrl = document.getElementById('new-mapsurl').value;
+  var nombre = document.getElementById('new-nombre').value.trim();
+  var ciudad = document.getElementById('new-ciudad').value.trim();
 
   if (!nombre) {
+    btn.disabled = false; sp.style.display = 'none'; lbl.style.display = '';
     document.getElementById('new-nombre').focus();
     return;
   }
 
-  btn.disabled = true; sp.style.display = 'inline-block'; lbl.style.display = 'none';
-
-  gasCall('api_addLocation', { token: TOKEN, nombre: nombre, ciudad: ciudad, mapsUrl: mapsUrl })
+  gasCall('api_addLocation', { token: TOKEN, nombre: nombre, ciudad: ciudad })
     .then(function(res) {
       btn.disabled = false; sp.style.display = 'none'; lbl.style.display = '';
       if (res && res.ok) {
+        // Reload data to get updated list with new location id
         gasCall('api_ubicaciones', { token: TOKEN }).then(function(data) {
-          if (data.ok) { UB_DATA = data; renderModules(); }
+          if (data.ok) {
+            UB_DATA = data;
+            renderModules();
+          }
         });
         showChip('chip-new');
         setTimeout(function() { closeModal('modal-new'); }, 900);
@@ -756,94 +635,6 @@ function doLogout() {
   gasCall('api_logout', { session: SESSION }).catch(function() {});
   window.location.href = 'https://dichosea.com/login.html';
 }
-
-// ── NOMINATIM AUTOCOMPLETE ───────────────────────────────────────
-function initAutocomplete(inputId, dropdownId, opts) {
-  var input    = document.getElementById(inputId);
-  var dropdown = document.getElementById(dropdownId);
-  var timer    = null;
-
-  input.addEventListener('input', function() {
-    clearTimeout(timer);
-    var q = input.value.trim();
-    if (q.length < 3) { dropdown.classList.remove('open'); return; }
-    dropdown.innerHTML = '<div class="autocomplete-loading">Buscando…</div>';
-    dropdown.classList.add('open');
-    timer = setTimeout(function() { fetchNominatim(q); }, 350);
-  });
-
-  input.addEventListener('blur', function() {
-    setTimeout(function() { dropdown.classList.remove('open'); }, 200);
-  });
-
-  function fetchNominatim(q) {
-    var url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q=' + encodeURIComponent(q);
-    fetch(url, { headers: { 'Accept-Language': LANG || 'es' } })
-      .then(function(r) { return r.json(); })
-      .then(function(results) {
-        dropdown.innerHTML = '';
-        if (!results.length) {
-          dropdown.innerHTML = '<div class="autocomplete-loading">Sin resultados</div>';
-          return;
-        }
-        results.forEach(function(r) {
-          var addr   = r.address || {};
-          var city   = addr.city || addr.town || addr.village || addr.county || addr.state || '';
-          var country = addr.country_code ? addr.country_code.toUpperCase() : '';
-          var shortAddr = [addr.road, addr.house_number].filter(Boolean).join(' ');
-          var displayCity = [city, country].filter(Boolean).join(', ');
-
-          var el = document.createElement('div');
-          el.className = 'autocomplete-item';
-          el.innerHTML = '<div class="autocomplete-item-main">' + escHtml(shortAddr || r.display_name.split(',')[0]) + '</div>'
-                       + '<div class="autocomplete-item-sub">'  + escHtml(displayCity || r.display_name) + '</div>';
-
-          el.addEventListener('click', function() {
-            var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + r.lat + ',' + r.lon;
-            var result  = {
-              lat: r.lat, lon: r.lon,
-              city: city, country: country,
-              displayName: r.display_name,
-              mapsUrl: mapsUrl,
-              neighbourhood: addr.neighbourhood || addr.suburb || addr.city_district || '',
-              suburb:   addr.suburb || '',
-              district: addr.city_district || addr.district || ''
-            };
-            input.value = shortAddr || r.display_name.split(',')[0];
-            dropdown.classList.remove('open');
-            if (opts && opts.onSelect) opts.onSelect(result);
-          });
-
-          dropdown.appendChild(el);
-        });
-      })
-      .catch(function() {
-        dropdown.innerHTML = '<div class="autocomplete-loading">Error al buscar</div>';
-      });
-  }
-}
-
-// Inicializar autocomplete del modal nueva ubicación
-initAutocomplete('new-dir', 'new-dir-dropdown', {
-  onSelect: function(r) {
-    // Guardar campos ocultos
-    document.getElementById('new-mapsurl').value = r.mapsUrl;
-    document.getElementById('new-ciudad').value  = r.city || '';
-
-    // Nombre sugerido: "Negocio · Barrio"
-    var negocio = (UB_DATA && UB_DATA.negocio) || '';
-    var zona    = r.neighbourhood || r.suburb || r.district || r.city || '';
-    document.getElementById('new-nombre').value = negocio + (zona ? ' · ' + zona : '');
-
-    // Cargar iframe del mapa
-    document.getElementById('new-map-iframe').src =
-      'https://maps.google.com/maps?q=' + r.lat + ',' + r.lon + '&z=16&output=embed';
-
-    // Actualizar preview y avanzar al paso 2
-    updateNewPreview();
-    newShowStep(2);
-  }
-});
 </script>
 </body>
 </html>
