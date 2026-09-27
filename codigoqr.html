@@ -42,7 +42,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   display: flex; align-items: center; gap: 10px;
   padding-right: 24px;
   border-right: 1px solid rgba(255,255,255,.14);
-  flex-shrink: 0;
+  margin-right: 4px; flex-shrink: 0;
   cursor: pointer;
 }
 .logo {
@@ -71,16 +71,18 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .nav-item svg { flex-shrink: 0; opacity: .7; }
 .nav-item.active svg { opacity: 1; }
 .header-right {
-  display: flex; align-items: center;
+  display: flex; align-items: center; gap: 10px;
   padding-left: 6px;
   margin-left: auto; flex-shrink: 0;
 }
 .header-biz {
   font-size: 13px; color: rgba(255,255,255,.65); font-weight: 500;
   white-space: nowrap;
+  padding-right: 16px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px;
 }
-.hdr-logout { font-size: 12px; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.6); background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: .15s; }
-.hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); }
+.header-biz strong { color: #fff; }
+.hdr-logout { font-size: 12px; font-weight: 600; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.6); background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 5px 11px; cursor: pointer; transition: .15s; }
+.hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.1); }
 
 /* ── PAGE ── */
 .page { max-width: 1080px; margin: 0; padding: 28px 40px 60px 152px; }
@@ -412,7 +414,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
     </a>
   </nav>
   <div class="header-right">
-    <span class="header-biz" id="header-biz-name"></span>
+    <span class="header-biz"><strong id="header-biz-name"></strong></span>
     <button class="hdr-logout" onclick="doLogout()" id="btn-logout">Salir</button>
   </div>
 </header>
