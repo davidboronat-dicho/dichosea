@@ -341,11 +341,8 @@
     // ── Detectar idioma inicial por browser (mejora UX durante carga) ──
     function detectBrowserLang() {
       var params = new URLSearchParams(window.location.search);
-      // Primero: param ?lang= en la URL
       var paramLang = params.get('lang');
       if (paramLang && TR[paramLang]) return paramLang;
-      // Segundo: idioma del navegador (catalán solo por ?lang=ca, no por navigator,
-      // porque los templates de WATI no incluyen ?lang= en la URL)
       var nav = navigator.language || navigator.userLanguage || 'es';
       if (nav.startsWith('en')) return 'en';
       return 'es';
@@ -367,21 +364,6 @@
       document.documentElement.lang = lang === 'ca' ? 'ca' : (lang === 'en' ? 'en' : 'es');
     }
 
-    // ── Caché localStorage ──
-    function getCached(waId) {
-      try {
-        var raw = localStorage.getItem('review_' + waId);
-        if (!raw) return null;
-        var obj = JSON.parse(raw);
-        if (Date.now() - obj.ts > CACHE_TTL) { localStorage.removeItem('review_' + waId); return null; }
-        return obj.data;
-      } catch(e) { return null; }
-    }
-
-    function setCache(waId, data) {
-      try { localStorage.setItem('review_' + waId, JSON.stringify({ ts: Date.now(), data: data })); } catch(e) {}
-    }
-
     // ── Ciudad: quitar ", País" si viene en el valor ──
     function formatCiudad(raw) {
       return (raw || '').split(',')[0].trim();
@@ -398,10 +380,9 @@
 
     function renderData(data) {
       // Prioridad: idioma detectado en el audio del cliente → idioma del negocio → 'es'
-      // (idioma_negocio es solo para las plantillas de WATI/Make, no para la UI del cliente)
       var lang = data.idioma_detectado || data.idioma_negocio || 'es';
       applyLang(lang);
-      document.getElementById('negocio').textContent    = data.negocio       || '';
+      document.getElementById('negocio').textContent    = data.nombre_ubicacion || data.negocio || '';
       document.getElementById('ciudad').textContent     = formatCiudad(data.ciudad);
       document.getElementById('reviewText').textContent = data.transcripcion || '';
       document.getElementById('ctaBtn').href             = data.reviewUrl     || '#';
@@ -418,9 +399,6 @@
     if (!waId) {
       show('error');
     } else {
-      // Sin caché localStorage: cada apertura consulta GAS directamente.
-      // El CacheService de GAS responde en <100ms para llamadas repetidas,
-      // así que el localStorage solo causaba datos obsoletos cuando cambiaba la reseña.
       var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
       var tid = controller ? setTimeout(function() { controller.abort(); }, 12000) : null;
       fetch(GAS_URL + '?page=reviewData&id=' + encodeURIComponent(waId), controller ? { signal: controller.signal } : {})
