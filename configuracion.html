@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/x-icon" href="https://dichosea.com/favicon.ico">
 <title>Dicho · Configuración</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Jost:wght@400;500;600;700&display=swap">
@@ -164,7 +165,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 
 <!-- ── HEADER ── -->
 <header class="header">
-  <div class="header-brand">
+  <div class="header-brand" onclick="window.location.href=document.getElementById('nav-dashboard').href" style="cursor:pointer">
     <div class="logo">D</div>
     <span class="brand-name">dicho<span>.</span></span>
   </div>
@@ -194,7 +195,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 
 <!-- ── PAGE ── -->
 <div class="page">
-  <div class="page-eyebrow" data-i18n="eyebrow">Cuenta</div>
+  <div class="page-eyebrow" data-i18n="eyebrow">Tu negocio</div>
   <div class="page-title" data-i18n="page_title">Configuración</div>
 
   <!-- ── 1. PERFIL ── -->
@@ -442,7 +443,7 @@ function renderTipos(lang) {
 var TR = {
   es: {
     nav_qr: 'Código QR', nav_ubicaciones: 'Ubicaciones', nav_config: 'Configuración',
-    eyebrow: 'Cuenta', page_title: 'Configuración',
+    eyebrow: 'Tu negocio', page_title: 'Configuración',
     s1_title: 'Perfil del negocio', s1_sub: 'Información que aparece en tus tarjetas y mensajes de WhatsApp',
     f_idioma: 'Idioma', f_idioma_hint: 'El idioma de esta página cambia al instante. Las otras páginas se actualizarán próximamente.',
     f_contacto: 'Nombre de contacto', f_negocio: 'Nombre del negocio', f_tipo: 'Tipo de negocio',
@@ -465,7 +466,7 @@ var TR = {
   },
   ca: {
     nav_qr: 'Codi QR', nav_ubicaciones: 'Ubicacions', nav_config: 'Configuració',
-    eyebrow: 'Compte', page_title: 'Configuració',
+    eyebrow: 'El teu negoci', page_title: 'Configuració',
     s1_title: 'Perfil del negoci', s1_sub: 'Informació que apareix a les teves targetes i missatges de WhatsApp',
     f_idioma: 'Idioma', f_idioma_hint: "L'idioma d'aquesta pàgina canvia a l'instant. Les altres pàgines s'actualitzaran aviat.",
     f_contacto: 'Nom de contacte', f_negocio: 'Nom del negoci', f_tipo: 'Tipus de negoci',
@@ -488,7 +489,7 @@ var TR = {
   },
   en: {
     nav_qr: 'QR Code', nav_ubicaciones: 'Locations', nav_config: 'Settings',
-    eyebrow: 'Account', page_title: 'Settings',
+    eyebrow: 'Your business', page_title: 'Settings',
     s1_title: 'Business profile', s1_sub: 'Info that appears on your cards and WhatsApp messages',
     f_idioma: 'Language', f_idioma_hint: "This page's language changes instantly. Other pages will follow soon.",
     f_contacto: 'Contact name', f_negocio: 'Business name', f_tipo: 'Business type',
