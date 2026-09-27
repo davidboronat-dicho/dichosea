@@ -34,7 +34,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   display: flex; align-items: stretch; padding: 0 28px;
   position: sticky; top: 0; z-index: 50;
 }
-.header-brand { display: flex; align-items: center; gap: 10px; padding-right: 24px; border-right: 1px solid rgba(255,255,255,.14); flex-shrink: 0; }
+.header-brand { display: flex; align-items: center; gap: 10px; padding-right: 24px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px; flex-shrink: 0; }
 .logo { width: 28px; height: 28px; background: #fff; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: var(--green-deep); font-family: 'Plus Jakarta Sans', sans-serif; }
 .brand-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -.03em; }
 .brand-name span { color: #86efac; }
@@ -43,9 +43,10 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .nav-item:hover { color: rgba(255,255,255,.88); }
 .nav-item.active { color: #fff; font-weight: 700; border-bottom-color: #86efac; background: rgba(255,255,255,.07); }
 .header-right { display: flex; align-items: center; gap: 10px; padding-left: 6px; margin-left: auto; }
-.header-biz { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.75); font-family: 'Jost', sans-serif; white-space: nowrap; }
-.hdr-logout { font-size: 12px; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.6); background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: .15s; }
-.hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); }
+.header-biz { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.65); font-family: 'Jost', sans-serif; white-space: nowrap; padding-right: 16px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px; }
+.header-biz strong { color: #fff; }
+.hdr-logout { font-size: 12px; font-weight: 600; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.6); background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 5px 11px; cursor: pointer; transition: .15s; }
+.hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.1); }
 
 /* ── PAGE ── */
 .page { max-width: 1080px; margin: 0; padding: 28px 40px 64px 152px; }
@@ -198,7 +199,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
     </a>
   </nav>
   <div class="header-right">
-    <span class="header-biz" id="header-biz-name"></span>
+    <span class="header-biz"><strong id="header-biz-name"></strong></span>
     <button class="hdr-logout" onclick="doLogout()" id="btn-logout">Salir</button>
   </div>
 </header>
