@@ -24,7 +24,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { overflow-y: scroll; }
-body { background: var(--surface); color: var(--text); min-height: 100vh; font-size: 14px; }
+body { background: var(--surface); color: var(--text); min-height: 100vh; font-size: 14px; zoom: 1.25; }
 
 /* ── HEADER ── */
 .header {
@@ -83,7 +83,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); }
 
 /* ── PAGE ── */
-.page { max-width: 680px; margin: 0 auto; padding: 28px 24px 60px; }
+.page { max-width: 680px; margin: 0; padding: 28px 28px 60px; }
 
 .page-top {
   display: flex; align-items: flex-start;
