@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/x-icon" href="https://dichosea.com/favicon.ico">
 <title>Dicho · Código QR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Jost:wght@400;500;600;700&display=swap">
@@ -77,9 +78,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .header-biz {
   font-size: 13px; color: rgba(255,255,255,.65); font-weight: 500;
   white-space: nowrap;
-  padding-right: 16px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px;
 }
-.header-biz strong { color: #fff; }
 .hdr-logout { font-size: 12px; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.6); background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: .15s; }
 .hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); }
 
@@ -384,8 +383,8 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
     </a>
   </nav>
   <div class="header-right">
-    <span class="header-biz"><strong id="header-biz-name"></strong></span>
-    <button class="hdr-logout" onclick="doLogout()" data-i18n="logout">Salir</button>
+    <span class="header-biz" id="header-biz-name"></span>
+    <button class="hdr-logout" onclick="doLogout()" id="btn-logout">Salir</button>
   </div>
 </header>
 
@@ -483,7 +482,7 @@ var TR = {
   es: {
     nav_dashboard: 'Dashboard', nav_qr: 'Código QR',
     nav_ubicaciones: 'Ubicaciones', nav_config: 'Configuración',
-    eyebrow: 'Tus tarjetas de feedback',
+    eyebrow: 'Tu negocio',
     page_title: 'Código QR',
     btn_new_loc: 'Crear nueva ubicación',
     loading: 'Cargando…',
@@ -514,7 +513,7 @@ var TR = {
   ca: {
     nav_dashboard: 'Dashboard', nav_qr: 'Codi QR',
     nav_ubicaciones: 'Ubicacions', nav_config: 'Configuració',
-    eyebrow: 'Les teves targetes de feedback',
+    eyebrow: 'El teu negoci',
     page_title: 'Codi QR',
     btn_new_loc: 'Crear nova ubicació',
     loading: 'Carregant…',
@@ -545,7 +544,7 @@ var TR = {
   en: {
     nav_dashboard: 'Dashboard', nav_qr: 'QR Code',
     nav_ubicaciones: 'Locations', nav_config: 'Settings',
-    eyebrow: 'Your feedback cards',
+    eyebrow: 'Your business',
     page_title: 'QR Code',
     btn_new_loc: 'Create new location',
     loading: 'Loading…',
@@ -587,6 +586,8 @@ function applyLang(lang) {
   document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
     el.placeholder = t(el.getAttribute('data-i18n-ph'));
   });
+  var btnLogout = document.getElementById('btn-logout');
+  if (btnLogout) btnLogout.textContent = (lang === 'ca') ? 'Sortir' : 'Salir';
   try { sessionStorage.setItem('dicho_lang_' + TOKEN, currentLang); } catch(e) {}
 }
 
@@ -1049,8 +1050,8 @@ function saveNewLocation() {
   btn.textContent = t('creating');
   hideAlert('new-loc-alert');
 
-  google.script.run
-    .withSuccessHandler(function(res) {
+  gasCall('api_addLocation', { token: TOKEN, nombre_ubicacion: nombre, ciudad: ciudad })
+    .then(function(res) {
       btn.disabled = false;
       btn.textContent = t('btn_create');
       if (res && res.ok) {
@@ -1070,12 +1071,11 @@ function saveNewLocation() {
         showAlert('new-loc-alert', (res && res.error) || 'Error al crear la ubicación.', 'error');
       }
     })
-    .withFailureHandler(function(err) {
+    .catch(function(err) {
       btn.disabled = false;
       btn.textContent = t('btn_create');
       showAlert('new-loc-alert', 'Error: ' + (err.message || err), 'error');
-    })
-    .addLocation(TOKEN, nombre, ciudad);
+    });
 }
 
 // ── Nominatim autocomplete ───────────────────────────────────
