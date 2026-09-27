@@ -398,62 +398,46 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIGURACIÓN ─────────────────────────────────────────────────────────────
-var SCRIPT_URL     = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
-var GAS_DASH_URL   = 'https://dichosea.com/dashboard.html';
 var ADMIN_PASSWORD = 'Dav920430!';
+var GAS_URL        = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
 
 var clients        = [];
 var locations      = [];
 var feedbackCounts = {};
 var activeClient   = null;
-var _adminKey      = '';
 
-// ── JSONP helper ──────────────────────────────────────────────────────────────
-function gasCall(action, params, successCb, errorCb) {
-  var cbName = 'gasAdminCb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-  var url = SCRIPT_URL + '?page=api_admin&action=' + encodeURIComponent(action)
-          + '&admin_key=' + encodeURIComponent(_adminKey);
-  if (params) {
-    Object.keys(params).forEach(function(k) {
-      url += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(params[k] == null ? '' : params[k]);
-    });
-  }
-  url += '&callback=' + cbName;
-
-  window[cbName] = function(data) {
-    try { document.head.removeChild(script); } catch(e) {}
-    delete window[cbName];
-    if (successCb) successCb(data);
-  };
-
-  var script = document.createElement('script');
-  script.onerror = function() {
-    try { document.head.removeChild(script); } catch(e) {}
-    delete window[cbName];
-    if (errorCb) errorCb(new Error('Error de red'));
-  };
-  // timeout
-  var t = setTimeout(function() {
-    if (window[cbName]) {
-      delete window[cbName];
-      try { document.head.removeChild(script); } catch(e) {}
-      if (errorCb) errorCb(new Error('Timeout'));
+// ── JSONP helper ───────────────────────────────────────────
+function gasCall(page, params) {
+  return new Promise(function(resolve, reject) {
+    var cb = 'gc_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+    var url = GAS_URL + '?page=' + encodeURIComponent(page) + '&callback=' + cb;
+    for (var k in params) {
+      if (params[k] !== undefined && params[k] !== null && params[k] !== '') {
+        url += '&' + k + '=' + encodeURIComponent(params[k]);
+      }
     }
-  }, 20000);
-  var origCb = window[cbName];
-  window[cbName] = function(data) { clearTimeout(t); origCb(data); };
-
-  script.src = url;
-  document.head.appendChild(script);
+    window[cb] = function(data) {
+      delete window[cb];
+      if (s.parentNode) s.parentNode.removeChild(s);
+      resolve(data);
+    };
+    var s = document.createElement('script');
+    s.src = url;
+    s.onerror = function() {
+      delete window[cb];
+      if (s.parentNode) s.parentNode.removeChild(s);
+      reject(new Error('Error de red'));
+    };
+    document.head.appendChild(s);
+  });
 }
 
 // ── Gate ───────────────────────────────────────────────────
+
 function gateSubmit() {
   var val = document.getElementById('gate-input').value;
   if (val === ADMIN_PASSWORD) {
-    _adminKey = val;
-    try { localStorage.setItem('dicho_admin_key', val); } catch(e) {}
+    try { localStorage.setItem('dicho_admin_key', ADMIN_PASSWORD); } catch(e) {}
     document.getElementById('gate').classList.remove('open');
     init();
   } else {
@@ -469,7 +453,6 @@ function checkGate() {
   var stored = '';
   try { stored = localStorage.getItem('dicho_admin_key') || ''; } catch(e) {}
   if (stored === ADMIN_PASSWORD) {
-    _adminKey = stored;
     document.getElementById('gate').classList.remove('open');
     init();
   } else {
@@ -478,6 +461,7 @@ function checkGate() {
 }
 
 // ── Views ──────────────────────────────────────────────────
+
 function showClientes() {
   document.getElementById('view-clientes').classList.add('active');
   document.getElementById('view-ubicaciones').classList.remove('active');
@@ -502,6 +486,7 @@ function showUbicaciones(client) {
 }
 
 // ── Data loaders ───────────────────────────────────────────
+
 function init() {
   loadClients();
   loadAllLocations();
@@ -509,28 +494,32 @@ function init() {
 }
 
 function loadFeedbackCounts() {
-  gasCall('getFeedbackCounts', null, function(res) {
-    feedbackCounts = (res && res.data) ? res.data : {};
-    renderClients();
-  }, function() { feedbackCounts = {}; });
+  gasCall('api_admin_getFeedbackCounts', { pwd: ADMIN_PASSWORD })
+    .then(function(res) { feedbackCounts = (res && res.data) || {}; renderClients(); })
+    .catch(function() { feedbackCounts = {}; });
 }
 
 function loadClients() {
-  gasCall('getClients', null, function(res) {
-    clients = (res && res.data) ? res.data : [];
-    renderClients();
-  }, function(e) { toast('Error al cargar clientes: ' + e.message); });
+  gasCall('api_admin_getClients', { pwd: ADMIN_PASSWORD })
+    .then(function(res) {
+      if (res && res.ok) { clients = res.data || []; renderClients(); }
+      else { toast('Error al cargar clientes: ' + (res && res.error ? res.error : 'inténtalo de nuevo')); }
+    })
+    .catch(function(e) { toast('Error al cargar clientes: ' + e.message); });
 }
 
 function loadAllLocations() {
-  gasCall('getLocations', null, function(res) {
-    locations = (res && res.data) ? res.data : [];
-    renderClients();
-    if (activeClient) renderLocations();
-  }, function(e) { console.error(e); });
+  gasCall('api_admin_getLocations', { pwd: ADMIN_PASSWORD })
+    .then(function(res) {
+      locations = (res && res.data) || [];
+      renderClients();
+      if (activeClient) renderLocations();
+    })
+    .catch(function(e) { console.error(e); });
 }
 
 // ── Renderers ──────────────────────────────────────────────
+
 function renderClients() {
   var el = document.getElementById('clients-list');
   if (!clients.length) {
@@ -540,7 +529,7 @@ function renderClients() {
   var html = clients.map(function(c) {
     var locCount = locations.filter(function(l) { return l.clienteId === c.id; }).length;
     var fbCount  = (feedbackCounts[c.id] || 0);
-    var dashUrl  = GAS_DASH_URL + '?page=dashboard&token=' + encodeURIComponent(c.id);
+    var dashUrl  = 'https://dichosea.com/dashboard.html?token=' + encodeURIComponent(c.id);
     var meta = [];
     if (c.email)  meta.push(esc(c.email));
     if (c.plan)   meta.push('<span class="badge badge-blue">' + esc(c.plan.split('/')[0].trim()) + '</span>');
@@ -587,6 +576,7 @@ function renderLocations() {
 }
 
 // ── Actions ────────────────────────────────────────────────
+
 function addClient() {
   var negocio = document.getElementById('c-negocio').value.trim();
   if (!negocio) { toast('El nombre del negocio es obligatorio'); return; }
@@ -595,7 +585,7 @@ function addClient() {
   btn.disabled = true;
   btn.textContent = 'Guardando…';
 
-  var params = {
+  var data = {
     nombre:   document.getElementById('c-nombre').value.trim(),
     negocio:  negocio,
     tipo:     document.getElementById('c-tipo').value,
@@ -604,36 +594,44 @@ function addClient() {
     whatsapp: document.getElementById('c-wa').value.trim()
   };
 
-  gasCall('createClient', params, function(res) {
-    btn.disabled = false;
-    btn.textContent = '+ Añadir cliente';
-    if (res && res.ok) {
-      toast('Cliente añadido ✓');
-      document.getElementById('c-nombre').value  = '';
-      document.getElementById('c-negocio').value = '';
-      document.getElementById('c-tipo').value    = '';
-      document.getElementById('c-ciudad').value  = '';
-      document.getElementById('c-email').value   = '';
-      document.getElementById('c-wa').value      = '';
-      loadClients();
-      loadAllLocations();
-    } else {
-      toast('Error: ' + (res && res.error ? res.error : 'inténtalo de nuevo'));
-    }
-  }, function(e) {
-    btn.disabled = false;
-    btn.textContent = '+ Añadir cliente';
-    toast('Error: ' + e.message);
-  });
+  gasCall('api_admin_createClient', {
+    pwd: ADMIN_PASSWORD,
+    nombre:   data.nombre,
+    negocio:  data.negocio,
+    tipo:     data.tipo,
+    ciudad:   data.ciudad,
+    email:    data.email,
+    whatsapp: data.whatsapp
+  })
+    .then(function(res) {
+      btn.disabled = false;
+      btn.textContent = '+ Añadir cliente';
+      if (res && res.ok) {
+        toast('Cliente añadido ✓');
+        document.getElementById('c-nombre').value  = '';
+        document.getElementById('c-negocio').value = '';
+        document.getElementById('c-tipo').value    = '';
+        document.getElementById('c-ciudad').value  = '';
+        document.getElementById('c-email').value   = '';
+        document.getElementById('c-wa').value      = '';
+        loadClients();
+        loadAllLocations();
+      } else {
+        toast('Error: ' + (res && res.error ? res.error : 'inténtalo de nuevo'));
+      }
+    })
+    .catch(function(e) {
+      btn.disabled = false;
+      btn.textContent = '+ Añadir cliente';
+      toast('Error: ' + e.message);
+    });
 }
 
 function removeClient(id) {
   if (!confirm('¿Eliminar este cliente y todas sus ubicaciones?')) return;
-  gasCall('deleteClient', { id: id }, function() {
-    toast('Cliente eliminado');
-    loadClients();
-    loadAllLocations();
-  }, function(e) { toast('Error: ' + e.message); });
+  gasCall('api_admin_deleteClient', { pwd: ADMIN_PASSWORD, id: id })
+    .then(function() { toast('Cliente eliminado'); loadClients(); loadAllLocations(); })
+    .catch(function(e) { toast('Error: ' + e.message); });
 }
 
 function addLocation() {
@@ -641,29 +639,32 @@ function addLocation() {
   var nombre = document.getElementById('l-nombre').value.trim();
   var ciudad = document.getElementById('l-ciudad').value.trim();
   if (!nombre || !ciudad) { toast('Completa nombre y ciudad'); return; }
-  gasCall('createLocation', {
+  gasCall('api_admin_createLocation', {
+    pwd: ADMIN_PASSWORD,
     clienteId:     activeClient.id,
     clienteNombre: activeClient.nombre,
     nombre:        nombre,
     ciudad:        ciudad
-  }, function(res) {
-    document.getElementById('l-nombre').value = '';
-    document.getElementById('l-ciudad').value = '';
-    toast('Ubicación creada ✓');
-    loadAllLocations();
-    if (res && res.qrUrl) setTimeout(function() { showQR(res); }, 600);
-  }, function(e) { toast('Error: ' + e.message); });
+  })
+    .then(function(res) {
+      document.getElementById('l-nombre').value = '';
+      document.getElementById('l-ciudad').value = '';
+      toast('Ubicación creada ✓');
+      loadAllLocations();
+      if (res && res.loc && res.loc.qrUrl) setTimeout(function() { showQR(res.loc); }, 600);
+    })
+    .catch(function(e) { toast('Error: ' + e.message); });
 }
 
 function removeLocation(id) {
   if (!confirm('¿Eliminar esta ubicación?')) return;
-  gasCall('deleteLocation', { id: id }, function() {
-    toast('Ubicación eliminada');
-    loadAllLocations();
-  }, function(e) { toast('Error: ' + e.message); });
+  gasCall('api_admin_deleteLocation', { pwd: ADMIN_PASSWORD, id: id })
+    .then(function() { toast('Ubicación eliminada'); loadAllLocations(); })
+    .catch(function(e) { toast('Error: ' + e.message); });
 }
 
 // ── QR Modal ───────────────────────────────────────────────
+
 function showQR(l) {
   document.getElementById('qr-title').textContent     = l.nombre || l.nombreUbicacion || '';
   document.getElementById('qr-code-text').textContent = 'Código: ' + (l.codigo || '');
@@ -688,6 +689,7 @@ function copyWaUrl() {
 }
 
 // ── Utils ──────────────────────────────────────────────────
+
 function toast(msg) {
   var el = document.getElementById('toast');
   el.textContent = msg;
@@ -789,7 +791,7 @@ function makeAutocomplete(inputId, listId, wrapId) {
   });
 }
 
-// Inicializar autocompletes y arrancar
+// Inicializar ambos autocompletes
 makeAutocomplete('c-ciudad', 'c-ciudad-list', 'c-ciudad-wrap');
 makeAutocomplete('l-ciudad', 'l-ciudad-list', 'l-ciudad-wrap');
 
