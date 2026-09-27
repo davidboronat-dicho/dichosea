@@ -298,28 +298,28 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
             <div class="toggle-title" data-i18n="n1_title">Nuevo feedback recibido</div>
             <div class="toggle-desc" data-i18n="n1_desc">Recibe un email cada vez que un cliente deja un feedback</div>
           </div>
-          <label class="toggle"><input type="checkbox" id="notif-nuevo" checked><span class="toggle-track"></span></label>
+          <label class="toggle"><input type="checkbox" id="notif-nuevo" checked onchange="saveNotif()"><span class="toggle-track"></span></label>
         </div>
         <div class="toggle-row">
           <div class="toggle-info">
             <div class="toggle-title" data-i18n="n2_title">Resumen semanal</div>
             <div class="toggle-desc" data-i18n="n2_desc">Un informe con los principales indicadores de la semana, cada lunes</div>
           </div>
-          <label class="toggle"><input type="checkbox" id="notif-semanal" checked><span class="toggle-track"></span></label>
+          <label class="toggle"><input type="checkbox" id="notif-semanal" checked onchange="saveNotif()"><span class="toggle-track"></span></label>
         </div>
         <div class="toggle-row">
           <div class="toggle-info">
             <div class="toggle-title" data-i18n="n3_title">Alerta de sentimiento negativo</div>
             <div class="toggle-desc" data-i18n="n3_desc">Aviso inmediato cuando un feedback tiene valoración baja o sentimiento negativo</div>
           </div>
-          <label class="toggle"><input type="checkbox" id="notif-negativo"><span class="toggle-track"></span></label>
+          <label class="toggle"><input type="checkbox" id="notif-negativo" onchange="saveNotif()"><span class="toggle-track"></span></label>
         </div>
         <div class="toggle-row">
           <div class="toggle-info">
             <div class="toggle-title" data-i18n="n4_title">Feedback listo para publicar</div>
             <div class="toggle-desc" data-i18n="n4_desc">Te avisamos cuando la IA detecta un feedback apto para Google Maps</div>
           </div>
-          <label class="toggle"><input type="checkbox" id="notif-publicar" checked><span class="toggle-track"></span></label>
+          <label class="toggle"><input type="checkbox" id="notif-publicar" checked onchange="saveNotif()"><span class="toggle-track"></span></label>
         </div>
       </div>
     </div>
@@ -632,11 +632,7 @@ function renderPlan(planKey) {
       + p.locked.map(function(f){ return '<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted-l);margin-bottom:8px">'+ICO_LOCK+f[l]+'</div>'; }).join('');
   }
   document.getElementById('plan-body').innerHTML = card + '<div>' + feats + locks + '</div>';
-  var billingLabel = l==='en'?'View billing history':l==='ca'?'Veure historial de pagaments':'Ver historial de pagos';
-  var upgradeLabel = l==='en'?'Upgrade plan':l==='ca'?'Millorar pla':'Mejorar plan';
-  var foot = '<button class="btn-ghost">'+billingLabel+'</button>';
-  if (p.upgrade) foot += '<button class="btn-upgrade"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 11 12 6 7 11"/><line x1="12" y1="6" x2="12" y2="18"/></svg> '+upgradeLabel+'</button>';
-  document.getElementById('plan-foot').innerHTML = foot;
+  document.getElementById('plan-foot').innerHTML = '';
 }
 
 (function init() {
