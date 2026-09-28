@@ -421,8 +421,8 @@ body {
 .footer-lang-btn:hover { color: var(--ink); }
 .footer-lang-btn.active { color: var(--g); }
 /* ── COOKIE BANNER ── */
-[hidden] { display: none !important; }
 #cookie-banner {
+  display: none;
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
   background: var(--always-dark);
   border-top: 1px solid rgba(255,255,255,.08);
@@ -752,7 +752,7 @@ body {
 </footer>
 
 <!-- COOKIE BANNER -->
-<div id="cookie-banner" role="dialog" aria-label="Aviso de cookies" hidden>
+<div id="cookie-banner" role="dialog" aria-label="Aviso de cookies">
   <p id="cookie-text">
     Usamos cookies estrictamente necesarias para el funcionamiento del sitio.
     Consulta nuestra <a href="privacy.html" id="cookie-privacy-link">política de privacidad</a>.
@@ -992,14 +992,12 @@ setLang(LANG);
 (function() {
   var banner = document.getElementById('cookie-banner');
   var btn    = document.getElementById('cookie-banner-accept');
-  try {
-    if (!localStorage.getItem('dicho_cookies_ok')) {
-      banner.hidden = false;
-    }
-  } catch(e) { banner.hidden = false; }
+  var accepted = false;
+  try { accepted = !!localStorage.getItem('dicho_cookies_ok'); } catch(e) {}
+  if (!accepted) banner.style.display = 'flex';
   btn.addEventListener('click', function() {
     try { localStorage.setItem('dicho_cookies_ok', '1'); } catch(e) {}
-    banner.hidden = true;
+    banner.style.display = 'none';
   });
 })();
 
