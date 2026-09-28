@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Página no encontrada · Dicho</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+<style>
+:root {
+  --bg: #F5F1E8; --ink: #1C2B20; --ink-2: #3E4E41;
+  --g: #16A34A; --border: #D8D2C3; --muted: #6B7A6E;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111A14; --ink: #EBF0EC; --ink-2: #B0C2B3;
+    --g: #22C55E; --border: #2A3B2C; --muted: #7B9180;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111A14; --ink: #EBF0EC; --ink-2: #B0C2B3;
+  --g: #22C55E; --border: #2A3B2C; --muted: #7B9180;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--bg); color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  display: flex; flex-direction: column;
+}
+.wrap { padding-inline: max(20px, calc((100% - 700px) / 2)); }
+.nav {
+  height: 56px; display: flex; align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-size: 18px; font-weight: 800; color: var(--g); text-decoration: none; }
+.nav-logo span { color: var(--ink); }
+.hero {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 64px 20px;
+}
+.hero-inner { max-width: 480px; }
+.ghost {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(100px, 20vw, 160px);
+  font-weight: 700; font-style: italic;
+  color: var(--g); opacity: .12; line-height: 1;
+  margin-bottom: -12px;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(24px, 4vw, 36px); font-weight: 700;
+  color: var(--ink); margin-bottom: 14px; line-height: 1.2;
+}
+.hero p {
+  font-size: 16px; color: var(--ink-2); line-height: 1.65;
+  margin-bottom: 32px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--g); color: #fff;
+  padding: 12px 24px; border-radius: 10px;
+  font-size: 15px; font-weight: 700; text-decoration: none;
+  transition: opacity .15s;
+}
+.btn:hover { opacity: .85; }
+.footer {
+  border-top: 1px solid var(--border); padding-block: 20px;
+  font-size: 13px; color: var(--muted); text-align: center;
+}
+</style>
+</head>
+<body>
+<header>
+  <nav class="nav wrap">
+    <a href="/" class="nav-logo">dicho<span>.</span></a>
+  </nav>
+</header>
+<main class="hero">
+  <div class="hero-inner">
+    <div class="ghost">404</div>
+    <h1>Esta página no existe</h1>
+    <p>Parece que el enlace que seguiste no lleva a ningún sitio.<br>No pasa nada — volvamos al inicio.</p>
+    <a href="/" class="btn">← Ir a dichosea.com</a>
+  </div>
+</main>
+<footer class="wrap">
+  <div class="footer">© 2026 Dicho · <a href="privacy.html" style="color:inherit">Privacidad</a> · <a href="terms.html" style="color:inherit">Términos</a></div>
+</footer>
+</body>
+</html>
