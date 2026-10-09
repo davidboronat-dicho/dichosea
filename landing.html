@@ -200,10 +200,10 @@
 </head>
 <body>
 
-  <!-- Loading -->
+  <!-- Loading: el texto solo aparece si el idioma del negocio viene en la URL (?lang=) -->
   <div class="loading-wrap" id="loading">
     <div class="spinner"></div>
-    <span id="loadingText">Un momento…</span>
+    <span id="loadingText"></span>
   </div>
 
   <!-- Error -->
@@ -335,15 +335,6 @@
       }, 1000);
     }
 
-    function detectBrowserLang() {
-      var paramLang = params.get('lang');
-      if (paramLang && copy[paramLang]) return paramLang;
-      var nav = navigator.language || navigator.userLanguage || 'es';
-      if (nav.startsWith('en')) return 'en';
-      if (nav.toLowerCase().startsWith('es-mx')) return 'es-mx';
-      return 'es';
-    }
-
     function applyLang(idioma) {
       var t = copy[idioma] || copy['es'];
       document.getElementById('headline').innerHTML       = t.headline;
@@ -354,7 +345,12 @@
       return t;
     }
 
-    applyLang(detectBrowserLang());
+    // "Un momento…" solo se muestra si el idioma del negocio viene en la URL (?lang=ca, es, es-mx, en).
+    // Si no viene, se ve solo el spinner hasta que llega el idioma real del negocio.
+    var urlLang = params.get('lang');
+    if (urlLang && copy[urlLang]) {
+      document.getElementById('loadingText').textContent = copy[urlLang].loading;
+    }
 
     var CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
     var CACHE_KEY = 'dicho_landing_' + storeId;
