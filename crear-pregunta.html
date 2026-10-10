@@ -103,6 +103,13 @@ nav {
 .btn-ghost-sm:hover { color: var(--ink); border-color: var(--muted); }
 
 [hidden] { display: none !important; }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-sep { width: 1px; height: 18px; background: var(--border); }
+.lang-sw { display: flex; gap: 4px; }
+.lang-btn { background: none; border: none; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--muted); cursor: pointer; padding: 4px 6px; border-radius: 6px; }
+.lang-btn:hover { color: var(--ink); }
+.lang-btn.active { color: var(--g); background: var(--g-f); }
+@media (max-width: 640px) { .nav-link { display: none; } .nav-sep { display: none; } .nav-logo small { display: none; } }
 /* en modo crear no se muestra la tarjeta: solo el formulario, centrado */
 body.mode-crear .qr-col { display: none; }
 body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify-content: center; }
@@ -166,51 +173,59 @@ body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify
 <body class="mode-crear">
 
 <nav class="wrap">
-  <a class="nav-logo" href="https://dichosea.com/preguntas"><b>dicho<span>.</span></b><small>Preguntas</small></a>
-  <a class="nav-link" href="https://dichosea.com/login.html">¿Ya tienes cuenta? Accede</a>
+  <a class="nav-logo" id="logo-link" href="https://dichosea.com/preguntas"><b>dicho<span>.</span></b><small data-i18n="nav_tag">Preguntas</small></a>
+  <div class="nav-right">
+    <a class="nav-link" id="login-link" href="https://dichosea.com/login.html" data-i18n="nav_login">¿Ya tienes cuenta? Accede</a>
+    <div class="nav-sep"></div>
+    <div class="lang-sw" role="group" aria-label="Idioma">
+      <button type="button" class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+      <button type="button" class="lang-btn" data-lang="ca" onclick="setLang('ca')">CA</button>
+      <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
 </nav>
 
 <main class="confirm-wrap wrap">
 
   <!-- ═══════ IZQUIERDA · ESTADO 1: CREAR ═══════ -->
   <div class="confirm-left" id="view-crear">
-    <span class="confirm-eyebrow">Gratis · en 2 minutos</span>
-    <h1 class="confirm-h">Crea tu<br><em>primera pregunta.</em></h1>
-    <p class="confirm-sub">Escríbela y crea tu cuenta. Al terminar tendrás tu QR listo para imprimir.</p>
+    <span class="confirm-eyebrow" data-i18n="c_eye">Gratis · en 2 minutos</span>
+    <h1 class="confirm-h" data-i18n-html="c_h">Crea tu<br><em>primera pregunta.</em></h1>
+    <p class="confirm-sub" data-i18n="c_sub">Escríbela y crea tu cuenta. Al terminar tendrás tu QR listo para imprimir.</p>
 
     <form class="f-block" id="lead-form" novalidate>
-      <div class="f-step"><i>1</i> Tu pregunta</div>
+      <div class="f-step"><i>1</i> <span data-i18n="c_step1">Tu pregunta</span></div>
       <div class="fgroup">
-        <textarea id="f-pregunta" maxlength="120" rows="2" aria-label="Tu pregunta" placeholder="¿Qué plato te gustaría ver en nuestra carta?"></textarea>
+        <textarea id="f-pregunta" maxlength="120" rows="2" data-i18n-aria="c_step1" data-i18n-placeholder="c_q_ph" aria-label="Tu pregunta" placeholder="¿Qué plato te gustaría ver en nuestra carta?"></textarea>
         <div class="f-count"><span id="f-count">0</span>/120</div>
       </div>
-      <div class="f-tip">💡 Las preguntas abiertas funcionan mejor: <strong>«¿Qué cambiarías?»</strong> da más que «¿Te gustó?».</div>
+      <div class="f-tip" data-i18n-html="c_tip">💡 Las preguntas abiertas funcionan mejor: <strong>«¿Qué cambiarías?»</strong> da más que «¿Te gustó?».</div>
 
-      <div class="f-step"><i>2</i> Tus datos</div>
+      <div class="f-step"><i>2</i> <span data-i18n="c_step2">Tus datos</span></div>
       <div class="frow">
         <div class="fgroup">
-          <label for="f-nombre">Nombre y apellidos</label>
-          <input id="f-nombre" type="text" placeholder="Ana García" autocomplete="name">
+          <label for="f-nombre" data-i18n="f_nombre">Nombre y apellidos</label>
+          <input id="f-nombre" type="text" data-i18n-placeholder="f_nombre_ph" placeholder="Ana García" autocomplete="name">
         </div>
         <div class="fgroup">
-          <label for="f-negocio">Negocio u organización</label>
-          <input id="f-negocio" type="text" maxlength="50" placeholder="Restaurante El Mirador" autocomplete="organization">
+          <label for="f-negocio" data-i18n="f_negocio">Negocio u organización</label>
+          <input id="f-negocio" type="text" maxlength="50" data-i18n-placeholder="f_negocio_ph" placeholder="Restaurante El Mirador" autocomplete="organization">
         </div>
       </div>
       <div class="frow">
         <div class="fgroup">
-          <label for="f-email">Correo electrónico</label>
-          <input id="f-email" type="email" placeholder="ana@negocio.com" autocomplete="email">
+          <label for="f-email" data-i18n="f_email">Correo electrónico</label>
+          <input id="f-email" type="email" data-i18n-placeholder="f_email_ph" placeholder="ana@negocio.com" autocomplete="email">
         </div>
         <div class="fgroup">
           <label for="f-wa">WhatsApp</label>
-          <input id="f-wa" type="tel" placeholder="+34 612 345 678" autocomplete="tel">
+          <input id="f-wa" type="tel" data-i18n-placeholder="f_wa_ph" placeholder="+34 612 345 678" autocomplete="tel">
         </div>
       </div>
 
-      <button class="btn-submit" type="submit" id="submit-btn">Crear mi pregunta →</button>
+      <button class="btn-submit" type="submit" id="submit-btn" data-i18n="f_submit">Crear mi pregunta →</button>
       <p class="form-error" id="form-error"></p>
-      <p class="f-legal">Al continuar aceptas los <a href="https://dichosea.com/terms.html">términos</a> y la <a href="https://dichosea.com/privacy.html">política de privacidad</a>.</p>
+      <p class="f-legal" data-i18n-html="f_legal">Al continuar aceptas los <a href="https://dichosea.com/terms.html">términos</a> y la <a href="https://dichosea.com/privacy.html">política de privacidad</a>.</p>
     </form>
   </div>
 
@@ -219,58 +234,58 @@ body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify
     <div class="check-ring">
       <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
-    <span class="confirm-eyebrow">¡Tu pregunta ya está activa!</span>
-    <h1 class="confirm-h">Bienvenido,<br><em id="biz-name">tu organización.</em></h1>
-    <p class="confirm-sub">Tu QR está listo para imprimir. Ponlo donde la gente tenga un momento para responder: en la mesa, la recepción, la sala de descanso o la salida.</p>
+    <span class="confirm-eyebrow" data-i18n="l_eye">¡Tu pregunta ya está activa!</span>
+    <h1 class="confirm-h"><span data-i18n="l_h">Bienvenido,</span><br><em id="biz-name">tu organización.</em></h1>
+    <p class="confirm-sub" data-i18n="l_sub">Tu QR está listo para imprimir. Ponlo donde la gente tenga un momento para responder: en la mesa, la recepción, la sala de descanso o la salida.</p>
 
     <div class="next-steps">
       <div class="step-row">
         <div class="step-dot step-done"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="step-text"><strong>Pregunta creada</strong>Tu cuenta y tu primera pregunta están registradas en Dicho.</div>
+        <div class="step-text"><strong data-i18n="l_s1h">Pregunta creada</strong><span data-i18n="l_s1p">Tu cuenta y tu primera pregunta están registradas en Dicho.</span></div>
       </div>
       <div class="step-row">
         <div class="step-dot">2</div>
-        <div class="step-text"><strong>Imprime la tarjeta y colócala</strong>Usa la tarjeta de la derecha. Un clic para imprimir.</div>
+        <div class="step-text"><strong data-i18n="l_s2h">Imprime la tarjeta y colócala</strong><span data-i18n="l_s2p">Usa la tarjeta de la derecha. Un clic para imprimir.</span></div>
       </div>
       <div class="step-row">
         <div class="step-dot step-off">3</div>
-        <div class="step-text"><strong>Escucha las respuestas en tu panel</strong>Verás cada audio transcrito, los temas que se repiten y un resumen de la IA.</div>
+        <div class="step-text"><strong data-i18n="l_s3h">Escucha las respuestas en tu panel</strong><span data-i18n="l_s3p">Verás cada audio transcrito, los temas que se repiten y un resumen de la IA.</span></div>
       </div>
     </div>
 
     <div class="mail-pill">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
-      Te enviamos el acceso a <strong id="mail-addr">tu correo</strong>
+      <span data-i18n="l_mail">Te enviamos el acceso a</span> <strong id="mail-addr"></strong>
     </div>
 
     <div class="btn-row">
       <a class="btn-dash" id="btn-dash" href="#">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
-        Ir a mi panel
+        <span data-i18n="l_dash">Ir a mi panel</span>
       </a>
-      <a class="btn-ghost-sm" href="https://dichosea.com/preguntas">Volver al inicio</a>
+      <a class="btn-ghost-sm" id="home-link" href="https://dichosea.com/preguntas" data-i18n="l_home">Volver al inicio</a>
     </div>
   </div>
 
   <!-- ═══════ DERECHA: TARJETA ═══════ -->
   <div class="qr-col">
-    <span class="qr-label" id="qr-label" hidden>Tu tarjeta para imprimir</span>
+    <span class="qr-label" id="qr-label" data-i18n="q_label" hidden>Tu tarjeta para imprimir</span>
 
     <div class="qr-card" id="printable-card">
       <div class="card-left">
         <div>
-          <div class="cl-eye">Queremos saber</div>
+          <div class="cl-eye" data-i18n="k_eye">Queremos saber</div>
           <p class="cl-headline" id="card-q"></p>
-          <div class="cl-scan-label">Escáneame</div>
-          <div class="cl-scan-text">Respóndenos con un audio y listo.<br><span class="cl-note">(Sin apps ni registros ;)</span></div>
+          <div class="cl-scan-label" data-i18n="k_scan">Escáneame</div>
+          <div class="cl-scan-text"><span data-i18n="k_text">Respóndenos con un audio y listo.</span><br><span class="cl-note" data-i18n="k_note">(Sin apps ni registros ;)</span></div>
         </div>
-        <div class="cl-biz" id="card-biz">El Mirador</div>
+        <div class="cl-biz" id="card-biz"></div>
       </div>
       <div class="card-right">
-        <div class="cr-top"><span class="cr-via">vía</span><span class="cr-wa">WHATSAPP</span></div>
+        <div class="cr-top"><span class="cr-via" data-i18n="k_via">vía</span><span class="cr-wa">WHATSAPP</span></div>
         <div class="cr-qr">
           <div class="qr-wrap preview" id="qr-wrap">
-            <img id="qr-img" alt="Código QR">
+            <img id="qr-img" alt="QR">
             <canvas id="qr-overlay" width="220" height="220"></canvas>
           </div>
         </div>
@@ -278,15 +293,14 @@ body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify
       </div>
     </div>
 
-
     <div class="qr-actions" id="qr-actions" hidden>
       <button class="btn-print" onclick="window.print()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Imprimir tarjeta
+        <span data-i18n="q_print">Imprimir tarjeta</span>
       </button>
       <button class="btn-dl" onclick="descargarQR()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Descargar QR
+        <span data-i18n="q_dl">Descargar QR</span>
       </button>
     </div>
   </div>
@@ -295,27 +309,144 @@ body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify
 
 <script>
 // ── CONFIGURACIÓN ────────────────────────────────────────────────
-// Mismo Apps Script que la home. Envía modo=preguntas y pregunta (sin tipo de negocio).
+// Mismo Apps Script que la home. Envía modo=preguntas, la pregunta y el idioma.
 var DICHO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
 
-var PREGUNTA_EJEMPLO = '¿Qué plato te gustaría ver en nuestra carta?';
+// ── i18n ─────────────────────────────────────────────────────────
+var LANG = 'es';
+var TR = {
+  es: {
+    title_c:'Dicho · Crea tu pregunta', title_l:'Dicho · Tu pregunta está lista',
+    nav_tag:'Preguntas', nav_login:'¿Ya tienes cuenta? Accede',
+    c_eye:'Gratis · en 2 minutos', c_h:'Crea tu<br><em>primera pregunta.</em>',
+    c_sub:'Escríbela y crea tu cuenta. Al terminar tendrás tu QR listo para imprimir.',
+    c_step1:'Tu pregunta', c_q_ph:'¿Qué plato te gustaría ver en nuestra carta?',
+    c_tip:'💡 Las preguntas abiertas funcionan mejor: <strong>«¿Qué cambiarías?»</strong> da más que «¿Te gustó?».',
+    c_step2:'Tus datos',
+    f_nombre:'Nombre y apellidos', f_nombre_ph:'Ana García',
+    f_negocio:'Negocio u organización', f_negocio_ph:'Restaurante El Mirador',
+    f_email:'Correo electrónico', f_email_ph:'ana@negocio.com', f_wa_ph:'+34 612 345 678',
+    f_submit:'Crear mi pregunta →', f_loading:'Creando tu pregunta…',
+    f_legal:'Al continuar aceptas los <a href="https://dichosea.com/terms.html?lang=es">términos</a> y la <a href="https://dichosea.com/privacy.html?lang=es">política de privacidad</a>.',
+    e_campos:'Por favor completa todos los campos.', e_email:'Revisa el correo electrónico.',
+    e_general:'No pudimos crear tu pregunta. Revisa tu conexión e inténtalo de nuevo.',
+    l_eye:'¡Tu pregunta ya está activa!', l_h:'Bienvenido,',
+    l_sub:'Tu QR está listo para imprimir. Ponlo donde la gente tenga un momento para responder: en la mesa, la recepción, la sala de descanso o la salida.',
+    l_s1h:'Pregunta creada', l_s1p:'Tu cuenta y tu primera pregunta están registradas en Dicho.',
+    l_s2h:'Imprime la tarjeta y colócala', l_s2p:'Usa la tarjeta de la derecha. Un clic para imprimir.',
+    l_s3h:'Escucha las respuestas en tu panel', l_s3p:'Verás cada audio transcrito, los temas que se repiten y un resumen de la IA.',
+    l_mail:'Te enviamos el acceso a', l_mail_def:'tu correo', l_dash:'Ir a mi panel', l_home:'Volver al inicio',
+    l_org_def:'tu organización.', q_label:'Tu tarjeta para imprimir', q_print:'Imprimir tarjeta', q_dl:'Descargar QR',
+    k_eye:'Queremos saber', k_scan:'Escáneame', k_text:'Respóndenos con un audio y listo.', k_note:'(Sin apps ni registros ;)',
+    k_via:'vía', k_org_def:'Tu organización'
+  },
+  ca: {
+    title_c:'Dicho · Crea la teva pregunta', title_l:'Dicho · La teva pregunta és a punt',
+    nav_tag:'Preguntes', nav_login:'Ja tens compte? Accedeix',
+    c_eye:'Gratis · en 2 minuts', c_h:'Crea la teva<br><em>primera pregunta.</em>',
+    c_sub:'Escriu-la i crea el teu compte. En acabar tindràs el QR llest per imprimir.',
+    c_step1:'La teva pregunta', c_q_ph:'Quin plat t\'agradaria veure a la nostra carta?',
+    c_tip:'💡 Les preguntes obertes funcionen millor: <strong>«Què canviaries?»</strong> dona més que «T\'ha agradat?».',
+    c_step2:'Les teves dades',
+    f_nombre:'Nom i cognoms', f_nombre_ph:'Anna García',
+    f_negocio:'Negoci o organització', f_negocio_ph:'Restaurant El Mirador',
+    f_email:'Correu electrònic', f_email_ph:'anna@negoci.com', f_wa_ph:'+34 612 345 678',
+    f_submit:'Crear la meva pregunta →', f_loading:'Creant la teva pregunta…',
+    f_legal:'En continuar acceptes els <a href="https://dichosea.com/terms.html?lang=ca">termes</a> i la <a href="https://dichosea.com/privacy.html?lang=ca">política de privadesa</a>.',
+    e_campos:'Si us plau, omple tots els camps.', e_email:'Revisa el correu electrònic.',
+    e_general:'No hem pogut crear la teva pregunta. Revisa la connexió i torna-ho a provar.',
+    l_eye:'La teva pregunta ja està activa!', l_h:'Benvingut,',
+    l_sub:'El teu QR està llest per imprimir. Posa\'l on la gent tingui un moment per respondre: a la taula, la recepció, la sala de descans o la sortida.',
+    l_s1h:'Pregunta creada', l_s1p:'El teu compte i la teva primera pregunta estan registrats a Dicho.',
+    l_s2h:'Imprimeix la targeta i col·loca-la', l_s2p:'Fes servir la targeta de la dreta. Un clic per imprimir.',
+    l_s3h:'Escolta les respostes al teu panell', l_s3p:'Veuràs cada àudio transcrit, els temes que es repeteixen i un resum de la IA.',
+    l_mail:'T\'hem enviat l\'accés a', l_mail_def:'el teu correu', l_dash:'Anar al meu panell', l_home:'Tornar a l\'inici',
+    l_org_def:'la teva organització.', q_label:'La teva targeta per imprimir', q_print:'Imprimir targeta', q_dl:'Descarregar QR',
+    k_eye:'Volem saber', k_scan:'Escaneja\'m', k_text:'Respon-nos amb un àudio i llestos.', k_note:'(Sense apps ni registres ;)',
+    k_via:'via', k_org_def:'La teva organització'
+  },
+  en: {
+    title_c:'Dicho · Create your question', title_l:'Dicho · Your question is ready',
+    nav_tag:'Questions', nav_login:'Already have an account? Log in',
+    c_eye:'Free · 2 minutes', c_h:'Create your<br><em>first question.</em>',
+    c_sub:'Write it and create your account. When you finish, your QR code will be ready to print.',
+    c_step1:'Your question', c_q_ph:'Which dish would you like to see on our menu?',
+    c_tip:'💡 Open questions work best: <strong>“What would you change?”</strong> gets more than “Did you like it?”.',
+    c_step2:'Your details',
+    f_nombre:'Full name', f_nombre_ph:'Ana García',
+    f_negocio:'Business or organization', f_negocio_ph:'El Mirador Restaurant',
+    f_email:'Email', f_email_ph:'ana@business.com', f_wa_ph:'+1 555 123 4567',
+    f_submit:'Create my question →', f_loading:'Creating your question…',
+    f_legal:'By continuing you accept the <a href="https://dichosea.com/terms.html?lang=en">terms</a> and the <a href="https://dichosea.com/privacy.html?lang=en">privacy policy</a>.',
+    e_campos:'Please fill in all fields.', e_email:'Please check your email address.',
+    e_general:'We couldn\'t create your question. Check your connection and try again.',
+    l_eye:'Your question is live!', l_h:'Welcome,',
+    l_sub:'Your QR code is ready to print. Put it where people have a moment to answer: on the table, at reception, in the break room or by the exit.',
+    l_s1h:'Question created', l_s1p:'Your account and your first question are registered in Dicho.',
+    l_s2h:'Print the card and put it up', l_s2p:'Use the card on the right. One click to print.',
+    l_s3h:'Listen to the answers in your dashboard', l_s3p:'You\'ll see every voice message transcribed, recurring topics and an AI summary.',
+    l_mail:'We sent your access link to', l_mail_def:'your email', l_dash:'Go to my dashboard', l_home:'Back to home',
+    l_org_def:'your organization.', q_label:'Your card to print', q_print:'Print card', q_dl:'Download QR',
+    k_eye:'We want to know', k_scan:'Scan me', k_text:'Just answer us with a voice message.', k_note:'(No apps, no sign-up ;)',
+    k_via:'via', k_org_def:'Your organization'
+  }
+};
 
-var qEl   = document.getElementById('f-pregunta');
-var bizEl = document.getElementById('f-negocio');
-var state = { qrUrl: '', negocio: '' };
+function detectLang() {
+  var p = new URLSearchParams(window.location.search);
+  if (p.get('lang') && TR[p.get('lang')]) return p.get('lang');
+  try { var s = localStorage.getItem('dicho_lang'); if (s && TR[s]) return s; } catch (e) {}
+  var bl = (navigator.language || 'es').toLowerCase();
+  if (bl.indexOf('ca') === 0) return 'ca';
+  if (bl.indexOf('es') === 0) return 'es';
+  return 'en';
+}
+
+var state = { qrUrl: '', negocio: '', email: '', listo: false };
+
+function setLang(lang) {
+  if (!TR[lang]) lang = 'es';
+  var prev = TR[LANG];
+  LANG = lang;
+  document.documentElement.lang = lang;
+  try { localStorage.setItem('dicho_lang', lang); } catch (e) {}
+  var t = TR[lang];
+  document.querySelectorAll('[data-i18n]').forEach(function(el) { var k = el.getAttribute('data-i18n'); if (t[k] !== undefined) el.textContent = t[k]; });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) { var k = el.getAttribute('data-i18n-html'); if (t[k] !== undefined) el.innerHTML = t[k]; });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) { var k = el.getAttribute('data-i18n-placeholder'); if (t[k] !== undefined) el.placeholder = t[k]; });
+  document.querySelectorAll('[data-i18n-aria]').forEach(function(el) { var k = el.getAttribute('data-i18n-aria'); if (t[k] !== undefined) el.setAttribute('aria-label', t[k]); });
+  document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
+  // Enlaces que mantienen el idioma
+  document.getElementById('login-link').href = 'https://dichosea.com/login.html?lang=' + lang;
+  document.getElementById('logo-link').href  = 'https://dichosea.com/preguntas?lang=' + lang;
+  document.getElementById('home-link').href  = 'https://dichosea.com/preguntas?lang=' + lang;
+  // Si el error visible era un texto del idioma anterior, tradúcelo
+  var err = document.getElementById('form-error');
+  ['e_campos','e_email','e_general'].forEach(function(k) { if (prev && err.textContent === prev[k]) err.textContent = t[k]; });
+  if (!state.listo) document.getElementById('submit-btn').textContent = t.f_submit;
+  document.title = state.listo ? t.title_l : t.title_c;
+  if (state.listo) {
+    document.getElementById('biz-name').textContent = state.negocio || t.l_org_def;
+    document.getElementById('mail-addr').textContent = state.email || t.l_mail_def;
+  }
+  renderCard();
+}
 
 // ── Prefill desde la URL (?pregunta=…&negocio=…) — p. ej. desde la landing ──
+var qEl   = document.getElementById('f-pregunta');
+var bizEl = document.getElementById('f-negocio');
 var params = new URLSearchParams(window.location.search);
 if (params.get('pregunta')) qEl.value = params.get('pregunta');
-if (params.get('negocio')) bizEl.value = params.get('negocio');
+if (params.get('negocio'))  bizEl.value = params.get('negocio');
 
 // ── TARJETA ──────────────────────────────────────────────────────
 function renderCard() {
-  var q = qEl.value.trim() || PREGUNTA_EJEMPLO;
+  var t = TR[LANG];
+  var q = qEl.value.trim() || t.c_q_ph;
   var h = document.getElementById('card-q');
   h.textContent = q;
   h.className = 'cl-headline' + (q.length > 85 ? ' xs' : q.length > 55 ? ' sm' : '');
-  document.getElementById('card-biz').textContent = bizEl.value.trim() || 'Tu organización';
+  document.getElementById('card-biz').textContent = bizEl.value.trim() || t.k_org_def;
   document.getElementById('f-count').textContent = qEl.value.length;
   if (!state.qrUrl) document.getElementById('qr-img').src = previewQR(q + '|' + bizEl.value);
 }
@@ -363,30 +494,26 @@ drawBadge(document.getElementById('qr-overlay').getContext('2d'));
 
 // ── PASAR A ESTADO "LISTO" ──────────────────────────────────────
 function showListo(d) {
-  state.qrUrl = d.qrUrl || ''; state.negocio = d.negocio || bizEl.value.trim();
+  var t = TR[LANG];
+  state.listo = true;
+  state.qrUrl = d.qrUrl || ''; state.negocio = d.negocio || bizEl.value.trim(); state.email = d.email || '';
   if (d.pregunta) qEl.value = d.pregunta;
   if (d.negocio) bizEl.value = d.negocio;
   renderCard();
   document.body.classList.remove('mode-crear');
   document.getElementById('view-crear').hidden = true;
   document.getElementById('view-listo').hidden = false;
-  document.getElementById('biz-name').textContent = state.negocio || 'tu organización';
-  document.getElementById('mail-addr').textContent = d.email || 'tu correo';
-  document.getElementById('btn-dash').href = d.dashUrl || '#';
+  document.getElementById('biz-name').textContent = state.negocio || t.l_org_def;
+  document.getElementById('mail-addr').textContent = state.email || t.l_mail_def;
+  document.getElementById('btn-dash').href = d.dashUrl ? d.dashUrl + (d.dashUrl.indexOf('?') >= 0 ? '&' : '?') + 'lang=' + LANG : '#';
   document.getElementById('qr-label').hidden = false;
   document.getElementById('qr-actions').hidden = false;
   if (state.qrUrl) {
     document.getElementById('qr-wrap').classList.remove('preview');
     document.getElementById('qr-img').src = state.qrUrl;
   }
-  document.title = 'Dicho · Tu pregunta está lista';
+  document.title = t.title_l;
   window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// Si el script redirige aquí con ?qrUrl=…, abrimos directamente en "listo"
-if (params.get('qrUrl')) {
-  showListo({ qrUrl: params.get('qrUrl'), dashUrl: params.get('dashUrl'), email: params.get('email'),
-              negocio: params.get('negocio'), pregunta: params.get('pregunta') });
 }
 
 // ── DESCARGAR QR (igual que bienvenida.html) ────────────────────
@@ -405,30 +532,27 @@ function descargarQR() {
   }).catch(function() { var a = document.createElement('a'); a.href = state.qrUrl; a.download = filename; a.click(); });
 }
 
-function esc(s) { return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-
 // ── ENVÍO ────────────────────────────────────────────────────────
 document.getElementById('lead-form').addEventListener('submit', function(e) {
   e.preventDefault();
+  var t = TR[LANG];
   var v = function(id) { return document.getElementById(id).value.trim(); };
-  var data = { pregunta: v('f-pregunta'), negocio: v('f-negocio'), nombre: v('f-nombre'), email: v('f-email'), whatsapp: v('f-wa') };
+  var data = { pregunta: v('f-pregunta'), nombre: v('f-nombre'), negocio: v('f-negocio'), email: v('f-email'), whatsapp: v('f-wa') };
   var err = document.getElementById('form-error');
   var missing = Object.keys(data).filter(function(k) { return !data[k]; });
-  if (missing.length) { err.style.display = 'block'; err.textContent = 'Por favor completa todos los campos.'; document.getElementById('f-' + (missing[0] === 'whatsapp' ? 'wa' : missing[0])).focus(); return; }
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) { err.style.display = 'block'; err.textContent = 'Revisa el correo electrónico.'; document.getElementById('f-email').focus(); return; }
+  if (missing.length) { err.style.display = 'block'; err.textContent = t.e_campos; document.getElementById('f-' + (missing[0] === 'whatsapp' ? 'wa' : missing[0])).focus(); return; }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) { err.style.display = 'block'; err.textContent = t.e_email; document.getElementById('f-email').focus(); return; }
 
   var btn = document.getElementById('submit-btn');
-  btn.innerHTML = '<span class="btn-spinner"></span> Creando tu pregunta…'; btn.disabled = true; err.style.display = 'none';
+  btn.innerHTML = '<span class="btn-spinner"></span> ' + t.f_loading; btn.disabled = true; err.style.display = 'none';
 
-  var q = new URLSearchParams({ page: 'submit', modo: 'preguntas' });
+  var q = new URLSearchParams({ page: 'submit', modo: 'preguntas', lang: LANG });
   Object.keys(data).forEach(function(k) { q.set(k, data[k]); });
 
   fetch(DICHO_SCRIPT_URL + '?' + q.toString())
     .then(function(r) { return r.json(); })
     .then(function(result) {
       if (!result || !result.ok) throw new Error((result && result.error) || 'general');
-      // El script hoy devuelve redirectUrl (bienvenida.html?negocio=…&email=…&qrUrl=…&dashUrl=…).
-      // Leemos esos parámetros y mostramos la bienvenida aquí mismo, con la pregunta en la tarjeta.
       var rp = {};
       try { rp = Object.fromEntries(new URL(result.redirectUrl).searchParams); } catch (x) {}
       var qrUrl = result.qrUrl || rp.qrUrl;
@@ -436,13 +560,19 @@ document.getElementById('lead-form').addEventListener('submit', function(e) {
       showListo({ qrUrl: qrUrl, dashUrl: result.dashUrl || rp.dashUrl, email: data.email, negocio: data.negocio, pregunta: data.pregunta });
     })
     .catch(function(x) {
-      btn.textContent = 'Crear mi pregunta →'; btn.disabled = false; err.style.display = 'block';
-      err.textContent = (x && x.message && x.message !== 'general' && x.message !== 'Failed to fetch')
-        ? x.message : 'No pudimos crear tu pregunta. Revisa tu conexión e inténtalo de nuevo.';
+      var t2 = TR[LANG];
+      btn.textContent = t2.f_submit; btn.disabled = false; err.style.display = 'block';
+      err.textContent = (x && x.message && x.message !== 'general' && x.message !== 'Failed to fetch') ? x.message : t2.e_general;
     });
 });
 
-renderCard();
+// ── INIT ─────────────────────────────────────────────────────────
+setLang(detectLang());
+// Si el script redirige aquí con ?qrUrl=…, abrimos directamente en "listo"
+if (params.get('qrUrl')) {
+  showListo({ qrUrl: params.get('qrUrl'), dashUrl: params.get('dashUrl'), email: params.get('email'),
+              negocio: params.get('negocio'), pregunta: params.get('pregunta') });
+}
 </script>
 </body>
 </html>
