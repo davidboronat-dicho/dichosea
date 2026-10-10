@@ -863,7 +863,7 @@ function goTo(id) { document.getElementById(id).scrollIntoView({behavior:'smooth
 // Página de alta (crear-pregunta.html). Acepta ?pregunta=…&negocio=… para venir ya rellenada.
 var CREAR_URL = 'https://dichosea.com/crear-pregunta.html';
 function goCrear(pregunta, negocio) {
-  var q = new URLSearchParams();
+  var q = new URLSearchParams({ lang: LANG });
   if (pregunta) q.set('pregunta', pregunta);
   if (negocio)  q.set('negocio', negocio);
   var qs = q.toString();
