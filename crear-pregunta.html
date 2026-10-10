@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dicho · Crea tu pregunta</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root {
+  --bg:      #F5F1E8;
+  --surface: #FFFFFF;
+  --ink:     #1C2B20;
+  --ink-2:   #3E4E41;
+  --g:       #16A34A;
+  --g-d:     #14532D;
+  --g-l:     #DCFCE7;
+  --g-f:     #F0FDF4;
+  --muted:   #6B7A6E;
+  --border:  #D8D2C3;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--bg); color: var(--ink);
+  line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100dvh;
+}
+.wrap { padding-inline: max(20px, calc((100% - 1100px) / 2)); }
+
+/* ── NAV ── */
+nav {
+  height: 60px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px);
+}
+.nav-logo { font-size: 20px; font-weight: 800; color: var(--g); letter-spacing: -.5px; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.nav-logo b { font-weight: 800; }
+.nav-logo b span { color: var(--ink); }
+.nav-logo small { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--g-d); background: var(--g-l); padding: 3px 8px; border-radius: 6px; }
+.nav-link { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .15s; }
+.nav-link:hover { color: var(--ink); }
+
+/* ── LAYOUT ── */
+.confirm-wrap {
+  padding-block: 64px 80px; display: grid;
+  grid-template-columns: 1fr 1fr; gap: 64px; align-items: start;
+}
+.confirm-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--g); margin-bottom: 12px; display: block; }
+.confirm-h {
+  font-family: 'Playfair Display', serif; font-size: clamp(28px, 3.6vw, 42px); font-weight: 700;
+  line-height: 1.12; letter-spacing: -.025em; color: var(--ink); margin-bottom: 14px; text-wrap: balance;
+}
+.confirm-h em { font-style: italic; color: var(--g); }
+.confirm-sub { font-size: 16px; color: var(--ink-2); line-height: 1.7; max-width: 440px; margin-bottom: 32px; }
+
+/* ── FORM (estado: crear) ── */
+.f-block { display: flex; flex-direction: column; gap: 18px; max-width: 480px; }
+.f-step { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.f-step i { font-style: normal; width: 22px; height: 22px; border-radius: 50%; background: var(--g); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; letter-spacing: 0; }
+.fgroup { display: flex; flex-direction: column; gap: 6px; }
+.fgroup label { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fgroup input, .fgroup textarea {
+  width: 100%; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 11px 14px; font-family: inherit; font-size: 15px; color: var(--ink); outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.fgroup textarea { min-height: 88px; resize: vertical; font-family: 'Playfair Display', serif; font-style: italic; font-size: 19px; line-height: 1.35; }
+.fgroup input:focus, .fgroup textarea:focus { border-color: var(--g); box-shadow: 0 0 0 3px rgba(22,163,74,.15); }
+.fgroup input::placeholder, .fgroup textarea::placeholder { color: #A39E90; }
+.f-count { font-size: 12px; color: var(--muted); text-align: right; margin-top: -2px; }
+.f-tip { font-size: 13px; color: var(--ink-2); background: var(--g-f); border-radius: 10px; padding: 11px 14px; line-height: 1.5; }
+.btn-submit {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--g); color: #fff; padding: 14px 26px; border-radius: 10px;
+  font-size: 15px; font-weight: 700; border: none; font-family: inherit; cursor: pointer; transition: background .15s; margin-top: 4px;
+}
+.btn-submit:hover { background: var(--g-d); }
+.btn-submit:disabled { opacity: .7; cursor: default; }
+.btn-spinner { width:16px; height:16px; border:2.5px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.form-error { font-size: 13px; color: #B91C1C; display: none; }
+.f-legal { font-size: 12px; color: var(--muted); }
+.f-legal a { color: var(--muted); }
+
+/* ── BIENVENIDA (estado: listo) ── */
+.check-ring { width: 56px; height: 56px; border-radius: 50%; background: var(--g-l); display: flex; align-items: center; justify-content: center; margin-bottom: 28px; }
+.check-ring svg { width: 24px; height: 24px; }
+.next-steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 8px; }
+.step-row { display: flex; gap: 14px; align-items: flex-start; }
+.step-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--g); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+.step-done { background: var(--g-l); color: var(--g); }
+.step-off { background: var(--border); color: var(--muted); }
+.step-text { font-size: 14px; color: var(--ink-2); }
+.step-text strong { color: var(--ink); display: block; font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.mail-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--g-f); border: 1px solid #BBF7D0; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: var(--g-d); font-weight: 600; margin-top: 20px; flex-wrap: wrap; }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-dash { display: inline-flex; align-items: center; gap: 8px; background: var(--g); color: #fff; padding: 13px 26px; border-radius: 10px; font-size: 15px; font-weight: 700; text-decoration: none; transition: background .15s; margin-top: 28px; }
+.btn-dash:hover { background: var(--g-d); }
+.btn-ghost-sm { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--muted); padding: 13px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; border: 1.5px solid var(--border); font-family: inherit; cursor: pointer; text-decoration: none; margin-top: 28px; transition: color .15s, border-color .15s; }
+.btn-ghost-sm:hover { color: var(--ink); border-color: var(--muted); }
+
+[hidden] { display: none !important; }
+/* en modo crear no se muestra la tarjeta: solo el formulario, centrado */
+body.mode-crear .qr-col { display: none; }
+body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify-content: center; }
+
+/* ── QR SIDE ── */
+.qr-col { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 24px; padding-top: 8px; }
+.qr-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.qr-hint { font-size: 12.5px; color: var(--muted); max-width: 340px; }
+
+.qr-card { background: #F0FDF4; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.10); border: 1px solid #D1FAE5; display: flex; flex-direction: row; max-width: 360px; }
+.card-left { flex: 1; min-width: 0; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; }
+.card-right { width: 134px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 18px 23px 14px 8px; gap: 10px; }
+.cl-eye { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: #6B7A6E; margin-bottom: 7px; }
+.cl-headline { font-size: 17px; font-weight: 900; color: #1C2B20; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 14px; overflow-wrap: anywhere; }
+.cl-headline.sm { font-size: 14.5px; }
+.cl-headline.xs { font-size: 12.5px; }
+.cl-scan-label { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: #16A34A; margin-bottom: 5px; }
+.cl-scan-text { font-size: 12px; color: #3E4E41; line-height: 1.5; }
+.cl-note { font-size: 11px; color: #6B7A6E; }
+.cl-biz { font-size: 10px; font-weight: 700; color: #6B7A6E; margin-top: 12px; padding-top: 10px; border-top: 1px solid #D1FAE5; }
+.cr-top { display: flex; align-items: center; gap: 5px; }
+.cr-via { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #9CA3AF; }
+.cr-wa { background: #16A34A; color: #fff; font-size: 8px; font-weight: 800; letter-spacing: .04em; padding: 2px 7px; border-radius: 20px; }
+.cr-qr { background: #fff; border-radius: 14px; padding: 9px; }
+.qr-wrap { position: relative; width: 110px; height: 110px; }
+.qr-wrap img { width: 110px; height: 110px; display: block; }
+.qr-wrap.preview img { opacity: .28; filter: blur(.6px); }
+.qr-wrap canvas { position: absolute; top: 0; left: 0; width: 110px; height: 110px; pointer-events: none; }
+.cr-powered { font-size: 9px; font-weight: 600; color: #6B7A6E; margin-top: -4px; }
+.cr-powered strong { color: #1C2B20; font-weight: 800; }
+
+.qr-actions { display: flex; gap: 10px; }
+.btn-print { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--g); color: #fff; padding: 13px 26px; border-radius: 10px; font-size: 15px; font-weight: 700; border: none; font-family: inherit; cursor: pointer; transition: background .15s; }
+.btn-print:hover { background: var(--g-d); }
+.btn-dl { display: flex; align-items: center; justify-content: center; gap: 6px; background: transparent; color: var(--ink-2); padding: 11px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; border: 1.5px solid var(--border); font-family: inherit; cursor: pointer; transition: border-color .15s, color .15s; }
+.btn-dl:hover { border-color: var(--muted); color: var(--ink); }
+
+@media print {
+  body * { visibility: hidden; }
+  .qr-card, .qr-card * { visibility: visible; }
+  .qr-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 340px; box-shadow: none; }
+}
+@media (max-width: 860px) {
+  .confirm-wrap { grid-template-columns: 1fr; gap: 40px; }
+  .qr-col { position: static; }
+}
+@media (max-width: 640px) {
+  .confirm-wrap { padding-block: 32px 48px; }
+  .confirm-h { font-size: clamp(24px, 7vw, 36px); }
+  .confirm-sub { font-size: 14px; margin-bottom: 24px; }
+  .frow { grid-template-columns: 1fr; }
+  .qr-card { max-width: 100%; }
+  .qr-actions { flex-wrap: wrap; }
+  .btn-print, .btn-dl { flex: 1; min-width: 140px; }
+  .btn-submit { width: 100%; }
+  .btn-row { flex-direction: column; }
+  .btn-dash, .btn-ghost-sm { width: 100%; justify-content: center; margin-top: 12px; }
+}
+</style>
+</head>
+<body class="mode-crear">
+
+<nav class="wrap">
+  <a class="nav-logo" href="https://dichosea.com/preguntas"><b>dicho<span>.</span></b><small>Preguntas</small></a>
+  <a class="nav-link" href="https://dichosea.com/login.html">¿Ya tienes cuenta? Accede</a>
+</nav>
+
+<main class="confirm-wrap wrap">
+
+  <!-- ═══════ IZQUIERDA · ESTADO 1: CREAR ═══════ -->
+  <div class="confirm-left" id="view-crear">
+    <span class="confirm-eyebrow">Gratis · en 2 minutos</span>
+    <h1 class="confirm-h">Crea tu<br><em>primera pregunta.</em></h1>
+    <p class="confirm-sub">Escríbela y crea tu cuenta. Al terminar tendrás tu QR listo para imprimir.</p>
+
+    <form class="f-block" id="lead-form" novalidate>
+      <div class="f-step"><i>1</i> Tu pregunta</div>
+      <div class="fgroup">
+        <textarea id="f-pregunta" maxlength="120" rows="2" aria-label="Tu pregunta" placeholder="¿Qué plato te gustaría ver en nuestra carta?"></textarea>
+        <div class="f-count"><span id="f-count">0</span>/120</div>
+      </div>
+      <div class="f-tip">💡 Las preguntas abiertas funcionan mejor: <strong>«¿Qué cambiarías?»</strong> da más que «¿Te gustó?».</div>
+
+      <div class="f-step"><i>2</i> Tus datos</div>
+      <div class="frow">
+        <div class="fgroup">
+          <label for="f-nombre">Nombre y apellidos</label>
+          <input id="f-nombre" type="text" placeholder="Ana García" autocomplete="name">
+        </div>
+        <div class="fgroup">
+          <label for="f-negocio">Negocio u organización</label>
+          <input id="f-negocio" type="text" maxlength="50" placeholder="Restaurante El Mirador" autocomplete="organization">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fgroup">
+          <label for="f-email">Correo electrónico</label>
+          <input id="f-email" type="email" placeholder="ana@negocio.com" autocomplete="email">
+        </div>
+        <div class="fgroup">
+          <label for="f-wa">WhatsApp</label>
+          <input id="f-wa" type="tel" placeholder="+34 612 345 678" autocomplete="tel">
+        </div>
+      </div>
+
+      <button class="btn-submit" type="submit" id="submit-btn">Crear mi pregunta →</button>
+      <p class="form-error" id="form-error"></p>
+      <p class="f-legal">Al continuar aceptas los <a href="https://dichosea.com/terms.html">términos</a> y la <a href="https://dichosea.com/privacy.html">política de privacidad</a>.</p>
+    </form>
+  </div>
+
+  <!-- ═══════ IZQUIERDA · ESTADO 2: LISTO (como bienvenida.html) ═══════ -->
+  <div class="confirm-left" id="view-listo" hidden>
+    <div class="check-ring">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <span class="confirm-eyebrow">¡Tu pregunta ya está activa!</span>
+    <h1 class="confirm-h">Bienvenido,<br><em id="biz-name">tu organización.</em></h1>
+    <p class="confirm-sub">Tu QR está listo para imprimir. Ponlo donde la gente tenga un momento para responder: en la mesa, la recepción, la sala de descanso o la salida.</p>
+
+    <div class="next-steps">
+      <div class="step-row">
+        <div class="step-dot step-done"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="step-text"><strong>Pregunta creada</strong>Tu cuenta y tu primera pregunta están registradas en Dicho.</div>
+      </div>
+      <div class="step-row">
+        <div class="step-dot">2</div>
+        <div class="step-text"><strong>Imprime la tarjeta y colócala</strong>Usa la tarjeta de la derecha. Un clic para imprimir.</div>
+      </div>
+      <div class="step-row">
+        <div class="step-dot step-off">3</div>
+        <div class="step-text"><strong>Escucha las respuestas en tu panel</strong>Verás cada audio transcrito, los temas que se repiten y un resumen de la IA.</div>
+      </div>
+    </div>
+
+    <div class="mail-pill">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+      Te enviamos el acceso a <strong id="mail-addr">tu correo</strong>
+    </div>
+
+    <div class="btn-row">
+      <a class="btn-dash" id="btn-dash" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+        Ir a mi panel
+      </a>
+      <a class="btn-ghost-sm" href="https://dichosea.com/preguntas">Volver al inicio</a>
+    </div>
+  </div>
+
+  <!-- ═══════ DERECHA: TARJETA ═══════ -->
+  <div class="qr-col">
+    <span class="qr-label" id="qr-label" hidden>Tu tarjeta para imprimir</span>
+
+    <div class="qr-card" id="printable-card">
+      <div class="card-left">
+        <div>
+          <div class="cl-eye">Queremos saber</div>
+          <p class="cl-headline" id="card-q"></p>
+          <div class="cl-scan-label">Escáneame</div>
+          <div class="cl-scan-text">Respóndenos con un audio y listo.<br><span class="cl-note">(Sin apps ni registros ;)</span></div>
+        </div>
+        <div class="cl-biz" id="card-biz">El Mirador</div>
+      </div>
+      <div class="card-right">
+        <div class="cr-top"><span class="cr-via">vía</span><span class="cr-wa">WHATSAPP</span></div>
+        <div class="cr-qr">
+          <div class="qr-wrap preview" id="qr-wrap">
+            <img id="qr-img" alt="Código QR">
+            <canvas id="qr-overlay" width="220" height="220"></canvas>
+          </div>
+        </div>
+        <div class="cr-powered">powered by <strong>dicho.</strong></div>
+      </div>
+    </div>
+
+
+    <div class="qr-actions" id="qr-actions" hidden>
+      <button class="btn-print" onclick="window.print()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimir tarjeta
+      </button>
+      <button class="btn-dl" onclick="descargarQR()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar QR
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── CONFIGURACIÓN ────────────────────────────────────────────────
+// Mismo Apps Script que la home. Envía modo=preguntas y pregunta (sin tipo de negocio).
+var DICHO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+
+var PREGUNTA_EJEMPLO = '¿Qué plato te gustaría ver en nuestra carta?';
+
+var qEl   = document.getElementById('f-pregunta');
+var bizEl = document.getElementById('f-negocio');
+var state = { qrUrl: '', negocio: '' };
+
+// ── Prefill desde la URL (?pregunta=…&negocio=…) — p. ej. desde la landing ──
+var params = new URLSearchParams(window.location.search);
+if (params.get('pregunta')) qEl.value = params.get('pregunta');
+if (params.get('negocio')) bizEl.value = params.get('negocio');
+
+// ── TARJETA ──────────────────────────────────────────────────────
+function renderCard() {
+  var q = qEl.value.trim() || PREGUNTA_EJEMPLO;
+  var h = document.getElementById('card-q');
+  h.textContent = q;
+  h.className = 'cl-headline' + (q.length > 85 ? ' xs' : q.length > 55 ? ' sm' : '');
+  document.getElementById('card-biz').textContent = bizEl.value.trim() || 'Tu organización';
+  document.getElementById('f-count').textContent = qEl.value.length;
+  if (!state.qrUrl) document.getElementById('qr-img').src = previewQR(q + '|' + bizEl.value);
+}
+qEl.addEventListener('input', renderCard);
+bizEl.addEventListener('input', renderCard);
+
+// QR de muestra (decorativo) hasta tener el real
+function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function previewQR(seed) {
+  var N = 25, r = hash(seed) || 1, cells = '';
+  function rnd() { r ^= r << 13; r >>>= 0; r ^= r >>> 17; r ^= r << 5; r >>>= 0; return r / 4294967296; }
+  function f(x, y) { return '<rect x="'+x+'" y="'+y+'" width="7" height="7"/><rect x="'+(x+1)+'" y="'+(y+1)+'" width="5" height="5" fill="#fff"/><rect x="'+(x+2)+'" y="'+(y+2)+'" width="3" height="3"/>'; }
+  function inF(x, y) { return (x < 8 && y < 8) || (x > N-9 && y < 8) || (x < 8 && y > N-9); }
+  for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) if (!inF(x, y) && rnd() < .48) cells += '<rect x="'+x+'" y="'+y+'" width="1" height="1"/>';
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+N+' '+N+'" shape-rendering="crispEdges"><g fill="#14532D">'+cells+f(0,0)+f(N-7,0)+f(0,N-7)+'</g></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// ── MICRÓFONO (idéntico a bienvenida.html) ───────────────────────
+var QR_GREEN = '#14532D', QR_CX = 110, QR_CY = 110, QR_R = 38;
+function rrPath(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r); ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r); ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r); ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r); ctx.closePath();
+}
+function drawMic(ctx, cx, cy, H, color) {
+  var s = H / 118, ox = cx - 50 * s, oy = cy - 59 * s;
+  ctx.save(); ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.lineWidth = 11 * s; ctx.beginPath(); ctx.moveTo(ox + 19*s, oy + 40*s);
+  ctx.bezierCurveTo(ox+19*s, oy+90*s, ox+81*s, oy+90*s, ox+81*s, oy+40*s); ctx.stroke();
+  rrPath(ctx, ox + 45*s, oy + 90*s, 10*s, 14*s, 5*s); ctx.fill();
+  rrPath(ctx, ox + 22*s, oy + 102*s, 56*s, 10*s, 5*s); ctx.fill();
+  rrPath(ctx, ox + 34*s, oy + 4*s, 32*s, 55*s, 16*s); ctx.fill();
+  ctx.restore();
+}
+function drawBadge(ctx) {
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(QR_CX, QR_CY, QR_R + 6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = QR_GREEN; ctx.beginPath(); ctx.arc(QR_CX, QR_CY, QR_R, 0, Math.PI * 2); ctx.fill();
+  var iconH = QR_R * 1.1; drawMic(ctx, QR_CX, QR_CY - iconH * 0.04, iconH, '#ffffff');
+}
+drawBadge(document.getElementById('qr-overlay').getContext('2d'));
+
+// ── PASAR A ESTADO "LISTO" ──────────────────────────────────────
+function showListo(d) {
+  state.qrUrl = d.qrUrl || ''; state.negocio = d.negocio || bizEl.value.trim();
+  if (d.pregunta) qEl.value = d.pregunta;
+  if (d.negocio) bizEl.value = d.negocio;
+  renderCard();
+  document.body.classList.remove('mode-crear');
+  document.getElementById('view-crear').hidden = true;
+  document.getElementById('view-listo').hidden = false;
+  document.getElementById('biz-name').textContent = state.negocio || 'tu organización';
+  document.getElementById('mail-addr').textContent = d.email || 'tu correo';
+  document.getElementById('btn-dash').href = d.dashUrl || '#';
+  document.getElementById('qr-label').hidden = false;
+  document.getElementById('qr-actions').hidden = false;
+  if (state.qrUrl) {
+    document.getElementById('qr-wrap').classList.remove('preview');
+    document.getElementById('qr-img').src = state.qrUrl;
+  }
+  document.title = 'Dicho · Tu pregunta está lista';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Si el script redirige aquí con ?qrUrl=…, abrimos directamente en "listo"
+if (params.get('qrUrl')) {
+  showListo({ qrUrl: params.get('qrUrl'), dashUrl: params.get('dashUrl'), email: params.get('email'),
+              negocio: params.get('negocio'), pregunta: params.get('pregunta') });
+}
+
+// ── DESCARGAR QR (igual que bienvenida.html) ────────────────────
+function descargarQR() {
+  if (!state.qrUrl) return;
+  var filename = (state.negocio ? state.negocio.replace(/\s+/g, '-').toLowerCase() : 'qr') + '-dicho-pregunta.png';
+  fetch(state.qrUrl).then(function(r) { return r.blob(); }).then(function(blob) {
+    var img = new Image();
+    img.onload = function() {
+      var c = document.createElement('canvas'); c.width = c.height = 220;
+      var ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, 220, 220); drawBadge(ctx);
+      var a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = filename; a.click();
+      URL.revokeObjectURL(img.src);
+    };
+    img.src = URL.createObjectURL(blob);
+  }).catch(function() { var a = document.createElement('a'); a.href = state.qrUrl; a.download = filename; a.click(); });
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+// ── ENVÍO ────────────────────────────────────────────────────────
+document.getElementById('lead-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var v = function(id) { return document.getElementById(id).value.trim(); };
+  var data = { pregunta: v('f-pregunta'), negocio: v('f-negocio'), nombre: v('f-nombre'), email: v('f-email'), whatsapp: v('f-wa') };
+  var err = document.getElementById('form-error');
+  var missing = Object.keys(data).filter(function(k) { return !data[k]; });
+  if (missing.length) { err.style.display = 'block'; err.textContent = 'Por favor completa todos los campos.'; document.getElementById('f-' + (missing[0] === 'whatsapp' ? 'wa' : missing[0])).focus(); return; }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) { err.style.display = 'block'; err.textContent = 'Revisa el correo electrónico.'; document.getElementById('f-email').focus(); return; }
+
+  var btn = document.getElementById('submit-btn');
+  btn.innerHTML = '<span class="btn-spinner"></span> Creando tu pregunta…'; btn.disabled = true; err.style.display = 'none';
+
+  var q = new URLSearchParams({ page: 'submit', modo: 'preguntas' });
+  Object.keys(data).forEach(function(k) { q.set(k, data[k]); });
+
+  fetch(DICHO_SCRIPT_URL + '?' + q.toString())
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+      if (!result || !result.ok) throw new Error((result && result.error) || 'general');
+      // El script hoy devuelve redirectUrl (bienvenida.html?negocio=…&email=…&qrUrl=…&dashUrl=…).
+      // Leemos esos parámetros y mostramos la bienvenida aquí mismo, con la pregunta en la tarjeta.
+      var rp = {};
+      try { rp = Object.fromEntries(new URL(result.redirectUrl).searchParams); } catch (x) {}
+      var qrUrl = result.qrUrl || rp.qrUrl;
+      if (!qrUrl && result.redirectUrl) { window.location.href = result.redirectUrl; return; }
+      showListo({ qrUrl: qrUrl, dashUrl: result.dashUrl || rp.dashUrl, email: data.email, negocio: data.negocio, pregunta: data.pregunta });
+    })
+    .catch(function(x) {
+      btn.textContent = 'Crear mi pregunta →'; btn.disabled = false; err.style.display = 'block';
+      err.textContent = (x && x.message && x.message !== 'general' && x.message !== 'Failed to fetch')
+        ? x.message : 'No pudimos crear tu pregunta. Revisa tu conexión e inténtalo de nuevo.';
+    });
+});
+
+renderCard();
+</script>
+</body>
+</html>
