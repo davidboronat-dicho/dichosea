@@ -293,6 +293,12 @@ body {
 .ac-item span { font-size: 11px; color: #6B9E78; display: block; }
 .ac-item:hover, .ac-item.active { background: #F0FDF4; }
 .ac-loading { padding: 10px 14px; font-size: 13px; color: #6B9E78; font-style: italic; }
+.cta-box { background: var(--always-dark-2); border: 1px solid rgba(255,255,255,.08); border-radius: 20px; padding: 36px 32px; display: flex; flex-direction: column; gap: 18px; }
+.cta-list { list-style: none; display: flex; flex-direction: column; gap: 12px; counter-reset: s; }
+.cta-list li { counter-increment: s; display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,.85); font-size: 15px; font-weight: 600; }
+.cta-list li::before { content: counter(s); width: 26px; height: 26px; border-radius: 50%; background: rgba(74,222,128,.15); color: #4ADE80; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.cta-go { justify-content: center; text-decoration: none; padding: 15px; font-size: 16px; }
+.cta-note { font-size: 12px; color: rgba(255,255,255,.4); text-align: center; }
 /* ── FOOTER ── */
 .footer { padding-block: 28px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); }
 .footer-logo { font-size: 16px; font-weight: 800; color: var(--g); }
@@ -371,7 +377,7 @@ body {
     <div class="nav-right">
       <a href="https://dichosea.com/login.html" class="nav-acceder" id="nav-acceder-link" data-i18n="nav_acceder">Acceder</a>
       <div class="nav-sep"></div>
-      <button class="nav-cta" data-i18n="nav_prueba" onclick="goTo('crear')">Empieza gratis</button>
+      <button class="nav-cta" data-i18n="nav_prueba" onclick="goCrear()">Empieza gratis</button>
     </div>
   </nav>
 </header>
@@ -385,7 +391,7 @@ body {
     <p class="hero-sub" style="margin-bottom:18px" data-i18n="hero_sub1">Escribe una pregunta, ponla en un cartel con QR y tus clientes te responden con un audio de WhatsApp.</p>
     <p class="hero-sub" data-i18n="hero_sub2">La IA transcribe, agrupa y resume todas las respuestas para que decidas con lo que de verdad piensan.</p>
     <div class="hero-btns">
-      <button class="btn-primary" data-i18n="hero_cta" onclick="goTo('crear')">Crea tu primera pregunta</button>
+      <button class="btn-primary" data-i18n="hero_cta" onclick="goCrear()">Crea tu primera pregunta</button>
       <button class="btn-ghost" data-i18n="hero_sec" onclick="goTo('panel')">Ver el panel</button>
     </div>
   </div>
@@ -577,55 +583,22 @@ body {
   </div>
 </section>
 
-<!-- CTA + FORM -->
+<!-- CTA -->
 <section class="cta-band" id="contacto">
   <div class="wrap cta-grid">
     <div class="reveal">
       <span class="label" style="color:#4ADE80" data-i18n="cta_label">Empieza gratis</span>
       <h2 class="cta-h" data-i18n-html="cta_h">Tu próxima decisión,<br><em>respondida por tus clientes.</em></h2>
-      <p class="cta-p" data-i18n="cta_p">Deja tus datos y tu primera pregunta. Te enviamos el cartel con tu QR listo para imprimir.</p>
+      <p class="cta-p" data-i18n="cta_p">Escribe tu pregunta, crea tu cuenta y llévate el cartel con tu QR listo para imprimir.</p>
     </div>
-    <div class="reveal" style="transition-delay:.1s">
-      <form class="lead-form" id="lead-form" novalidate>
-        <div class="lead-form-title" data-i18n="form_title">Crea tu cuenta y tu primera pregunta</div>
-        <div class="fgroup">
-          <label for="f-pregunta" data-i18n="f_preg_lbl">Tu primera pregunta</label>
-          <textarea id="f-pregunta" maxlength="120" data-i18n-placeholder="f_preg_ph" placeholder="¿Qué plato te gustaría ver en nuestra carta?" required></textarea>
-        </div>
-        <div class="frow">
-          <div class="fgroup">
-            <label for="f-nombre" data-i18n="f_nombre_lbl">Nombre y apellidos</label>
-            <input id="f-nombre" type="text" data-i18n-placeholder="f_nombre_ph" placeholder="Ana García" required>
-          </div>
-          <div class="fgroup">
-            <label for="f-negocio" data-i18n="f_negocio_lbl">Nombre del negocio</label>
-            <input id="f-negocio" type="text" data-i18n-placeholder="f_negocio_ph" placeholder="Restaurante El Mirador" required>
-          </div>
-        </div>
-        <div class="fgroup">
-          <label for="f-tipo" data-i18n="f_tipo_lbl">Tipo de negocio</label>
-          <select id="f-tipo" required></select>
-        </div>
-        <div class="frow">
-          <div class="fgroup">
-            <label for="f-ciudad" data-i18n="f_ciudad_lbl">Ciudad</label>
-            <div class="autocomplete-wrap" id="ciudad-wrap">
-              <input id="f-ciudad" type="text" data-i18n-placeholder="f_ciudad_ph" placeholder="Escribe tu ciudad…" autocomplete="off" required>
-              <div class="ac-list" id="ciudad-list"></div>
-            </div>
-          </div>
-          <div class="fgroup">
-            <label for="f-email" data-i18n="f_email_lbl">Correo electrónico</label>
-            <input id="f-email" type="email" data-i18n-placeholder="f_email_ph" placeholder="ana@negocio.com" required>
-          </div>
-        </div>
-        <div class="fgroup">
-          <label for="f-wa" data-i18n="f_wa_lbl">WhatsApp</label>
-          <input id="f-wa" type="tel" data-i18n-placeholder="f_wa_ph" placeholder="+34 612 345 678" required>
-        </div>
-        <button class="btn-primary" type="submit" id="submit-btn" data-i18n="f_submit">Crear mi pregunta →</button>
-        <p class="form-error" id="form-error"></p>
-      </form>
+    <div class="reveal cta-box" style="transition-delay:.1s">
+      <ul class="cta-list">
+        <li data-i18n="cta_l1">Escribe tu pregunta</li>
+        <li data-i18n="cta_l2">Deja tu nombre, email y WhatsApp</li>
+        <li data-i18n="cta_l3">Imprime tu cartel con el QR</li>
+      </ul>
+      <a class="btn-primary cta-go" href="#" onclick="goCrear();return false;" data-i18n="cta_btn">Crea tu primera pregunta →</a>
+      <p class="cta-note" data-i18n="cta_note">Gratis · en 2 minutos · sin tarjeta</p>
     </div>
   </div>
 </section>
@@ -713,7 +686,9 @@ var TR = {
     ben3_h:'La IA ordena por ti', ben3_p:'Transcribe, agrupa por temas y te resume qué piensa la mayoría. Tú solo lees y decides.',
     ben4_h:'Una pregunta, un QR', ben4_p:'Crea tantas preguntas como quieras, cada una con su cartel, y compara las respuestas entre ellas.',
     cta_label:'Empieza gratis', cta_h:'Tu próxima decisión,<br><em>respondida por tus clientes.</em>',
-    cta_p:'Deja tus datos y tu primera pregunta. Te enviamos el cartel con tu QR listo para imprimir.',
+    cta_p:'Escribe tu pregunta, crea tu cuenta y llévate el cartel con tu QR listo para imprimir.',
+    cta_l1:'Escribe tu pregunta', cta_l2:'Deja tu nombre, email y WhatsApp', cta_l3:'Imprime tu cartel con el QR',
+    cta_btn:'Crea tu primera pregunta →', cta_note:'Gratis · en 2 minutos · sin tarjeta',
     form_title:'Crea tu cuenta y tu primera pregunta',
     f_preg_lbl:'Tu primera pregunta', f_preg_ph:'¿Qué plato te gustaría ver en nuestra carta?',
     f_nombre_lbl:'Nombre y apellidos', f_nombre_ph:'Ana García',
@@ -785,7 +760,9 @@ var TR = {
     ben3_h:'La IA ho ordena per tu', ben3_p:'Transcriu, agrupa per temes i et resumeix què pensa la majoria. Tu només llegeixes i decideixes.',
     ben4_h:'Una pregunta, un QR', ben4_p:'Crea tantes preguntes com vulguis, cadascuna amb el seu cartell, i compara les respostes entre elles.',
     cta_label:'Comença gratis', cta_h:'La teva propera decisió,<br><em>resposta pels teus clients.</em>',
-    cta_p:'Deixa les teves dades i la teva primera pregunta. T\'enviem el cartell amb el QR llest per imprimir.',
+    cta_p:'Escriu la teva pregunta, crea el teu compte i emporta\'t el cartell amb el QR llest per imprimir.',
+    cta_l1:'Escriu la teva pregunta', cta_l2:'Deixa el teu nom, email i WhatsApp', cta_l3:'Imprimeix el cartell amb el QR',
+    cta_btn:'Crea la teva primera pregunta →', cta_note:'Gratis · en 2 minuts · sense targeta',
     form_title:'Crea el teu compte i la teva primera pregunta',
     f_preg_lbl:'La teva primera pregunta', f_preg_ph:'Quin plat t\'agradaria veure a la nostra carta?',
     f_nombre_lbl:'Nom i cognoms', f_nombre_ph:'Anna García',
@@ -857,7 +834,9 @@ var TR = {
     ben3_h:'AI sorts it for you', ben3_p:'It transcribes, groups by topic and summarizes what most people think. You just read and decide.',
     ben4_h:'One question, one QR', ben4_p:'Create as many questions as you like, each with its own poster, and compare the answers.',
     cta_label:'Start for free', cta_h:'Your next decision,<br><em>answered by your customers.</em>',
-    cta_p:'Leave your details and your first question. We\'ll send you the poster with your QR code ready to print.',
+    cta_p:'Write your question, create your account and get your poster with its QR code ready to print.',
+    cta_l1:'Write your question', cta_l2:'Leave your name, email and WhatsApp', cta_l3:'Print your poster with the QR code',
+    cta_btn:'Create your first question →', cta_note:'Free · 2 minutes · no card needed',
     form_title:'Create your account and your first question',
     f_preg_lbl:'Your first question', f_preg_ph:'Which dish would you like to see on our menu?',
     f_nombre_lbl:'Full name', f_nombre_ph:'Ana García',
@@ -880,6 +859,16 @@ var TR = {
 };
 
 function goTo(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+
+// Página de alta (crear-pregunta.html). Acepta ?pregunta=…&negocio=… para venir ya rellenada.
+var CREAR_URL = 'https://dichosea.com/crear-pregunta.html';
+function goCrear(pregunta, negocio) {
+  var q = new URLSearchParams();
+  if (pregunta) q.set('pregunta', pregunta);
+  if (negocio)  q.set('negocio', negocio);
+  var qs = q.toString();
+  window.location.href = CREAR_URL + (qs ? '?' + qs : '');
+}
 
 function detectLang() {
   var p = new URLSearchParams(window.location.search);
@@ -909,9 +898,6 @@ function setLang(lang) {
   document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
     var k = el.getAttribute('data-i18n-placeholder'); if (t[k] !== undefined) el.placeholder = t[k];
   });
-  var sel = document.getElementById('f-tipo');
-  sel.innerHTML = '<option value="" disabled selected>' + t.f_tipo_ph + '</option>';
-  t.tipos.forEach(function(opt) { var o = document.createElement('option'); o.value = opt; o.textContent = opt; sel.appendChild(o); });
   document.querySelectorAll('.footer-lang-btn').forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
   var acc = document.getElementById('nav-acceder-link'); if (acc) acc.href = ACCEDER_BASE_URL + '?lang=' + lang;
   var ct = document.getElementById('cookie-text'), cl = document.getElementById('cookie-privacy-link');
@@ -980,10 +966,7 @@ function renderPoster() {
 qEl.addEventListener('input', function() { builder.edited = true; renderChips(); renderPoster(); });
 bizEl.addEventListener('input', renderPoster);
 document.getElementById('b-go').addEventListener('click', function() {
-  document.getElementById('f-pregunta').value = qEl.value.trim();
-  if (bizEl.value.trim()) document.getElementById('f-negocio').value = bizEl.value.trim();
-  goTo('contacto');
-  setTimeout(function(){ document.getElementById('f-nombre').focus({preventScroll:true}); }, 700);
+  goCrear(qEl.value.trim(), bizEl.value.trim());
 });
 
 // ── DASHBOARD MOCK ───────────────────────────────────────────────
@@ -1035,79 +1018,6 @@ var obs = new IntersectionObserver(function(entries) {
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
 
-// ── AUTOCOMPLETE CIUDAD (igual que la home) ─────────────────────
-var acInput = document.getElementById('f-ciudad'), acList = document.getElementById('ciudad-list'), acWrap = document.getElementById('ciudad-wrap');
-var acIdx = -1, acTimer = null, acAbort = null;
-function renderItems(items) {
-  acList.innerHTML = ''; acIdx = -1;
-  if (!items.length) { acList.classList.remove('open'); return; }
-  items.forEach(function(item) {
-    var d = document.createElement('div'); d.className = 'ac-item';
-    var city = item.name || item.display_name.split(',')[0];
-    var country = item.address && item.address.country ? item.address.country : '';
-    var state = item.address && (item.address.state || item.address.county) ? (item.address.state || item.address.county) : '';
-    var sub = [state, country].filter(Boolean).join(', ');
-    d.innerHTML = esc(city) + (sub ? '<span>' + esc(sub) + '</span>' : '');
-    d.addEventListener('mousedown', function(ev) { ev.preventDefault(); acInput.value = city + (country ? ', ' + country : ''); acList.classList.remove('open'); });
-    acList.appendChild(d);
-  });
-  acList.classList.add('open');
-}
-function searchCities(q) {
-  if (acAbort) acAbort.abort();
-  acAbort = new AbortController();
-  acList.innerHTML = '<div class="ac-loading">' + TR[LANG].ac_loading + '</div>'; acList.classList.add('open');
-  var url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&addressdetails=1&featuretype=city&limit=8&accept-language=es';
-  fetch(url, { signal: acAbort.signal, headers: { 'Accept-Language': 'es' } })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var T = ['city','town','village','municipality'];
-      var cities = data.filter(function(r) { return T.indexOf(r.type) !== -1 || T.indexOf(r.addresstype) !== -1; });
-      if (!cities.length) cities = data;
-      renderItems(cities.slice(0, 8));
-    })
-    .catch(function(err) { if (err.name !== 'AbortError') acList.classList.remove('open'); });
-}
-acInput.addEventListener('input', function() {
-  var q = this.value.trim(); clearTimeout(acTimer);
-  if (q.length < 2) { acList.classList.remove('open'); return; }
-  acTimer = setTimeout(function() { searchCities(q); }, 350);
-});
-acInput.addEventListener('keydown', function(e) {
-  var items = acList.querySelectorAll('.ac-item'); if (!items.length) return;
-  if (e.key === 'ArrowDown') { e.preventDefault(); acIdx = Math.min(acIdx + 1, items.length - 1); }
-  else if (e.key === 'ArrowUp') { e.preventDefault(); acIdx = Math.max(acIdx - 1, 0); }
-  else if (e.key === 'Enter' && acIdx >= 0) { e.preventDefault(); acInput.value = items[acIdx].firstChild.textContent; acList.classList.remove('open'); return; }
-  else if (e.key === 'Escape') { acList.classList.remove('open'); return; }
-  items.forEach(function(it, i) { it.classList.toggle('active', i === acIdx); });
-});
-document.addEventListener('click', function(e) { if (!acWrap.contains(e.target)) acList.classList.remove('open'); });
-
-// ── ENVÍO ────────────────────────────────────────────────────────
-// Mismo Apps Script que la home. Envía además modo=preguntas y la pregunta:
-// el script tiene que aceptar estos dos parámetros nuevos.
-var DICHO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
-document.getElementById('lead-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  var t = TR[LANG];
-  var v = function(id) { return document.getElementById(id).value.trim(); };
-  var pregunta = v('f-pregunta'), nombre = v('f-nombre'), negocio = v('f-negocio'), tipo = document.getElementById('f-tipo').value,
-      ciudad = v('f-ciudad'), email = v('f-email'), whatsapp = v('f-wa');
-  var errEl = document.getElementById('form-error');
-  if (!pregunta || !nombre || !negocio || !tipo || !ciudad || !email || !whatsapp) {
-    errEl.style.display = 'block'; errEl.textContent = t.f_err_campos; return;
-  }
-  var btn = document.getElementById('submit-btn');
-  btn.innerHTML = '<span class="btn-spinner"></span> ' + t.f_submit_loading; btn.disabled = true; errEl.style.display = 'none';
-  var params = new URLSearchParams({ page: 'submit', modo: 'preguntas', pregunta: pregunta, nombre: nombre, negocio: negocio, tipo: tipo, ciudad: ciudad, email: email, whatsapp: whatsapp, lang: LANG });
-  fetch(DICHO_SCRIPT_URL + '?' + params.toString())
-    .then(function(r) { return r.json(); })
-    .then(function(result) {
-      if (result && result.ok) { window.location.href = result.redirectUrl; }
-      else { btn.textContent = t.f_submit; btn.disabled = false; errEl.style.display = 'block'; errEl.textContent = (result && result.error) || t.f_err_general; }
-    })
-    .catch(function() { btn.textContent = t.f_submit; btn.disabled = false; errEl.style.display = 'block'; errEl.textContent = t.f_err_conexion; });
-});
 </script>
 </body>
 </html>
