@@ -40,9 +40,11 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .brand-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -.03em; }
 .brand-name span { color: #86efac; }
 .nav { display: flex; align-items: stretch; gap: 2px; padding-left: 4px; flex: 1; }
-.nav-item { display: inline-flex; align-items: center; gap: 7px; padding: 0 15px; font-size: 13px; font-weight: 500; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.62); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; text-decoration: none; transition: .15s; }
+.nav-item { display: inline-flex; align-items: center; gap: 7px; padding: 0 15px; font-size: 13px; font-weight: 500; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.62); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; text-decoration: none; transition: .15s; white-space: nowrap; }
 .nav-item:hover { color: rgba(255,255,255,.88); }
 .nav-item.active { color: #fff; font-weight: 700; border-bottom-color: #86efac; background: rgba(255,255,255,.07); }
+.nav-item svg { flex-shrink: 0; opacity: .7; }
+.nav-item.active svg { opacity: 1; }
 .header-right { display: flex; align-items: center; gap: 10px; padding-left: 6px; margin-left: auto; }
 .header-biz { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.65); font-family: 'Jost', sans-serif; white-space: nowrap; padding-right: 16px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px; }
 .header-biz strong { color: #fff; }
@@ -155,17 +157,26 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .ac-item:hover, .ac-item.active { background: var(--green-l); }
 .ac-loading { padding: 9px 12px; font-size: 13px; color: var(--muted-l); font-family: 'Jost', sans-serif; font-style: italic; }
 
+@media (max-width: 860px) {
+  .page { padding: 20px 16px 48px; }
+}
+@media (max-width: 640px) {
+  body { zoom: 1; }
+  .header { height: auto; flex-wrap: wrap; padding: 10px 16px; }
+  .nav { order: 3; flex: 1 1 100%; width: 100%; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,.1); padding: 2px 0; }
+  .nav-item { padding: 9px 10px; font-size: 12px; }
+  .header-biz { display: none; }
+}
 @media (max-width: 560px) {
   .form-grid { grid-template-columns: 1fr; }
   .form-grid .span2 { grid-column: 1; }
-  .nav-item { padding: 0 10px; font-size: 12px; }
   .lang-tabs { flex-wrap: wrap; }
 }
 </style>
 </head>
 <body style="visibility:hidden">
 
-<!-- ── HEADER ── -->
+<!-- ── HEADER (menú común) ── -->
 <header class="header">
   <div class="header-brand" onclick="window.location.href=document.getElementById('nav-dashboard').href" style="cursor:pointer">
     <div class="logo">D</div>
@@ -174,15 +185,15 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   <nav class="nav">
     <a class="nav-item" id="nav-dashboard" href="#" target="_top">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
+      <span data-i18n="nav_dashboard">Dashboard</span>
     </a>
-    <a class="nav-item" id="nav-qr" href="#" target="_top">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="17" y="17" width="4" height="4" rx=".5"/><rect x="17" y="13" width="4" height="2" rx=".5"/><rect x="13" y="17" width="2" height="4" rx=".5"/></svg>
-      <span data-i18n="nav_qr">Código QR</span>
+    <a class="nav-item" id="nav-feedback" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span data-i18n="nav_feedback">Feedback</span>
     </a>
-    <a class="nav-item" id="nav-ubicaciones" href="#" target="_top">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span data-i18n="nav_ubicaciones">Ubicaciones</span>
+    <a class="nav-item" id="nav-preguntas" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span data-i18n="nav_preguntas">Preguntas</span>
     </a>
     <a class="nav-item active" href="javascript:void(0)">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -191,7 +202,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   </nav>
   <div class="header-right">
     <span class="header-biz"><strong id="hdr-biz"></strong></span>
-    <button class="hdr-logout" onclick="doLogout()" id="btn-logout">Salir</button>
+    <button class="hdr-logout" onclick="doLogout()" id="btn-logout" data-i18n="logout">Salir</button>
   </div>
 </header>
 
@@ -448,7 +459,7 @@ function renderTipos(lang) {
 
 var TR = {
   es: {
-    nav_qr: 'Código QR', nav_ubicaciones: 'Ubicaciones', nav_config: 'Configuración',
+    nav_dashboard: 'Dashboard', nav_feedback: 'Feedback', nav_preguntas: 'Preguntas', nav_config: 'Configuración', logout: 'Salir',
     eyebrow: 'Tu negocio', page_title: 'Configuración',
     s1_title: 'Perfil del negocio', s1_sub: 'Información que aparece en tus tarjetas y mensajes de WhatsApp',
     f_idioma: 'Idioma', f_idioma_hint: 'El idioma de esta página cambia al instante. Las otras páginas se actualizarán próximamente.',
@@ -471,7 +482,7 @@ var TR = {
     btn_logout_all: 'Cerrar todas las sesiones', chip_pwd: '✓ Contraseña actualizada', btn_update_pwd: 'Actualizar contraseña'
   },
   ca: {
-    nav_qr: 'Codi QR', nav_ubicaciones: 'Ubicacions', nav_config: 'Configuració',
+    nav_dashboard: 'Dashboard', nav_feedback: 'Feedback', nav_preguntas: 'Preguntes', nav_config: 'Configuració', logout: 'Sortir',
     eyebrow: 'El teu negoci', page_title: 'Configuració',
     s1_title: 'Perfil del negoci', s1_sub: 'Informació que apareix a les teves targetes i missatges de WhatsApp',
     f_idioma: 'Idioma', f_idioma_hint: "L'idioma d'aquesta pàgina canvia a l'instant. Les altres pàgines s'actualitzaran aviat.",
@@ -494,7 +505,7 @@ var TR = {
     btn_logout_all: 'Tancar totes les sessions', chip_pwd: '✓ Contrasenya actualitzada', btn_update_pwd: 'Actualitzar contrasenya'
   },
   en: {
-    nav_qr: 'QR Code', nav_ubicaciones: 'Locations', nav_config: 'Settings',
+    nav_dashboard: 'Dashboard', nav_feedback: 'Feedback', nav_preguntas: 'Questions', nav_config: 'Settings', logout: 'Log out',
     eyebrow: 'Your business', page_title: 'Settings',
     s1_title: 'Business profile', s1_sub: 'Info that appears on your cards and WhatsApp messages',
     f_idioma: 'Language', f_idioma_hint: "This page's language changes instantly. Other pages will follow soon.",
@@ -534,9 +545,6 @@ function applyLang(lang) {
     var btn = document.getElementById('lang-' + l);
     if (btn) btn.classList.toggle('active', l === lang);
   });
-  // Botón salir: siempre Salir en es/en, Sortir en ca
-  var btnLogout = document.getElementById('btn-logout');
-  if (btnLogout) btnLogout.textContent = (lang === 'ca') ? 'Sortir' : 'Salir';
   document.documentElement.lang = lang === 'en' ? 'en' : lang === 'ca' ? 'ca' : 'es';
   renderTipos(lang);
   try { sessionStorage.setItem('dicho_lang_' + TOKEN, lang); } catch(e) {}
@@ -636,9 +644,10 @@ function renderPlan(planKey) {
 }
 
 (function init() {
-  document.getElementById('nav-dashboard').href   = 'https://dichosea.com/dashboard.html?token='   + encodeURIComponent(TOKEN);
-  document.getElementById('nav-qr').href          = 'https://dichosea.com/codigoqr.html?token='    + encodeURIComponent(TOKEN);
-  document.getElementById('nav-ubicaciones').href = 'https://dichosea.com/ubicaciones.html?token=' + encodeURIComponent(TOKEN);
+  // Menú común: Dashboard · Feedback · Preguntas · Configuración
+  document.getElementById('nav-dashboard').href = 'https://dichosea.com/dashboard.html?token='       + encodeURIComponent(TOKEN);
+  document.getElementById('nav-feedback').href  = 'https://dichosea.com/ubicaciones.html?token='     + encodeURIComponent(TOKEN);
+  document.getElementById('nav-preguntas').href = 'https://dichosea.com/preguntas-panel.html?token=' + encodeURIComponent(TOKEN);
 
   try {
     var _cachedBiz = sessionStorage.getItem('dicho_biz_' + TOKEN);
@@ -779,7 +788,7 @@ function checkPwd(v) {
 }
 
 function doLogout() {
-  gasCall('api_logout', { session: SESSION }).catch(function() {});
+  if (SESSION) gasCall('api_logout', { session: SESSION }).catch(function() {});
   window.location.href = 'https://dichosea.com/login.html';
 }
 
