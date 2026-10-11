@@ -85,6 +85,13 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .action-btn.primary:hover { background: #d1fae5; border-color: var(--green); }
 .action-btn.on, .action-btn.on:hover { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
 .action-btn .chev { transition: transform .2s; }
+.action-btn.danger { color: #B91C1C; margin-left: auto; }
+.action-btn.danger:hover { border-color: #DC2626; background: #FEE2E2; color: #991B1B; }
+.btn-danger-solid { padding: 10px 18px; font-size: 13px; font-weight: 700; font-family: 'Jost', sans-serif; color: #fff; background: #DC2626; border: none; border-radius: 8px; cursor: pointer; }
+.btn-danger-solid:hover { background: #B91C1C; }
+.btn-danger-solid:disabled { opacity: .55; cursor: default; }
+.del-q { margin-top: 12px; padding: 12px 14px; background: var(--surface); border-radius: 10px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+.del-note { margin-top: 12px; font-size: 13px; color: var(--muted); line-height: 1.5; }
 .action-btn.on .chev { transform: rotate(180deg); }
 
 /* ── RESPUESTAS (desplegable) ── */
@@ -276,6 +283,24 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   </div>
 </div>
 
+<!-- ── MODAL: ELIMINAR ── -->
+<div class="modal-bg" id="modal-del" onclick="if(event.target===this)closeModal('modal-del')">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-title" data-i18n="del_title">¿Eliminar esta pregunta?</div></div>
+      <button class="modal-close" onclick="closeModal('modal-del')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="del-q" id="del-q"></div>
+      <div class="del-note" data-i18n="del_text">Dejará de aparecer en tu panel y su QR dejará de aceptar respuestas. Si solo quieres dejar de recibir respuestas por un tiempo, mejor páusala.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-del')" data-i18n="btn_cancel">Cancelar</button>
+      <button class="btn-danger-solid" id="btn-del-ok" onclick="confirmDelete()" data-i18n="btn_delete_ok">Eliminar pregunta</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── MODAL: VER QR ── -->
 <div class="modal-bg" id="modal-qr" onclick="if(event.target===this)closeModal('modal-qr')">
   <div class="modal wide">
@@ -376,7 +401,10 @@ var TR = {
     btn_dl_qr:'Descargar solo QR', btn_test:'Probar enlace', btn_copy:'Copiar enlace', copied:'¡Copiado!', generating:'Generando…',
     k_eye:'Queremos saber', k_scan:'Escáneame', k_text:'Respóndenos con un audio y listo.', k_note:'(Sin apps ni registros ;)', k_via:'vía',
     toast_created:'Pregunta creada', toast_paused:'Pregunta pausada: el bot avisará de que no está activa', toast_active:'Pregunta activada',
-    err_load:'No se pudieron cargar tus preguntas.'
+    err_load:'No se pudieron cargar tus preguntas.',
+    btn_delete:'Eliminar', del_title:'¿Eliminar esta pregunta?', btn_delete_ok:'Eliminar pregunta', deleting:'Eliminando…',
+    del_text:'Dejará de aparecer en tu panel y su QR dejará de aceptar respuestas. Si solo quieres dejar de recibir respuestas por un tiempo, mejor páusala.',
+    toast_deleted:'Pregunta eliminada'
   },
   ca: {
     nav_dashboard:'Dashboard', nav_feedback:'Feedback', nav_preguntas:'Preguntes', nav_config:'Configuració', logout:'Sortir',
@@ -401,7 +429,10 @@ var TR = {
     btn_dl_qr:'Descarregar només QR', btn_test:'Provar enllaç', btn_copy:'Copiar enllaç', copied:'Copiat!', generating:'Generant…',
     k_eye:'Volem saber', k_scan:'Escaneja\'m', k_text:'Respon-nos amb un àudio i llestos.', k_note:'(Sense apps ni registres ;)', k_via:'via',
     toast_created:'Pregunta creada', toast_paused:'Pregunta en pausa: el bot avisarà que no està activa', toast_active:'Pregunta activada',
-    err_load:'No s\'han pogut carregar les teves preguntes.'
+    err_load:'No s\'han pogut carregar les teves preguntes.',
+    btn_delete:'Eliminar', del_title:'Vols eliminar aquesta pregunta?', btn_delete_ok:'Eliminar pregunta', deleting:'Eliminant…',
+    del_text:'Deixarà d\'aparèixer al teu panell i el seu QR deixarà d\'acceptar respostes. Si només vols deixar de rebre respostes una temporada, millor posa-la en pausa.',
+    toast_deleted:'Pregunta eliminada'
   },
   en: {
     nav_dashboard:'Dashboard', nav_feedback:'Feedback', nav_preguntas:'Questions', nav_config:'Settings', logout:'Log out',
@@ -426,7 +457,10 @@ var TR = {
     btn_dl_qr:'Download QR only', btn_test:'Test link', btn_copy:'Copy link', copied:'Copied!', generating:'Generating…',
     k_eye:'We want to know', k_scan:'Scan me', k_text:'Just answer us with a voice message.', k_note:'(No apps, no sign-up ;)', k_via:'via',
     toast_created:'Question created', toast_paused:'Question paused: the bot will say it is no longer active', toast_active:'Question activated',
-    err_load:'Could not load your questions.'
+    err_load:'Could not load your questions.',
+    btn_delete:'Delete', del_title:'Delete this question?', btn_delete_ok:'Delete question', deleting:'Deleting…',
+    del_text:'It will disappear from your panel and its QR will stop accepting answers. If you just want to stop receiving answers for a while, pause it instead.',
+    toast_deleted:'Question deleted'
   }
 };
 function t(k, n) { var s = (TR[LANG] || TR.es)[k]; if (s === undefined) s = TR.es[k] || k; return n !== undefined ? s.replace('{n}', n) : s; }
@@ -491,7 +525,14 @@ function render() {
       '</div>';
     return;
   }
-  c.innerHTML = ps.map(buildModule).join('');
+  c.innerHTML = sortPreguntas(ps).map(buildModule).join('');
+}
+
+// Más reciente arriba (por fecha de alta; si empatan, se respeta el orden que manda el servidor)
+function sortPreguntas(ps) {
+  return ps.map(function(p, i) { return { p: p, i: i }; })
+    .sort(function(a, b) { return ((b.p.fechaObj || 0) - (a.p.fechaObj || 0)) || (a.i - b.i); })
+    .map(function(x) { return x.p; });
 }
 
 function buildModule(p) {
@@ -532,6 +573,10 @@ function buildModule(p) {
         (activa
           ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>' + esc(t('btn_pause'))
           : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>' + esc(t('btn_activate'))) +
+      '</button>' +
+      '<button class="action-btn danger" onclick="askDelete(\'' + esc(p.id) + '\')" title="' + esc(t('btn_delete')) + '">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>' +
+        esc(t('btn_delete')) +
       '</button>' +
     '</div>' +
     '<div class="resp-panel' + (open ? ' open' : '') + '" id="resp-' + esc(p.id) + '">' + (open ? buildResp(p) : '') + '</div>' +
@@ -608,6 +653,33 @@ function toggleEstado(id) {
       } else { if (btn) btn.disabled = false; toast((res && res.error) || t('err_general')); }
     })
     .catch(function() { if (btn) btn.disabled = false; toast(t('err_general')); });
+}
+
+// ── ELIMINAR ─────────────────────────────────────────────────────
+var DEL_ID = null;
+function askDelete(id) {
+  var p = findP(id); if (!p) return;
+  DEL_ID = id;
+  document.getElementById('del-q').textContent = p.pregunta;
+  var b = document.getElementById('btn-del-ok');
+  b.disabled = false; b.textContent = t('btn_delete_ok');
+  openModal('modal-del');
+}
+function confirmDelete() {
+  var id = DEL_ID; if (!id) return;
+  var b = document.getElementById('btn-del-ok');
+  b.disabled = true; b.textContent = t('deleting');
+  gasCall('api_setEstadoPregunta', { token: TOKEN, id: id, estado: 'eliminada' })
+    .then(function(res) {
+      if (res && res.ok) {
+        DATA.preguntas = (DATA.preguntas || []).filter(function(p) { return p.id !== id; });
+        delete OPEN[id];
+        closeModal('modal-del');
+        render();
+        toast(t('toast_deleted'));
+      } else { b.disabled = false; b.textContent = t('btn_delete_ok'); toast((res && res.error) || t('err_general')); }
+    })
+    .catch(function() { b.disabled = false; b.textContent = t('btn_delete_ok'); toast(t('err_general')); });
 }
 
 // ── NUEVA PREGUNTA ───────────────────────────────────────────────
