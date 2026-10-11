@@ -183,7 +183,7 @@
         confidential: '🔒 100% confidencial', loading: 'Un momento…',
         closed: 'Esta pregunta ya no está activa. ¡Gracias por tu interés!',
         notFound: 'No hemos encontrado esta pregunta.',
-        prefill: 'Respondo a {negocio}', boton: 'Toca primero el botón verde >'
+        prefill: 'Para responder a «{pregunta}»\nToca primero el botón verde >'
       },
       ca: {
         eyebrow: 'Volem saber',
@@ -193,7 +193,7 @@
         confidential: '🔒 100% confidencial', loading: 'Un moment…',
         closed: 'Aquesta pregunta ja no està activa. Gràcies pel teu interès!',
         notFound: "No hem trobat aquesta pregunta.",
-        prefill: 'Responc a {negocio}', boton: 'Toca primer el botó verd >'
+        prefill: 'Per respondre a «{pregunta}»\nToca primer el botó verd >'
       },
       en: {
         eyebrow: 'We want to know',
@@ -203,7 +203,7 @@
         confidential: '🔒 100% confidential', loading: 'One moment…',
         closed: 'This question is no longer active. Thanks for your interest!',
         notFound: "We couldn't find this question.",
-        prefill: 'My answer for {negocio}', boton: 'Tap the green button first >'
+        prefill: 'To answer «{pregunta}»\nTap the green button first >'
       }
     };
     function tr(lang) {
@@ -251,8 +251,9 @@
       document.getElementById('ctaText').innerHTML = t.cta;
       document.getElementById('closedMsg').textContent = t.closed;
 
-      var texto = t.prefill.replace('{negocio}', data.negocio || 'Dicho') + ' (' + data.codigo + ')\n' + t.boton;
-      waLink = 'https://wa.me/' + (data.wa_number || WA_NUMBER_FALLBACK) + '?text=' + encodeURIComponent(texto);
+      // El enlace lo construye el servidor (mismo texto que reconoce Dicho); si no llega, se arma aquí
+      var texto = t.prefill.replace('{pregunta}', data.pregunta || '');
+      waLink = data.waUrl || ('https://wa.me/' + (data.wa_number || WA_NUMBER_FALLBACK) + '?text=' + encodeURIComponent(texto));
       document.getElementById('ctaBtn').href = waLink;
 
       var page = document.getElementById('page');
