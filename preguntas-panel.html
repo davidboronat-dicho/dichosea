@@ -673,7 +673,7 @@ function openQR(id) {
   CUR_QR = p;
   document.getElementById('qr-sub').textContent = t('lbl_codigo') + ': ' + p.codigo;
   document.getElementById('qr-card-slot').innerHTML = cardHtml(p);
-  document.getElementById('btn-test').href = p.waUrl;
+  document.getElementById('btn-test').href = p.landingUrl || p.waUrl;
   openModal('modal-qr');
 }
 
@@ -792,7 +792,7 @@ function printCard() {
 function copyLink() {
   var p = CUR_QR; if (!p || !navigator.clipboard) return;
   var span = document.querySelector('#btn-copy span'), orig = span.textContent;
-  navigator.clipboard.writeText(p.waUrl).then(function() { span.textContent = t('copied'); setTimeout(function() { span.textContent = orig; }, 1800); }).catch(function() {});
+  navigator.clipboard.writeText(p.landingUrl || p.waUrl).then(function() { span.textContent = t('copied'); setTimeout(function() { span.textContent = orig; }, 1800); }).catch(function() {});
 }
 
 function doLogout() {
