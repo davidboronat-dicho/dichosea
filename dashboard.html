@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<title>Dicho · Panel de Feedback</title>
+<title>Dicho · Panel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap">
 <style>
   :root {
@@ -77,6 +77,16 @@
   .hdr-logout:hover { color:#fff; border-color:rgba(255,255,255,.5); background:rgba(255,255,255,.1); }
   .main { max-width:1100px; margin:0; padding:28px 28px; }
 
+  /* ── NUEVO: pestañas Feedback / Preguntas ── */
+  .mode-tabs { display:inline-flex; gap:4px; background:#fff; border:1px solid var(--border); border-radius:10px; padding:4px; margin-bottom:18px; }
+  .mode-tab { font-family:'Jost',sans-serif; font-size:13px; font-weight:600; color:var(--muted); background:none; border:none; padding:7px 16px; border-radius:7px; cursor:pointer; transition:.15s; }
+  .mode-tab:hover { color:var(--text); }
+  .mode-tab.active { background:var(--green-deep); color:#fff; }
+  .view-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+  .view-title { font-size:20px; font-weight:700; letter-spacing:-.01em; }
+  .link-btn { font-family:'Jost',sans-serif; font-size:13px; font-weight:600; color:var(--green2); text-decoration:none; border:1.5px solid #bbf7d0; background:#F0FDF4; padding:7px 14px; border-radius:8px; white-space:nowrap; }
+  .link-btn:hover { border-color:var(--green); }
+
   .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
   @media(max-width:760px){ .stats { grid-template-columns:repeat(2,1fr); } }
   .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
@@ -110,6 +120,7 @@
   td { padding:10px 14px; border-bottom:1px solid var(--rule); font-size:13px; vertical-align:middle; }
   tr:last-child td { border-bottom:none; }
   tbody tr:hover td { background:#F8FAFD; }
+  td.q-cell { font-size:12px; color:var(--muted); max-width:220px; }
 
   .sent-pill { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; }
   .sent-positivo { background:#dcfce7; color:#15803d; }
@@ -117,12 +128,6 @@
   .sent-negativo { background:#fee2e2; color:#b91c1c; }
 
   .stars { color:#f59e0b; letter-spacing:1px; }
-
-  .hdr-btn { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500;
-             color:#fff; border:1px solid rgba(255,255,255,.35); border-radius:7px;
-             padding:7px 14px; cursor:pointer; background:rgba(255,255,255,.12);
-             font-family:'Jost',sans-serif; transition:.15s; text-decoration:none; }
-  .hdr-btn:hover { background:rgba(255,255,255,.22); }
 
   .qr-btn { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500;
             color:var(--green); border:1px solid var(--green); border-radius:6px;
@@ -156,7 +161,7 @@
 
   .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px;
          font-family:'Jost',sans-serif; font-size:14px; font-weight:600;
-         padding:10px 20px; border-radius:8px; cursor:pointer; border:none; transition:.15s; }
+         padding:10px 20px; border-radius:8px; cursor:pointer; border:none; transition:.15s; text-decoration:none; }
   .btn-primary { background:var(--green); color:#fff; }
   .btn-primary:hover { background:var(--green2); }
   .btn-primary:disabled { opacity:.55; cursor:not-allowed; }
@@ -183,6 +188,9 @@
               color:var(--muted); background:none; border:none; }
 
   .empty   { text-align:center; padding:36px 20px; color:var(--muted); font-size:13.5px; }
+  .empty-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:36px 32px; text-align:center; }
+  .empty-card h3 { font-size:18px; font-weight:700; margin-bottom:6px; }
+  .empty-card p { font-size:14px; color:var(--muted); margin-bottom:18px; line-height:1.6; }
   .loading { text-align:center; padding:28px; color:var(--muted); font-size:13px;
              display:flex; align-items:center; justify-content:center; gap:8px; }
   .spinner { width:18px; height:18px; border:2px solid var(--border);
@@ -192,10 +200,12 @@
   .footer { text-align:center; padding:28px 20px 40px; font-size:12px; color:var(--muted); }
 
   @media(max-width:640px) {
+    body { zoom:1; }
     .header { height:auto; flex-wrap:wrap; padding:10px 16px; gap:0; }
     .header-brand { padding-right:16px; }
-    .nav { flex-wrap:wrap; width:100%; order:3; border-top:1px solid rgba(255,255,255,.1); gap:0; padding:2px 0; }
+    .nav { flex:1 1 100%; flex-wrap:wrap; width:100%; order:3; border-top:1px solid rgba(255,255,255,.1); gap:0; padding:2px 0; }
     .nav-item { padding:8px 12px; font-size:12px; }
+    .header-biz { display:none; }
     .header-right { margin-left:auto; padding-left:12px; }
     .main { padding:16px 12px; }
     .stats { grid-template-columns:repeat(2,1fr); gap:10px; }
@@ -204,6 +214,8 @@
     .card { padding:16px 14px; }
     .row2 { grid-template-columns:1fr; gap:10px; }
     th, td { padding:8px 10px; }
+    td.q-cell { display:none; }
+    th.q-col { display:none; }
   }
 
   .expand-btn { background:none; border:none; cursor:pointer; color:var(--green); font-size:12px;
@@ -213,7 +225,7 @@
   .loc-filter { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
   .loc-chip { font-family:'Jost',sans-serif; font-size:12px; font-weight:500;
               padding:5px 13px; border-radius:20px; cursor:pointer; border:1.5px solid var(--border);
-              background:#fff; color:var(--muted); transition:.12s; white-space:nowrap; }
+              background:#fff; color:var(--muted); transition:.12s; white-space:nowrap; max-width:260px; overflow:hidden; text-overflow:ellipsis; }
   .loc-chip:hover { border-color:var(--green); color:var(--green); background:var(--green-l); }
   .loc-chip.active { border-color:var(--green); color:var(--green); background:var(--green-l); font-weight:600; }
 
@@ -245,20 +257,21 @@
     <div class="logo">D</div>
     <span class="brand-name">dicho<span>.</span></span>
   </div>
+  <!-- NUEVO menú común: Dashboard · Feedback · Preguntas · Configuración -->
   <nav class="nav">
-    <button class="nav-item active">
+    <a class="nav-item active" href="javascript:void(0)">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       <span data-i18n="nav_dashboard">Dashboard</span>
-    </button>
-    <button class="nav-item" onclick="goToQRPage()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="17" y="17" width="4" height="4" rx=".5"/><rect x="17" y="13" width="4" height="2" rx=".5"/><rect x="13" y="17" width="2" height="4" rx=".5"/></svg>
-      <span data-i18n="nav_qr">Código QR</span>
-    </button>
-    <button class="nav-item" onclick="goToUbicaciones()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span data-i18n="nav_ubicaciones">Ubicaciones</span>
-    </button>
-    <a class="nav-item" id="nav-config" href="javascript:void(0)" onclick="goToConfig()">
+    </a>
+    <a class="nav-item" id="nav-feedback" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span data-i18n="nav_feedback">Feedback</span>
+    </a>
+    <a class="nav-item" id="nav-preguntas" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span data-i18n="nav_preguntas">Preguntas</span>
+    </a>
+    <a class="nav-item" id="nav-config" href="#" target="_top">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       <span data-i18n="nav_config">Configuración</span>
     </a>
@@ -275,68 +288,152 @@
 
 <div class="main" id="main-content" style="display:none">
 
-  <div class="stats">
-    <div class="stat-card">
-      <div class="stat-label" data-i18n="stat_total">Total Feedbacks</div>
-      <div class="stat-value" id="s-total">0</div>
-      <div class="stat-sub" data-i18n="stat_total_sub">Registros totales</div>
+  <!-- Pestañas: solo si el cliente tiene Feedback y Preguntas -->
+  <div class="mode-tabs" id="mode-tabs" style="display:none">
+    <button class="mode-tab" id="tab-feedback"  onclick="showMode('feedback')"  data-i18n="tab_feedback">Feedback</button>
+    <button class="mode-tab" id="tab-preguntas" onclick="showMode('preguntas')" data-i18n="tab_preguntas">Preguntas</button>
+  </div>
+
+  <!-- ══════════ VISTA FEEDBACK (la de siempre) ══════════ -->
+  <div id="view-feedback">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="stat_total">Total Feedbacks</div>
+        <div class="stat-value" id="s-total">0</div>
+        <div class="stat-sub" data-i18n="stat_total_sub">Registros totales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="stat_pos">Sentimiento Positivo</div>
+        <div class="stat-value green" id="s-pos">0%</div>
+        <div class="stat-sub" data-i18n="stat_pos_sub">De los feedbacks recibidos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="stat_avg">Puntuación Media</div>
+        <div class="stat-value green" id="s-avg">—</div>
+        <div class="stat-sub" data-i18n="stat_avg_sub">Sobre 5 puntos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="stat_aptos">Aptos para Publicar</div>
+        <div class="stat-value orange" id="s-aptos">0%</div>
+        <div class="stat-sub" data-i18n="stat_aptos_sub">Listos para Google Maps</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label" data-i18n="stat_pos">Sentimiento Positivo</div>
-      <div class="stat-value green" id="s-pos">0%</div>
-      <div class="stat-sub" data-i18n="stat_pos_sub">De los feedbacks recibidos</div>
+
+    <div class="row2">
+      <div class="card">
+        <div class="card-title" data-i18n="chart_title">Sentimiento por día</div>
+        <div style="display:flex;gap:16px;margin-bottom:12px;font-size:12px">
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--pos);margin-right:4px"></span><span data-i18n="legend_pos">Positivo</span></span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neu);margin-right:4px"></span><span data-i18n="legend_neu">Neutro</span></span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neg);margin-right:4px"></span><span data-i18n="legend_neg">Negativo</span></span>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-sent"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title" data-i18n="topics_title">Temas más mencionados</div>
+        <div class="topics-wrap" id="topics-wrap">
+          <div class="empty" style="padding:20px" data-i18n="topics_empty">Sin datos de temas aún</div>
+        </div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label" data-i18n="stat_avg">Puntuación Media</div>
-      <div class="stat-value green" id="s-avg">—</div>
-      <div class="stat-sub" data-i18n="stat_avg_sub">Sobre 5 puntos</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label" data-i18n="stat_aptos">Aptos para Publicar</div>
-      <div class="stat-value orange" id="s-aptos">0%</div>
-      <div class="stat-sub" data-i18n="stat_aptos_sub">Listos para Google Maps</div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <div class="card-title" style="margin-bottom:0" id="fb-card-title" data-i18n="fb_title">Feedbacks</div>
+        <div class="loc-filter" id="loc-filter" style="margin-bottom:0"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="th_fecha">Fecha</th>
+              <th data-i18n="th_resumen">Resumen</th>
+              <th data-i18n="th_sent">Sentimiento</th>
+              <th data-i18n="th_punt">Puntuación</th>
+              <th data-i18n="th_apto">Apto Publicar</th>
+              <th id="th-ubicacion" style="display:none" data-i18n="th_ubic">Ubicación</th>
+            </tr>
+          </thead>
+          <tbody id="fb-tbody">
+            <tr><td colspan="5" class="empty" data-i18n="no_fb">Sin feedbacks aún</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div class="row2">
-    <div class="card">
-      <div class="card-title" data-i18n="chart_title">Sentimiento por día</div>
-      <div style="display:flex;gap:16px;margin-bottom:12px;font-size:12px">
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--pos);margin-right:4px"></span><span data-i18n="legend_pos">Positivo</span></span>
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neu);margin-right:4px"></span><span data-i18n="legend_neu">Neutro</span></span>
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neg);margin-right:4px"></span><span data-i18n="legend_neg">Negativo</span></span>
-      </div>
-      <div class="chart-wrap"><canvas id="chart-sent"></canvas></div>
+  <!-- ══════════ VISTA PREGUNTAS (NUEVA) ══════════ -->
+  <div id="view-preguntas" style="display:none">
+    <div class="view-head">
+      <div class="view-title" data-i18n="pq_title">Resumen de tus preguntas</div>
+      <a class="link-btn" id="link-gestionar" href="#" target="_top" data-i18n="pq_manage">Gestionar preguntas →</a>
     </div>
-    <div class="card">
-      <div class="card-title" data-i18n="topics_title">Temas más mencionados</div>
-      <div class="topics-wrap" id="topics-wrap">
-        <div class="empty" style="padding:20px" data-i18n="topics_empty">Sin datos de temas aún</div>
-      </div>
-    </div>
-  </div>
 
-  <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-      <div class="card-title" style="margin-bottom:0" id="fb-card-title" data-i18n="fb_title">Feedbacks</div>
-      <div class="loc-filter" id="loc-filter" style="margin-bottom:0"></div>
+    <div id="pq-empty" style="display:none" class="empty-card">
+      <h3 data-i18n="pq_empty_title">Aún no tienes preguntas</h3>
+      <p data-i18n="pq_empty_text">Crea tu primera pregunta y te daremos una tarjeta con su QR para que la gente te responda con un audio de WhatsApp.</p>
+      <a class="btn btn-primary" id="link-crear" href="#" target="_top" data-i18n="pq_empty_btn">Crear mi primera pregunta</a>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th data-i18n="th_fecha">Fecha</th>
-            <th data-i18n="th_resumen">Resumen</th>
-            <th data-i18n="th_sent">Sentimiento</th>
-            <th data-i18n="th_punt">Puntuación</th>
-            <th data-i18n="th_apto">Apto Publicar</th>
-            <th id="th-ubicacion" style="display:none" data-i18n="th_ubic">Ubicación</th>
-          </tr>
-        </thead>
-        <tbody id="fb-tbody">
-          <tr><td colspan="5" class="empty" data-i18n="no_fb">Sin feedbacks aún</td></tr>
-        </tbody>
-      </table>
+
+    <div id="pq-content">
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label" data-i18n="pq_s_activas">Preguntas activas</div>
+          <div class="stat-value" id="pq-activas">0</div>
+          <div class="stat-sub" id="pq-activas-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" data-i18n="pq_s_total">Respuestas</div>
+          <div class="stat-value" id="pq-total">0</div>
+          <div class="stat-sub" data-i18n="pq_s_total_sub">Recibidas en total</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" data-i18n="pq_s_semana">Esta semana</div>
+          <div class="stat-value green" id="pq-semana">0</div>
+          <div class="stat-sub" data-i18n="pq_s_semana_sub">Respuestas en 7 días</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" data-i18n="pq_s_pos">Sentimiento positivo</div>
+          <div class="stat-value green" id="pq-pos">—</div>
+          <div class="stat-sub" data-i18n="pq_s_pos_sub">De las respuestas recibidas</div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="card">
+          <div class="card-title" data-i18n="pq_chart_title">Respuestas por día</div>
+          <div style="display:flex;gap:16px;margin-bottom:12px;font-size:12px">
+            <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--pos);margin-right:4px"></span><span data-i18n="legend_pos">Positivo</span></span>
+            <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neu);margin-right:4px"></span><span data-i18n="legend_neu">Neutro</span></span>
+            <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neg);margin-right:4px"></span><span data-i18n="legend_neg">Negativo</span></span>
+          </div>
+          <div class="chart-wrap"><canvas id="chart-preg"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title" data-i18n="topics_title">Temas más mencionados</div>
+          <div class="topics-wrap" id="pq-topics"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div class="card-title" style="margin-bottom:0" data-i18n="pq_last">Últimas respuestas</div>
+          <div class="loc-filter" id="pq-filter" style="margin-bottom:0"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="th_fecha">Fecha</th>
+                <th class="q-col" data-i18n="th_pregunta">Pregunta</th>
+                <th data-i18n="th_resumen">Resumen</th>
+                <th data-i18n="th_sent">Sentimiento</th>
+              </tr>
+            </thead>
+            <tbody id="pq-tbody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -496,17 +593,21 @@ function gasCall(page, params) {
 
 // ── Estado global ─────────────────────────────────────────────
 var dashData      = null;
+var pregData      = null;   // NUEVO: datos de api_preguntas
 var allFeedbacks  = [];
 var activeLocId   = null;
+var activePregId  = null;   // NUEVO: filtro por pregunta
 var chartInst     = null;
+var chartPreg     = null;
 var currentLang   = 'es';
+var currentMode   = 'feedback';
 
 // ── Traducciones ──────────────────────────────────────────────
 var TR = {
   es: {
-    nav_dashboard: 'Dashboard', nav_qr: 'Código QR',
-    nav_ubicaciones: 'Ubicaciones', nav_config: 'Configuración', logout: 'Salir',
+    nav_dashboard: 'Dashboard', nav_feedback: 'Feedback', nav_preguntas: 'Preguntas', nav_config: 'Configuración', logout: 'Salir',
     loading: 'Cargando tu panel…',
+    tab_feedback: 'Feedback', tab_preguntas: 'Preguntas',
     stat_total: 'Total Feedbacks', stat_total_sub: 'Registros totales',
     stat_pos: 'Sentimiento Positivo', stat_pos_sub: 'De los feedbacks recibidos',
     stat_avg: 'Puntuación Media', stat_avg_sub: 'Sobre 5 puntos',
@@ -516,9 +617,20 @@ var TR = {
     topics_title: 'Temas más mencionados', topics_empty: 'Sin datos de temas aún',
     fb_title: 'Feedbacks', filter_all: 'Todas',
     th_fecha: 'Fecha', th_resumen: 'Resumen', th_sent: 'Sentimiento',
-    th_punt: 'Puntuación', th_apto: 'Apto Publicar', th_ubic: 'Ubicación',
+    th_punt: 'Puntuación', th_apto: 'Apto Publicar', th_ubic: 'Ubicación', th_pregunta: 'Pregunta',
     sent_positivo: 'Positivo', sent_neutro: 'Neutro', sent_negativo: 'Negativo',
     no_fb: 'Sin feedbacks aún',
+    pq_title: 'Resumen de tus preguntas', pq_manage: 'Gestionar preguntas →',
+    pq_empty_title: 'Aún no tienes preguntas',
+    pq_empty_text: 'Crea tu primera pregunta y te daremos una tarjeta con su QR para que la gente te responda con un audio de WhatsApp.',
+    pq_empty_btn: 'Crear mi primera pregunta',
+    pq_s_activas: 'Preguntas activas', pq_of: 'de {n} creadas',
+    pq_s_total: 'Respuestas', pq_s_total_sub: 'Recibidas en total',
+    pq_s_semana: 'Esta semana', pq_s_semana_sub: 'Respuestas en 7 días',
+    pq_s_pos: 'Sentimiento positivo', pq_s_pos_sub: 'De las respuestas recibidas',
+    pq_chart_title: 'Respuestas por día', pq_last: 'Últimas respuestas',
+    no_resp: 'Todavía no hay respuestas. Imprime la tarjeta de tu pregunta y colócala donde la gente tenga un momento para responder.',
+    ver: '[ver]',
     footer: 'Dicho — Feedback por voz via WhatsApp · Datos en tiempo real desde Google Sheets',
     loc_modal_title: 'Ubicaciones',
     loc_modal_sub: 'Gestiona tus puntos de feedback. Cada ubicación tiene su propio código QR.',
@@ -546,9 +658,9 @@ var TR = {
     fb_title_loc: 'Feedbacks · '
   },
   ca: {
-    nav_dashboard: 'Dashboard', nav_qr: 'Codi QR',
-    nav_ubicaciones: 'Ubicacions', nav_config: 'Configuració', logout: 'Sortir',
+    nav_dashboard: 'Dashboard', nav_feedback: 'Feedback', nav_preguntas: 'Preguntes', nav_config: 'Configuració', logout: 'Sortir',
     loading: 'Carregant el tauler…',
+    tab_feedback: 'Feedback', tab_preguntas: 'Preguntes',
     stat_total: 'Total Feedbacks', stat_total_sub: 'Registres totals',
     stat_pos: 'Sentiment Positiu', stat_pos_sub: 'Dels feedbacks rebuts',
     stat_avg: 'Puntuació Mitjana', stat_avg_sub: 'Sobre 5 punts',
@@ -558,9 +670,20 @@ var TR = {
     topics_title: 'Temes més esmentats', topics_empty: 'Sense dades de temes encara',
     fb_title: 'Feedbacks', filter_all: 'Totes',
     th_fecha: 'Data', th_resumen: 'Resum', th_sent: 'Sentiment',
-    th_punt: 'Puntuació', th_apto: 'Apte Publicar', th_ubic: 'Ubicació',
+    th_punt: 'Puntuació', th_apto: 'Apte Publicar', th_ubic: 'Ubicació', th_pregunta: 'Pregunta',
     sent_positivo: 'Positiu', sent_neutro: 'Neutre', sent_negativo: 'Negatiu',
     no_fb: 'Sense feedbacks encara',
+    pq_title: 'Resum de les teves preguntes', pq_manage: 'Gestionar preguntes →',
+    pq_empty_title: 'Encara no tens preguntes',
+    pq_empty_text: 'Crea la teva primera pregunta i et donarem una targeta amb el seu QR perquè la gent et respongui amb un àudio de WhatsApp.',
+    pq_empty_btn: 'Crear la meva primera pregunta',
+    pq_s_activas: 'Preguntes actives', pq_of: 'de {n} creades',
+    pq_s_total: 'Respostes', pq_s_total_sub: 'Rebudes en total',
+    pq_s_semana: 'Aquesta setmana', pq_s_semana_sub: 'Respostes en 7 dies',
+    pq_s_pos: 'Sentiment positiu', pq_s_pos_sub: 'De les respostes rebudes',
+    pq_chart_title: 'Respostes per dia', pq_last: 'Últimes respostes',
+    no_resp: 'Encara no hi ha respostes. Imprimeix la targeta de la teva pregunta i posa-la on la gent tingui un moment per respondre.',
+    ver: '[veure]',
     footer: 'Dicho — Feedback per veu via WhatsApp · Dades en temps real des de Google Sheets',
     loc_modal_title: 'Ubicacions',
     loc_modal_sub: 'Gestiona els teus punts de feedback. Cada ubicació té el seu propi codi QR.',
@@ -588,9 +711,9 @@ var TR = {
     fb_title_loc: 'Feedbacks · '
   },
   en: {
-    nav_dashboard: 'Dashboard', nav_qr: 'QR Code',
-    nav_ubicaciones: 'Locations', nav_config: 'Settings', logout: 'Log out',
+    nav_dashboard: 'Dashboard', nav_feedback: 'Feedback', nav_preguntas: 'Questions', nav_config: 'Settings', logout: 'Log out',
     loading: 'Loading your dashboard…',
+    tab_feedback: 'Feedback', tab_preguntas: 'Questions',
     stat_total: 'Total Feedbacks', stat_total_sub: 'Total records',
     stat_pos: 'Positive Sentiment', stat_pos_sub: 'Of received feedbacks',
     stat_avg: 'Average Score', stat_avg_sub: 'Out of 5 points',
@@ -600,9 +723,20 @@ var TR = {
     topics_title: 'Most mentioned topics', topics_empty: 'No topic data yet',
     fb_title: 'Feedbacks', filter_all: 'All',
     th_fecha: 'Date', th_resumen: 'Summary', th_sent: 'Sentiment',
-    th_punt: 'Score', th_apto: 'Ready to Publish', th_ubic: 'Location',
+    th_punt: 'Score', th_apto: 'Ready to Publish', th_ubic: 'Location', th_pregunta: 'Question',
     sent_positivo: 'Positive', sent_neutro: 'Neutral', sent_negativo: 'Negative',
     no_fb: 'No feedbacks yet',
+    pq_title: 'Your questions at a glance', pq_manage: 'Manage questions →',
+    pq_empty_title: 'You have no questions yet',
+    pq_empty_text: 'Create your first question and we\'ll give you a card with its QR code so people can answer with a WhatsApp voice message.',
+    pq_empty_btn: 'Create my first question',
+    pq_s_activas: 'Active questions', pq_of: 'of {n} created',
+    pq_s_total: 'Answers', pq_s_total_sub: 'Received in total',
+    pq_s_semana: 'This week', pq_s_semana_sub: 'Answers in 7 days',
+    pq_s_pos: 'Positive sentiment', pq_s_pos_sub: 'Of answers received',
+    pq_chart_title: 'Answers by day', pq_last: 'Latest answers',
+    no_resp: 'No answers yet. Print your question\'s card and put it where people have a moment to answer.',
+    ver: '[view]',
     footer: 'Dicho — Voice feedback via WhatsApp · Real-time data from Google Sheets',
     loc_modal_title: 'Locations',
     loc_modal_sub: 'Manage your feedback points. Each location has its own QR code.',
@@ -631,10 +765,10 @@ var TR = {
   }
 };
 
-function t(k) { return (TR[currentLang] || TR.es)[k] || k; }
+function t(k) { return (TR[currentLang] || TR.es)[k] || TR.es[k] || k; }
 
 function applyLang(lang) {
-  currentLang = lang || 'es';
+  currentLang = TR[lang] ? lang : 'es';
   document.documentElement.lang = currentLang;
   document.body.style.visibility = 'visible';
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
@@ -653,16 +787,21 @@ try {
 } catch(e) {}
 setTimeout(function() { document.body.style.visibility = 'visible'; }, 300);
 
-// ── Navegación ────────────────────────────────────────────────
-function goToQRPage() {
-  window.top.location.href = 'https://dichosea.com/codigoqr.html?token=' + encodeURIComponent(TOKEN);
-}
-function goToUbicaciones() {
-  window.top.location.href = 'https://dichosea.com/ubicaciones.html?token=' + encodeURIComponent(TOKEN);
-}
-function goToConfig() {
-  window.top.location.href = 'https://dichosea.com/configuracion.html?token=' + encodeURIComponent(TOKEN);
-}
+// ── Navegación (menú común) ───────────────────────────────────
+var NAV = {
+  feedback:  'https://dichosea.com/ubicaciones.html?token='     + encodeURIComponent(TOKEN),
+  preguntas: 'https://dichosea.com/preguntas-panel.html?token=' + encodeURIComponent(TOKEN),
+  config:    'https://dichosea.com/configuracion.html?token='   + encodeURIComponent(TOKEN)
+};
+document.getElementById('nav-feedback').href   = NAV.feedback;
+document.getElementById('nav-preguntas').href  = NAV.preguntas;
+document.getElementById('nav-config').href     = NAV.config;
+document.getElementById('link-gestionar').href = NAV.preguntas;
+document.getElementById('link-crear').href     = NAV.preguntas;
+// compatibilidad con enlaces antiguos
+function goToQRPage()      { window.top.location.href = NAV.feedback; }
+function goToUbicaciones() { window.top.location.href = NAV.feedback; }
+function goToConfig()      { window.top.location.href = NAV.config; }
 
 // Pre-populate business name from sessionStorage while API loads
 try {
@@ -675,29 +814,60 @@ gasCall('api_dashboard', { token: TOKEN })
     if (!data || !data.ok) {
       document.getElementById('main-loading').innerHTML =
         '<div class="empty">No se encontraron datos para este dashboard.<br><small>' +
-        (data && data.error ? data.error : 'Token inválido o sin datos.') + '</small></div>';
+        (data && data.error ? esc(data.error) : 'Token inválido o sin datos.') + '</small></div>';
       return;
     }
     dashData = data;
     var lang = data.idioma || (data.clientInfo && data.clientInfo.idioma) || 'es';
     applyLang(lang);
-    renderDashboard();
-    document.getElementById('main-loading').style.display  = 'none';
-    document.getElementById('main-content').style.display  = 'block';
-    var urlParams = new URLSearchParams(window.location.search);
-    var openModal = urlParams.get('open');
-    if (openModal === 'ubicaciones') showLocModal();
-    else if (openModal === 'config') showProfileModal();
+
+    var hasFb   = !!(data.hasUbicaciones || (data.ubicaciones && data.ubicaciones.length));
+    var hasPreg = !!data.hasPreguntas;
+    // Cliente de Preguntas (o sin ubicaciones): necesitamos sus preguntas
+    var needPreg = hasPreg || !hasFb;
+    var p = needPreg ? gasCall('api_preguntas', { token: TOKEN }).catch(function() { return null; }) : Promise.resolve(null);
+    return p.then(function(pd) {
+      if (pd && pd.ok) pregData = pd;
+      renderDashboard();
+      var urlParams = new URLSearchParams(window.location.search);
+      // Qué vista mostrar
+      var mode;
+      if (urlParams.get('tab') === 'preguntas' || urlParams.get('tab') === 'feedback') mode = urlParams.get('tab');
+      else if (hasFb && hasPreg) mode = (data.origen === 'preguntas') ? 'preguntas' : 'feedback';
+      else if (hasFb) mode = 'feedback';
+      else mode = 'preguntas';
+      if (mode === 'preguntas' && !hasPreg && hasFb) mode = 'feedback';
+      document.getElementById('mode-tabs').style.display = (hasFb && hasPreg) ? '' : 'none';
+      document.getElementById('main-loading').style.display  = 'none';
+      document.getElementById('main-content').style.display  = 'block';
+      showMode(mode);
+      if (urlParams.get('loc') && mode === 'feedback' && (data.ubicaciones || []).length >= 2) filterByLoc(urlParams.get('loc'));
+      var openModal = urlParams.get('open');
+      if (openModal === 'ubicaciones') showLocModal();
+      else if (openModal === 'config') showProfileModal();
+    });
   })
   .catch(function(err) {
     document.getElementById('main-loading').innerHTML =
-      '<div class="empty">Error al cargar datos: ' + err + '</div>';
+      '<div class="empty">Error al cargar datos: ' + esc(String(err)) + '</div>';
   });
+
+// ── NUEVO: cambiar entre Feedback y Preguntas ─────────────────
+function showMode(mode) {
+  currentMode = mode;
+  document.getElementById('view-feedback').style.display  = mode === 'feedback'  ? '' : 'none';
+  document.getElementById('view-preguntas').style.display = mode === 'preguntas' ? '' : 'none';
+  document.getElementById('tab-feedback').className  = 'mode-tab' + (mode === 'feedback'  ? ' active' : '');
+  document.getElementById('tab-preguntas').className = 'mode-tab' + (mode === 'preguntas' ? ' active' : '');
+  // Chart.js necesita el canvas visible para medir
+  if (mode === 'feedback' && dashData) renderChart(dashData);
+  if (mode === 'preguntas') renderPregChart();
+}
 
 // ── Render principal ─────────────────────────────────────────
 function renderDashboard() {
   var d = dashData;
-  var negocioName = d.clientInfo.negocio || '';
+  var negocioName = d.clientInfo.negocio || (pregData && pregData.negocio) || '';
   document.getElementById('header-biz').textContent = negocioName;
   if (negocioName) try { sessionStorage.setItem('dicho_biz_' + TOKEN, negocioName); } catch(e) {}
   document.getElementById('s-total').textContent = d.total;
@@ -705,13 +875,106 @@ function renderDashboard() {
   document.getElementById('s-avg').textContent   = d.total > 0 ? d.avgScore : '—';
   document.getElementById('s-aptos').textContent = d.pctAptos + '%';
   allFeedbacks = d.recientes || [];
-  renderChart(d);
-  renderTopics(d.topics);
+  renderTopics(d.topics, 'topics-wrap');
   renderFilterChips();
   renderTable(allFeedbacks);
+  renderPreguntas();
 }
 
-// ── Chips de filtro ───────────────────────────────────────────
+// ══════════ VISTA PREGUNTAS ══════════
+function allRespuestas() {
+  var out = [];
+  ((pregData && pregData.preguntas) || []).forEach(function(p) {
+    (p.respuestas || []).forEach(function(r) {
+      out.push({ fecha: r.fecha, fechaObj: r.fechaObj, sent: r.sent, temas: r.temas || [], resumen: r.resumen, transcripcion: r.transcripcion, pregunta: p.pregunta, pregId: p.id });
+    });
+  });
+  return out.sort(function(a, b) { return (b.fechaObj || 0) - (a.fechaObj || 0); });
+}
+
+function renderPreguntas() {
+  var ps = (pregData && pregData.preguntas) || [];
+  document.getElementById('pq-empty').style.display   = ps.length ? 'none' : '';
+  document.getElementById('pq-content').style.display = ps.length ? '' : 'none';
+  if (!ps.length) return;
+  var rs = allRespuestas();
+  var activas = ps.filter(function(p) { return p.estado === 'activa'; }).length;
+  var semanaMs = Date.now() - 7 * 86400000;
+  var semana = rs.filter(function(r) { return r.fechaObj >= semanaMs; }).length;
+  var pos = rs.filter(function(r) { return r.sent === 'positivo'; }).length;
+  document.getElementById('pq-activas').textContent = activas;
+  document.getElementById('pq-activas-sub').textContent = t('pq_of').replace('{n}', ps.length);
+  document.getElementById('pq-total').textContent = rs.length;
+  document.getElementById('pq-semana').textContent = semana;
+  document.getElementById('pq-pos').textContent = rs.length ? Math.round(pos / rs.length * 100) + '%' : '—';
+
+  var tm = {};
+  rs.forEach(function(r) { r.temas.forEach(function(x) { tm[x] = (tm[x] || 0) + 1; }); });
+  var topics = Object.keys(tm).map(function(k) { return { label: k, count: tm[k] }; })
+    .sort(function(a, b) { return b.count - a.count; }).slice(0, 8);
+  renderTopics(topics, 'pq-topics');
+  renderPregFilter();
+  renderPregTable();
+}
+
+function renderPregChart() {
+  if (!pregData || !(pregData.preguntas || []).length || typeof Chart === 'undefined') return;
+  var rs = allRespuestas();
+  var labels = [], pos = [], neu = [], neg = [];
+  for (var d = 13; d >= 0; d--) {
+    var day = new Date(); day.setHours(0, 0, 0, 0); day.setDate(day.getDate() - d);
+    var start = day.getTime(), end = start + 86400000;
+    labels.push(day.getDate() + '/' + (day.getMonth() + 1));
+    var dayRs = rs.filter(function(r) { return r.fechaObj >= start && r.fechaObj < end; });
+    pos.push(dayRs.filter(function(r) { return r.sent === 'positivo'; }).length);
+    neu.push(dayRs.filter(function(r) { return r.sent === 'neutro'; }).length);
+    neg.push(dayRs.filter(function(r) { return r.sent === 'negativo'; }).length);
+  }
+  if (chartPreg) chartPreg.destroy();
+  chartPreg = new Chart(document.getElementById('chart-preg').getContext('2d'), {
+    type: 'bar',
+    data: { labels: labels, datasets: [
+      { label: t('legend_pos'), data: pos, backgroundColor: 'rgba(22,163,74,.75)',  borderRadius: 3, stack: 's' },
+      { label: t('legend_neu'), data: neu, backgroundColor: 'rgba(156,163,175,.6)', borderRadius: 3, stack: 's' },
+      { label: t('legend_neg'), data: neg, backgroundColor: 'rgba(220,38,38,.7)',   borderRadius: 3, stack: 's' }
+    ] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+      scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45, minRotation: 30 } },
+                y: { stacked: true, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: { size: 10 }, stepSize: 1 }, beginAtZero: true } } }
+  });
+}
+
+function renderPregFilter() {
+  var ps = (pregData && pregData.preguntas) || [];
+  var c = document.getElementById('pq-filter');
+  if (ps.length < 2) { c.innerHTML = ''; return; }
+  c.innerHTML = '<button class="loc-chip' + (activePregId ? '' : ' active') + '" onclick="filterByPreg(null)">' + esc(t('filter_all')) + '</button>' +
+    ps.map(function(p) {
+      return '<button class="loc-chip' + (activePregId === p.id ? ' active' : '') + '" title="' + esc(p.pregunta) + '" onclick="filterByPreg(\'' + esc(p.id) + '\')">' + esc(p.pregunta) + '</button>';
+    }).join('');
+}
+function filterByPreg(id) { activePregId = id; renderPregFilter(); renderPregTable(); }
+
+function renderPregTable() {
+  var tb = document.getElementById('pq-tbody');
+  var rs = allRespuestas().filter(function(r) { return !activePregId || r.pregId === activePregId; }).slice(0, 50);
+  if (!rs.length) { tb.innerHTML = '<tr><td colspan="4" class="empty">' + esc(t('no_resp')) + '</td></tr>'; return; }
+  tb.innerHTML = rs.map(function(r, i) {
+    var sentKey = r.sent || 'neutro';
+    var row = '<tr>' +
+      '<td style="white-space:nowrap;color:var(--muted);font-size:12px">' + esc(r.fecha) + '</td>' +
+      '<td class="q-cell">' + esc(r.pregunta) + '</td>' +
+      '<td>' + esc(r.resumen || r.transcripcion || '—') +
+        (r.transcripcion && r.resumen ? ' <button class="expand-btn" onclick="toggleTr(\'pq' + i + '\')">' + esc(t('ver')) + '</button>' : '') + '</td>' +
+      '<td><span class="sent-pill sent-' + esc(sentKey) + '">' + esc(t('sent_' + sentKey)) + '</span></td>' +
+    '</tr>';
+    if (r.transcripcion && r.resumen) row += '<tr id="tr-pq' + i + '" style="display:none"><td></td><td colspan="3" class="transcript">' + esc(r.transcripcion) + '</td></tr>';
+    return row;
+  }).join('');
+}
+
+// ── Chips de filtro (Feedback) ────────────────────────────────
 function renderFilterChips() {
   var container = document.getElementById('loc-filter');
   var locs = (dashData && dashData.ubicaciones) || [];
@@ -749,8 +1012,9 @@ function filterByLoc(locId) {
   renderTable(filtered);
 }
 
-// ── Gráfica sentimiento ───────────────────────────────────────
+// ── Gráfica sentimiento (Feedback) ────────────────────────────
 function renderChart(d) {
+  if (typeof Chart === 'undefined') return;
   if (chartInst) chartInst.destroy();
   var ctx = document.getElementById('chart-sent').getContext('2d');
   var labels = d.chartLabels.map(function(l) {
@@ -777,9 +1041,9 @@ function renderChart(d) {
   });
 }
 
-// ── Temas ─────────────────────────────────────────────────────
-function renderTopics(topics) {
-  var wrap = document.getElementById('topics-wrap');
+// ── Temas (sirve para Feedback y Preguntas) ───────────────────
+function renderTopics(topics, wrapId) {
+  var wrap = document.getElementById(wrapId || 'topics-wrap');
   if (!topics || !topics.length) {
     wrap.innerHTML = '<div class="empty" style="padding:20px">' + t('topics_empty') + '</div>';
     return;
@@ -824,7 +1088,7 @@ function renderTable(feedbacks) {
     var rows = '<tr>' +
       '<td style="white-space:nowrap;color:var(--muted);font-size:12px">' + esc(f.fecha) + '</td>' +
       '<td>' + esc(f.resumen || '—') +
-        (f.transcripcion ? ' <button class="expand-btn" onclick="toggleTr(' + i + ')">[ver]</button>' : '') +
+        (f.transcripcion ? ' <button class="expand-btn" onclick="toggleTr(' + i + ')">' + esc(t('ver')) + '</button>' : '') +
       '</td>' +
       '<td><span class="sent-pill ' + sentClass + '">' + sentLabel + '</span></td>' +
       '<td><span class="stars">' + stars + '</span></td>' +
@@ -1059,7 +1323,7 @@ function doLogout() {
 }
 
 function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
 </body>
