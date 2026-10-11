@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Responde con tu voz · Dicho</title>
+  <meta property="og:title" content="Queremos saber tu opinión 🎙️">
+  <meta property="og:description" content="Responde a una pregunta enviando un audio de WhatsApp.">
+  <meta property="og:site_name" content="Dicho">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"></noscript>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F7F3;
+      color: #1a2e25;
+    }
+
+    /* ── Loading / Error ── */
+    .loading-wrap, .error-wrap {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; gap: 16px; color: #6a9a80; font-size: 15px; text-align: center; padding: 24px;
+    }
+    .error-wrap { display: none; gap: 12px; }
+    .error-icon { font-size: 40px; }
+    .error-msg { font-size: 16px; color: #6a9a80; line-height: 1.5; max-width: 320px; }
+    .spinner {
+      width: 36px; height: 36px; border: 3px solid #C8E6D8; border-top-color: #2DB67D;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Page ── */
+    .page { display: none; min-height: 100vh; max-width: 480px; margin: 0 auto; flex-direction: column; }
+
+    .topbar { padding: 44px 28px 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .biz-name { font-family: 'Nunito', sans-serif; font-size: 18px; font-weight: 800; color: #1a2e25; }
+    .eyebrow {
+      margin-top: 6px; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+      letter-spacing: .12em; text-transform: uppercase; color: #2DB67D;
+    }
+
+    .hero {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px 28px 0; text-align: center;
+    }
+
+    /* Pregunta */
+    .question-card {
+      position: relative; width: 100%;
+      background: #fff; border: 1.5px solid #C8E6D8; border-radius: 22px;
+      padding: 30px 24px 26px; box-shadow: 0 10px 30px rgba(26,122,82,0.08);
+    }
+    .question-card::before {
+      content: '“'; position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
+      width: 46px; height: 46px; border-radius: 50%; background: #2DB67D; color: #fff;
+      font-family: 'Playfair Display', serif; font-size: 40px; line-height: 58px; text-align: center;
+      box-shadow: 0 6px 18px rgba(45,182,125,0.35);
+    }
+    .question {
+      font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700;
+      color: #1a2e25; line-height: 1.3; word-wrap: break-word;
+    }
+    .question.long { font-size: 22px; }
+
+    /* Mic + instrucción */
+    .answer-row { display: flex; align-items: center; gap: 14px; margin-top: 30px; text-align: left; }
+    .mic-wrap { position: relative; width: 64px; height: 64px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .mic-ring { position: absolute; border-radius: 50%; border: 1.5px solid #2DB67D; opacity: 0; animation: ripple 2.4s ease-out infinite; }
+    .mic-ring:nth-child(1) { width: 64px; height: 64px; animation-delay: 0s; }
+    .mic-ring:nth-child(2) { width: 52px; height: 52px; animation-delay: 0.8s; }
+    @keyframes ripple { 0% { opacity: .5; transform: scale(.7); } 100% { opacity: 0; transform: scale(1.1); } }
+    .mic-circle {
+      width: 44px; height: 44px; border-radius: 50%; background: #2DB67D;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 20px rgba(45,182,125,0.35); position: relative; z-index: 1;
+    }
+    .mic-circle svg { width: 20px; height: 20px; }
+    .answer-text { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; line-height: 1.3; color: #1a2e25; }
+    .answer-text em { font-style: italic; color: #2DB67D; }
+
+    .confidential { font-size: 12px; color: #9ab8a8; margin-top: 18px; }
+
+    /* CTA */
+    .cta-wrap { margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; padding: 0 0 44px; }
+    .cta {
+      background: linear-gradient(135deg, #1a7a52, #2DB67D); border: none; border-radius: 16px;
+      padding: 18px 28px; cursor: pointer; box-shadow: 0 8px 24px rgba(45,182,125,0.32);
+      transition: opacity .15s, transform .15s; text-decoration: none;
+      display: flex; width: 100%; align-items: center; justify-content: center;
+    }
+    .cta:active { opacity: .88; transform: scale(.985); }
+    .cta-main { font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 900; color: #fff; line-height: 1.3; text-align: center; }
+    .countdown { font-size: 13px; color: #9ab8a8; text-align: center; }
+    .countdown strong { color: #2DB67D; font-weight: 800; }
+
+    /* Pregunta pausada / cerrada */
+    .closed {
+      display: none; margin-top: 28px; padding: 16px 18px; border-radius: 14px;
+      background: #fff; border: 1.5px dashed #C8E6D8; color: #6a9a80; font-size: 15px; line-height: 1.5;
+    }
+    .page.is-closed .answer-row, .page.is-closed .cta-wrap, .page.is-closed .confidential { display: none; }
+    .page.is-closed .closed { display: block; }
+    .page.is-closed .question-card { opacity: .6; }
+
+    .powered { text-align: center; font-size: 11px; color: #9ab8a8; padding-bottom: 20px; }
+    .powered b { color: #1a7a52; }
+  </style>
+</head>
+<body>
+
+  <div class="loading-wrap" id="loading">
+    <div class="spinner"></div>
+    <span id="loadingText"></span>
+  </div>
+
+  <div class="error-wrap" id="error">
+    <div class="error-icon">😕</div>
+    <div class="error-msg" id="errorMsg">No hemos encontrado esta pregunta.</div>
+  </div>
+
+  <div class="page" id="page">
+    <div class="topbar">
+      <div class="biz-name" id="bizName"></div>
+      <div class="eyebrow" id="eyebrow">Queremos saber</div>
+    </div>
+
+    <div class="hero">
+      <div class="question-card">
+        <div class="question" id="question"></div>
+      </div>
+
+      <div class="answer-row">
+        <div class="mic-wrap">
+          <div class="mic-ring"></div>
+          <div class="mic-ring"></div>
+          <div class="mic-circle">
+            <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="11" y="3" width="12" height="18" rx="6" fill="white"/>
+              <path d="M6 17c0 6.075 4.925 11 11 11s11-4.925 11-11" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="17" y1="28" x2="17" y2="32" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="12" y1="32" x2="22" y2="32" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="answer-text" id="answerText">Respóndenos con <em>solo</em> un audio de WhatsApp</div>
+      </div>
+      <div class="confidential" id="confidentialText">🔒 100% confidencial</div>
+
+      <div class="closed" id="closedMsg">Esta pregunta ya no está activa. ¡Gracias por tu interés!</div>
+
+      <div class="cta-wrap">
+        <a class="cta" id="ctaBtn" href="#" onclick="handleCta()">
+          <div class="cta-main" id="ctaText"></div>
+        </a>
+        <div class="countdown" id="countdown"></div>
+      </div>
+    </div>
+
+    <div class="powered">powered by <b>dicho.</b></div>
+  </div>
+
+  <script>
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+    var WA_NUMBER_FALLBACK = '19205473967';
+
+    var params = new URLSearchParams(window.location.search);
+    var codigo = (params.get('p') || params.get('codigo') || '').toLowerCase().trim();
+    var waLink = '#';
+    var countdownInterval = null;
+    var started = false;
+
+    var copy = {
+      es: {
+        eyebrow: 'Queremos saber',
+        answer: 'Respóndenos con <em>solo</em> un audio de WhatsApp',
+        cta: 'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y responder con un audio</span>',
+        countdown: 'Se abrirá en', countdownUnit: 'segundos', countdownReady: 'Abriendo WhatsApp…',
+        confidential: '🔒 100% confidencial', loading: 'Un momento…',
+        closed: 'Esta pregunta ya no está activa. ¡Gracias por tu interés!',
+        notFound: 'No hemos encontrado esta pregunta.',
+        prefill: 'Respondo a {negocio}', boton: 'Toca primero el botón verde >'
+      },
+      ca: {
+        eyebrow: 'Volem saber',
+        answer: "Respon-nos amb <em>només</em> un àudio de WhatsApp",
+        cta: 'Obrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">i respondre amb un àudio</span>',
+        countdown: "S'obrirà en", countdownUnit: 'segons', countdownReady: 'Obrint WhatsApp…',
+        confidential: '🔒 100% confidencial', loading: 'Un moment…',
+        closed: 'Aquesta pregunta ja no està activa. Gràcies pel teu interès!',
+        notFound: "No hem trobat aquesta pregunta.",
+        prefill: 'Responc a {negocio}', boton: 'Toca primer el botó verd >'
+      },
+      en: {
+        eyebrow: 'We want to know',
+        answer: 'Answer with <em>just</em> a WhatsApp voice message',
+        cta: 'Open WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">and answer with a voice note</span>',
+        countdown: 'WhatsApp opens in', countdownUnit: 'seconds', countdownReady: 'Opening WhatsApp…',
+        confidential: '🔒 100% confidential', loading: 'One moment…',
+        closed: 'This question is no longer active. Thanks for your interest!',
+        notFound: "We couldn't find this question.",
+        prefill: 'My answer for {negocio}', boton: 'Tap the green button first >'
+      }
+    };
+    function tr(lang) {
+      lang = String(lang || 'es').toLowerCase();
+      if (lang === 'es-mx') lang = 'es';
+      return copy[lang] || copy.es;
+    }
+
+    var urlLang = params.get('lang');
+    if (urlLang) document.getElementById('loadingText').textContent = tr(urlLang).loading;
+
+    function show(id) {
+      ['loading', 'error', 'page'].forEach(function(s) {
+        document.getElementById(s).style.display = (s === id) ? 'flex' : 'none';
+      });
+    }
+
+    function startCountdown(t) {
+      if (countdownInterval) return;
+      var secs = 5;
+      var cdEl = document.getElementById('countdown');
+      cdEl.innerHTML = t.countdown + ' <strong>' + secs + '</strong> ' + t.countdownUnit;
+      countdownInterval = setInterval(function() {
+        secs--;
+        if (secs <= 0) {
+          clearInterval(countdownInterval);
+          cdEl.textContent = t.countdownReady;
+          window.location.href = waLink;
+        } else {
+          cdEl.innerHTML = t.countdown + ' <strong>' + secs + '</strong> ' + t.countdownUnit;
+        }
+      }, 1000);
+    }
+
+    function render(data) {
+      var t = tr(data.idioma);
+      document.documentElement.lang = (data.idioma === 'en' ? 'en' : data.idioma === 'ca' ? 'ca' : 'es');
+      document.getElementById('bizName').textContent = data.negocio || '';
+      document.getElementById('eyebrow').textContent = t.eyebrow;
+      var q = document.getElementById('question');
+      q.textContent = data.pregunta || '';
+      q.classList.toggle('long', (data.pregunta || '').length > 80);
+      document.getElementById('answerText').innerHTML = t.answer;
+      document.getElementById('confidentialText').textContent = t.confidential;
+      document.getElementById('ctaText').innerHTML = t.cta;
+      document.getElementById('closedMsg').textContent = t.closed;
+
+      var texto = t.prefill.replace('{negocio}', data.negocio || 'Dicho') + ' (' + data.codigo + ')\n' + t.boton;
+      waLink = 'https://wa.me/' + (data.wa_number || WA_NUMBER_FALLBACK) + '?text=' + encodeURIComponent(texto);
+      document.getElementById('ctaBtn').href = waLink;
+
+      var page = document.getElementById('page');
+      var activa = (data.estado || 'activa') === 'activa';
+      page.classList.toggle('is-closed', !activa);
+      show('page');
+      if (activa && !started) { started = true; startCountdown(t); }
+      if (!activa && countdownInterval) { clearInterval(countdownInterval); document.getElementById('countdown').textContent = ''; }
+    }
+
+    function handleCta() {
+      clearInterval(countdownInterval);
+      document.getElementById('countdown').textContent = '';
+    }
+
+    // Caché de 24 h para que abra al instante; siempre se consulta el servidor
+    // (cuenta el escaneo y detecta si la pregunta se ha pausado).
+    var CACHE_KEY = 'dicho_preg_' + codigo;
+    var CACHE_TTL = 24 * 60 * 60 * 1000;
+
+    function fetchData() {
+      return fetch(GAS_URL + '?page=getPreguntaInfo&scan=1&p=' + encodeURIComponent(codigo))
+        .then(function(r) { return r.json(); });
+    }
+
+    if (!/^p-[a-z0-9]{4}$/.test(codigo)) {
+      document.getElementById('errorMsg').textContent = tr(urlLang).notFound;
+      show('error');
+    } else {
+      var cached = null;
+      try {
+        var raw = localStorage.getItem(CACHE_KEY);
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && parsed.data && (Date.now() - parsed.ts) < CACHE_TTL) cached = parsed.data;
+        }
+      } catch (e) {}
+      if (cached) render(cached);
+
+      fetchData().then(function(data) {
+        if (!data || !data.ok) {
+          if (!cached) { document.getElementById('errorMsg').textContent = tr(urlLang).notFound; show('error'); }
+          return;
+        }
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data: data, ts: Date.now() })); } catch (e) {}
+        render(data);
+      }).catch(function() {
+        if (!cached) { document.getElementById('errorMsg').textContent = tr(urlLang).notFound; show('error'); }
+      });
+    }
+  </script>
+</body>
+</html>
