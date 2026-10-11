@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Dicho · Preguntas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Jost:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --green-deep: #14532D;
+  --green:      #16A34A;
+  --green-mid:  #15803d;
+  --green-l:    #F0FDF4;
+  --green-b:    #D1FAE5;
+  --surface:    #F5F1E8;
+  --card:       #FFFFFF;
+  --border:     #D8D2C3;
+  --border-l:   #E8E4DA;
+  --text:       #1C2B20;
+  --muted:      #6B7A6E;
+  --muted-l:    #9AAA9E;
+  --amber:      #B45309;
+  --amber-l:    #FEF3C7;
+  --danger:     #DC2626;
+  --danger-l:   #FEE2E2;
+  font-family: 'Jost', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { overflow-y: scroll; }
+body { background: var(--surface); color: var(--text); min-height: 100vh; font-size: 14px; zoom: 1.25; }
+
+/* ── HEADER (igual que Ubicaciones / Configuración) ── */
+.header { background: var(--green-deep); height: 54px; display: flex; align-items: stretch; padding: 0 28px; position: sticky; top: 0; z-index: 50; }
+.header-brand { display: flex; align-items: center; gap: 10px; padding-right: 24px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px; flex-shrink: 0; cursor: pointer; }
+.logo { width: 28px; height: 28px; background: #fff; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: var(--green-deep); font-family: 'Plus Jakarta Sans', sans-serif; }
+.brand-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -.03em; }
+.brand-name span { color: #86efac; }
+.nav { display: flex; align-items: stretch; gap: 2px; padding-left: 4px; flex: 1; }
+.nav-item { display: inline-flex; align-items: center; gap: 7px; padding: 0 15px; font-size: 13px; font-weight: 500; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.62); border: none; background: none; border-bottom: 2px solid transparent; text-decoration: none; transition: .15s; white-space: nowrap; }
+.nav-item:hover { color: rgba(255,255,255,.88); }
+.nav-item.active { color: #fff; font-weight: 700; border-bottom-color: #86efac; background: rgba(255,255,255,.07); }
+.nav-item svg { flex-shrink: 0; opacity: .7; }
+.nav-item.active svg { opacity: 1; }
+.header-right { display: flex; align-items: center; gap: 10px; padding-left: 6px; margin-left: auto; }
+.header-biz { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.65); white-space: nowrap; padding-right: 16px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px; }
+.header-biz strong { color: #fff; }
+.hdr-logout { font-size: 12px; font-weight: 600; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.6); background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 5px 11px; cursor: pointer; transition: .15s; }
+.hdr-logout:hover { color: #fff; border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.1); }
+
+/* ── PAGE ── */
+.page { max-width: 1080px; margin: 0; padding: 28px 40px 64px 152px; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
+.page-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 900; color: var(--text); letter-spacing: -.02em; line-height: 1.15; }
+.btn-new { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; font-size: 13px; font-weight: 700; font-family: 'Jost', sans-serif; background: var(--green); color: #fff; border: none; border-radius: 9px; cursor: pointer; transition: .15s; white-space: nowrap; }
+.btn-new:hover { background: var(--green-mid); }
+
+/* ── MODULE CARD ── */
+.module-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(20,83,45,.06); margin-bottom: 20px; }
+.module-card.paused { opacity: .82; }
+.module-head { padding: 18px 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; border-bottom: 1px solid var(--border-l); }
+.module-q { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -.01em; line-height: 1.3; }
+.module-meta { display: flex; align-items: center; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
+.meta-item { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+.meta-item strong { font-weight: 700; color: var(--text); text-transform: uppercase; font-size: 10px; letter-spacing: .05em; }
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.activa  { background: var(--green-l); color: var(--green-mid); }
+.pill.pausada { background: var(--amber-l); color: var(--amber); }
+.pill.cerrada { background: #EEE; color: var(--muted); }
+.module-stats { padding: 12px 20px; border-bottom: 1px solid var(--border-l); display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.stat { display: flex; flex-direction: column; gap: 2px; padding: 0 4px; min-width: 0; }
+.stat + .stat { border-left: 1px solid var(--border-l); padding-left: 12px; }
+.stat-lbl { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-l); margin-bottom: 2px; }
+.stat-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 900; color: var(--text); line-height: 1; }
+.stat-val.green { color: var(--green-mid); }
+.stat-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.stat-chip { display: inline-block; background: var(--green-l); color: var(--green-deep); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-top: 2px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.module-actions { padding: 16px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+.action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; font-family: 'Jost', sans-serif; color: var(--text); background: #fff; border: 1.5px solid var(--border); border-radius: 9px; cursor: pointer; transition: .15s; white-space: nowrap; text-decoration: none; }
+.action-btn:hover { border-color: var(--green); background: var(--green-l); color: var(--green-mid); }
+.action-btn.primary { color: var(--green); border-color: var(--green-b); background: var(--green-l); }
+.action-btn.primary:hover { background: #d1fae5; border-color: var(--green); }
+.action-btn.on, .action-btn.on:hover { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+.action-btn .chev { transition: transform .2s; }
+.action-btn.on .chev { transform: rotate(180deg); }
+
+/* ── RESPUESTAS (desplegable) ── */
+.resp-panel { border-top: 1px solid var(--border-l); background: #FCFBF8; padding: 22px 24px; display: none; }
+.resp-panel.open { display: grid; grid-template-columns: 260px 1fr; gap: 28px; }
+.sub-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.topic-row { margin-bottom: 10px; font-size: 13px; }
+.topic-row-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.topic-row-top b { font-weight: 700; color: var(--muted); font-size: 12px; }
+.bar { height: 6px; border-radius: 3px; background: var(--border-l); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--green); border-radius: 3px; }
+.resp-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip { font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 20px; cursor: pointer; border: 1.5px solid var(--border); background: #fff; color: var(--muted); }
+.chip.active { border-color: var(--green); color: var(--green-mid); background: var(--green-l); font-weight: 600; }
+.resp { background: #fff; border: 1px solid var(--border-l); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+.resp-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+.resp-date { font-size: 11.5px; color: var(--muted); }
+.sent { display: inline-block; padding: 1px 8px; border-radius: 20px; font-size: 10.5px; font-weight: 700; }
+.sent.positivo { background: #dcfce7; color: #15803d; }
+.sent.neutro   { background: #f3f4f6; color: #6b7280; }
+.sent.negativo { background: #fee2e2; color: #b91c1c; }
+.resp-sum { font-size: 13.5px; line-height: 1.5; color: var(--text); }
+.resp-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.resp-tag { font-size: 10.5px; color: var(--muted); background: var(--surface); padding: 1px 7px; border-radius: 10px; }
+.resp-more { background: none; border: none; color: var(--green-mid); font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; padding: 0; margin-top: 6px; }
+.resp-tr { font-size: 12.5px; color: var(--muted); font-style: italic; line-height: 1.55; margin-top: 6px; padding: 8px 10px; background: var(--surface); border-radius: 8px; display: none; }
+.resp-tr.open { display: block; }
+.resp-empty { font-size: 13px; color: var(--muted); padding: 20px 0; line-height: 1.6; }
+.resp-count { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+/* ── EMPTY / LOADING ── */
+.empty-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 32px; max-width: 620px; box-shadow: 0 2px 8px rgba(20,83,45,.06); }
+.empty-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: -.02em; margin-bottom: 6px; }
+.empty-card p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
+.loading { display: flex; align-items: center; gap: 12px; color: var(--muted); padding: 60px 0; }
+.spin { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .6s linear infinite; }
+.spin.w { width: 14px; height: 14px; border-color: rgba(255,255,255,.4); border-top-color: #fff; display: inline-block; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── FORM (nueva pregunta) ── */
+.q-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); background: #fff; resize: vertical; min-height: 84px; line-height: 1.4; transition: .15s; }
+.q-input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,.1); }
+.q-input::placeholder { color: var(--muted-l); font-weight: 600; }
+.q-count { font-size: 11px; color: var(--muted-l); text-align: right; margin-top: 4px; }
+.q-tip { font-size: 12.5px; color: var(--green-deep); background: var(--green-l); border-radius: 8px; padding: 10px 12px; margin-top: 10px; line-height: 1.5; }
+.form-err { font-size: 12.5px; color: var(--danger); margin-top: 8px; display: none; }
+
+/* ── MODAL ── */
+.modal-bg { position: fixed; inset: 0; background: rgba(20,83,45,.28); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-bg.open { display: flex; }
+.modal { background: var(--card); border-radius: 16px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(20,83,45,.18); overflow: hidden; max-height: 90vh; overflow-y: auto; }
+.modal.wide { max-width: 620px; }
+.modal-head { padding: 20px 24px; border-bottom: 1px solid var(--border-l); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 800; }
+.modal-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.modal-close { width: 30px; height: 30px; border: none; background: none; cursor: pointer; border-radius: 6px; color: var(--muted); font-size: 18px; flex-shrink: 0; }
+.modal-close:hover { background: var(--surface); color: var(--text); }
+.modal-body { padding: 22px 24px; }
+.modal-foot { padding: 14px 24px; border-top: 1px solid var(--border-l); display: flex; justify-content: flex-end; gap: 10px; align-items: center; }
+.btn-ghost { padding: 9px 18px; font-size: 13px; font-weight: 600; font-family: 'Jost', sans-serif; color: var(--muted); background: none; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; }
+.btn-ghost:hover { color: var(--text); border-color: var(--text); }
+.btn-primary { padding: 9px 20px; font-size: 13px; font-weight: 700; font-family: 'Jost', sans-serif; color: #fff; background: var(--green); border: none; border-radius: 8px; cursor: pointer; }
+.btn-primary:hover { background: var(--green-mid); }
+.btn-primary:disabled { opacity: .55; cursor: default; }
+
+/* QR modal layout */
+.qr-layout { display: flex; gap: 24px; align-items: flex-start; }
+.qr-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+.qr-actions .action-btn { justify-content: flex-start; }
+
+/* ── TARJETA "Queremos saber" ── */
+.qr-card { background: #F0FDF4; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.10); border: 1px solid #D1FAE5; display: flex; width: 340px; max-width: 100%; flex-shrink: 0; }
+.card-left { flex: 1; min-width: 0; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; }
+.card-right { width: 134px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 18px 23px 14px 8px; gap: 10px; }
+.cl-eye { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: #6B7A6E; margin-bottom: 7px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.cl-headline { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 900; color: #1C2B20; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 14px; overflow-wrap: anywhere; }
+.cl-headline.sm { font-size: 14.5px; }
+.cl-headline.xs { font-size: 12.5px; }
+.cl-scan-label { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: #16A34A; margin-bottom: 5px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.cl-scan-text { font-size: 12px; color: #3E4E41; line-height: 1.5; }
+.cl-note { font-size: 11px; color: #6B7A6E; }
+.cl-biz { font-size: 10px; font-weight: 700; color: #6B7A6E; margin-top: 12px; padding-top: 10px; border-top: 1px solid #D1FAE5; }
+.cr-top { display: flex; align-items: center; gap: 5px; }
+.cr-via { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #9CA3AF; }
+.cr-wa { background: #16A34A; color: #fff; font-size: 8px; font-weight: 800; letter-spacing: .04em; padding: 2px 7px; border-radius: 20px; }
+.cr-qr { background: #fff; border-radius: 14px; padding: 9px; }
+.qr-wrap { position: relative; width: 110px; height: 110px; }
+.qr-wrap img { width: 110px; height: 110px; display: block; }
+.qr-mic-svg { position: absolute; top: 0; left: 0; width: 110px; height: 110px; pointer-events: none; }
+.cr-powered { font-size: 9px; font-weight: 600; color: #6B7A6E; margin-top: -4px; }
+.cr-powered strong { color: #1C2B20; font-weight: 800; }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--green-deep); color: #fff; font-size: 13px; font-weight: 600; padding: 10px 18px; border-radius: 10px; opacity: 0; transition: .3s; z-index: 300; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.footer { text-align: center; padding: 24px 20px; font-size: 12px; color: var(--muted-l); }
+
+@media (max-width: 860px) {
+  .page { padding: 20px 16px 48px; }
+  .resp-panel.open { grid-template-columns: 1fr; }
+  .module-stats { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+  .stat:nth-child(3) { border-left: none; padding-left: 4px; }
+  .qr-layout { flex-direction: column; align-items: stretch; }
+  .qr-actions { flex-direction: row; flex-wrap: wrap; }
+}
+@media (max-width: 640px) {
+  body { zoom: 1; }
+  .header { height: auto; flex-wrap: wrap; padding: 10px 16px; }
+  .nav { order: 3; flex: 1 1 100%; width: 100%; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,.1); padding: 2px 0; }
+  .nav-item { padding: 9px 10px; font-size: 12px; }
+  .header-biz { display: none; }
+  .module-head { flex-direction: column-reverse; padding: 16px; }
+  .module-actions, .resp-panel { padding: 16px; }
+}
+</style>
+</head>
+<body style="visibility:hidden">
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="header-brand" onclick="window.location.href=NAV.dashboard">
+    <div class="logo">D</div>
+    <span class="brand-name">dicho<span>.</span></span>
+  </div>
+  <nav class="nav">
+    <a class="nav-item" id="nav-dashboard" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span data-i18n="nav_dashboard">Dashboard</span>
+    </a>
+    <a class="nav-item" id="nav-feedback" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span data-i18n="nav_feedback">Feedback</span>
+    </a>
+    <a class="nav-item active" href="javascript:void(0)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span data-i18n="nav_preguntas">Preguntas</span>
+    </a>
+    <a class="nav-item" id="nav-config" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span data-i18n="nav_config">Configuración</span>
+    </a>
+  </nav>
+  <div class="header-right">
+    <span class="header-biz"><strong id="header-biz-name"></strong></span>
+    <button class="hdr-logout" onclick="doLogout()" data-i18n="logout">Salir</button>
+  </div>
+</header>
+
+<!-- ── PAGE ── -->
+<div class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow" data-i18n="eyebrow">Tu negocio</div>
+      <div class="page-title" data-i18n="page_title">Preguntas</div>
+    </div>
+    <button class="btn-new" id="btn-new" onclick="openNewModal()" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span data-i18n="btn_new">Nueva pregunta</span>
+    </button>
+  </div>
+
+  <div id="container">
+    <div class="loading"><div class="spin"></div> <span data-i18n="loading">Cargando…</span></div>
+  </div>
+</div>
+
+<div class="footer" data-i18n="footer">Dicho — Preguntas por voz vía WhatsApp</div>
+
+<!-- ── MODAL: NUEVA PREGUNTA ── -->
+<div class="modal-bg" id="modal-new" onclick="if(event.target===this)closeModal('modal-new')">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" data-i18n="new_title">Nueva pregunta</div>
+        <div class="modal-sub" data-i18n="new_sub">Se generará una tarjeta con su propio código QR.</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-new')">✕</button>
+    </div>
+    <div class="modal-body">
+      <textarea class="q-input" id="new-q" maxlength="120" rows="3" data-i18n-ph="q_ph" placeholder="¿Qué plato te gustaría ver en nuestra carta?" oninput="countQ('new-q','new-count')"></textarea>
+      <div class="q-count"><span id="new-count">0</span>/120</div>
+      <div class="q-tip" data-i18n-html="q_tip">💡 Las preguntas abiertas funcionan mejor: <strong>«¿Qué cambiarías?»</strong> da más que «¿Te gustó?».</div>
+      <div class="form-err" id="new-err"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-new')" data-i18n="btn_cancel">Cancelar</button>
+      <button class="btn-primary" id="btn-create" onclick="createPregunta('new-q','new-err','btn-create')" data-i18n="btn_create">Crear pregunta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: VER QR ── -->
+<div class="modal-bg" id="modal-qr" onclick="if(event.target===this)closeModal('modal-qr')">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" data-i18n="qr_title">Tarjeta para imprimir</div>
+        <div class="modal-sub" id="qr-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-qr')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="qr-layout">
+        <div id="qr-card-slot"></div>
+        <div class="qr-actions">
+          <button class="action-btn primary" id="btn-img" onclick="saveAsImage()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span data-i18n="btn_save_img">Guardar como imagen</span>
+          </button>
+          <button class="action-btn" onclick="printCard()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <span data-i18n="btn_print">Imprimir tarjeta</span>
+          </button>
+          <button class="action-btn" onclick="downloadQR()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span data-i18n="btn_dl_qr">Descargar solo QR</span>
+          </button>
+          <a class="action-btn" id="btn-test" href="#" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span data-i18n="btn_test">Probar enlace</span>
+          </a>
+          <button class="action-btn" id="btn-copy" onclick="copyLink()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            <span data-i18n="btn_copy">Copiar enlace</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── GitHub Pages: params de URL + gasCall (JSONP) ───────────────
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+var _p      = new URLSearchParams(window.location.search);
+var TOKEN   = _p.get('token')   || '';
+var SESSION = _p.get('session') || '';
+var DATA    = { preguntas: [] };
+var LANG    = 'es';
+var CUR_QR  = null;   // pregunta abierta en el modal QR
+var OPEN    = {};     // respuestas desplegadas por id
+var FILTER  = {};     // filtro de sentimiento por id
+
+var NAV = {
+  dashboard: 'https://dichosea.com/dashboard.html?token='     + encodeURIComponent(TOKEN),
+  feedback:  'https://dichosea.com/ubicaciones.html?token='   + encodeURIComponent(TOKEN),
+  config:    'https://dichosea.com/configuracion.html?token=' + encodeURIComponent(TOKEN)
+};
+
+function gasCall(page, params) {
+  return new Promise(function(resolve, reject) {
+    var cb = 'gc_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+    var url = GAS_URL + '?page=' + encodeURIComponent(page) + '&callback=' + cb;
+    for (var k in params) {
+      if (params[k] !== undefined && params[k] !== null && params[k] !== '') url += '&' + k + '=' + encodeURIComponent(params[k]);
+    }
+    var s = document.createElement('script');
+    window[cb] = function(data) { delete window[cb]; if (s.parentNode) s.parentNode.removeChild(s); resolve(data); };
+    s.src = url;
+    s.onerror = function() { delete window[cb]; if (s.parentNode) s.parentNode.removeChild(s); reject(new Error('JSONP failed')); };
+    document.head.appendChild(s);
+  });
+}
+
+// ── TRADUCCIONES ─────────────────────────────────────────────────
+var TR = {
+  es: {
+    nav_dashboard:'Dashboard', nav_feedback:'Feedback', nav_preguntas:'Preguntas', nav_config:'Configuración', logout:'Salir',
+    eyebrow:'Tu negocio', page_title:'Preguntas', btn_new:'Nueva pregunta', loading:'Cargando…',
+    footer:'Dicho — Preguntas por voz vía WhatsApp',
+    empty_title:'Crea tu primera pregunta', empty_text:'Escribe lo que quieres saber. Te daremos una tarjeta con su QR: la gente la escanea y te responde con un audio de WhatsApp.',
+    new_title:'Nueva pregunta', new_sub:'Se generará una tarjeta con su propio código QR.',
+    q_ph:'¿Qué plato te gustaría ver en nuestra carta?',
+    q_tip:'💡 Las preguntas abiertas funcionan mejor: <strong>«¿Qué cambiarías?»</strong> da más que «¿Te gustó?».',
+    btn_cancel:'Cancelar', btn_create:'Crear pregunta', creating:'Creando…',
+    err_empty:'Escribe tu pregunta.', err_general:'No se pudo guardar. Inténtalo de nuevo.',
+    st_activa:'Activa', st_pausada:'Pausada', st_cerrada:'Cerrada',
+    lbl_codigo:'Código', lbl_creada:'Creada',
+    s_total:'Respuestas', s_total_sub:'recibidas', s_semana:'Esta semana', s_semana_sub:'últimos 7 días',
+    s_pos:'Sentimiento', s_pos_sub:'positivo', s_tema:'Tema principal', s_tema_sub:'mencionado {n} veces',
+    btn_resp:'Ver respuestas', btn_qr:'Ver QR', btn_pause:'Pausar', btn_activate:'Activar',
+    temas_title:'Temas que se repiten', resp_title:'Respuestas', no_temas:'Aún no hay temas.',
+    no_resp:'Todavía no hay respuestas. Imprime la tarjeta y colócala donde la gente tenga un momento para responder.',
+    f_all:'Todas', sent_positivo:'Positivo', sent_neutro:'Neutro', sent_negativo:'Negativo',
+    ver_tr:'Ver transcripción', ocultar_tr:'Ocultar transcripción', showing:'Mostrando las {n} más recientes',
+    qr_title:'Tarjeta para imprimir', btn_save_img:'Guardar como imagen', btn_print:'Imprimir tarjeta',
+    btn_dl_qr:'Descargar solo QR', btn_test:'Probar enlace', btn_copy:'Copiar enlace', copied:'¡Copiado!', generating:'Generando…',
+    k_eye:'Queremos saber', k_scan:'Escáneame', k_text:'Respóndenos con un audio y listo.', k_note:'(Sin apps ni registros ;)', k_via:'vía',
+    toast_created:'Pregunta creada', toast_paused:'Pregunta pausada: el bot avisará de que no está activa', toast_active:'Pregunta activada',
+    err_load:'No se pudieron cargar tus preguntas.'
+  },
+  ca: {
+    nav_dashboard:'Dashboard', nav_feedback:'Feedback', nav_preguntas:'Preguntes', nav_config:'Configuració', logout:'Sortir',
+    eyebrow:'El teu negoci', page_title:'Preguntes', btn_new:'Nova pregunta', loading:'Carregant…',
+    footer:'Dicho — Preguntes per veu via WhatsApp',
+    empty_title:'Crea la teva primera pregunta', empty_text:'Escriu el que vols saber. Et donarem una targeta amb el seu QR: la gent l\'escaneja i et respon amb un àudio de WhatsApp.',
+    new_title:'Nova pregunta', new_sub:'Es generarà una targeta amb el seu propi codi QR.',
+    q_ph:'Quin plat t\'agradaria veure a la nostra carta?',
+    q_tip:'💡 Les preguntes obertes funcionen millor: <strong>«Què canviaries?»</strong> dona més que «T\'ha agradat?».',
+    btn_cancel:'Cancel·lar', btn_create:'Crear pregunta', creating:'Creant…',
+    err_empty:'Escriu la teva pregunta.', err_general:'No s\'ha pogut desar. Torna-ho a provar.',
+    st_activa:'Activa', st_pausada:'En pausa', st_cerrada:'Tancada',
+    lbl_codigo:'Codi', lbl_creada:'Creada',
+    s_total:'Respostes', s_total_sub:'rebudes', s_semana:'Aquesta setmana', s_semana_sub:'últims 7 dies',
+    s_pos:'Sentiment', s_pos_sub:'positiu', s_tema:'Tema principal', s_tema_sub:'esmentat {n} vegades',
+    btn_resp:'Veure respostes', btn_qr:'Veure QR', btn_pause:'Pausar', btn_activate:'Activar',
+    temas_title:'Temes que es repeteixen', resp_title:'Respostes', no_temas:'Encara no hi ha temes.',
+    no_resp:'Encara no hi ha respostes. Imprimeix la targeta i posa-la on la gent tingui un moment per respondre.',
+    f_all:'Totes', sent_positivo:'Positiu', sent_neutro:'Neutre', sent_negativo:'Negatiu',
+    ver_tr:'Veure transcripció', ocultar_tr:'Amagar transcripció', showing:'Es mostren les {n} més recents',
+    qr_title:'Targeta per imprimir', btn_save_img:'Desar com a imatge', btn_print:'Imprimir targeta',
+    btn_dl_qr:'Descarregar només QR', btn_test:'Provar enllaç', btn_copy:'Copiar enllaç', copied:'Copiat!', generating:'Generant…',
+    k_eye:'Volem saber', k_scan:'Escaneja\'m', k_text:'Respon-nos amb un àudio i llestos.', k_note:'(Sense apps ni registres ;)', k_via:'via',
+    toast_created:'Pregunta creada', toast_paused:'Pregunta en pausa: el bot avisarà que no està activa', toast_active:'Pregunta activada',
+    err_load:'No s\'han pogut carregar les teves preguntes.'
+  },
+  en: {
+    nav_dashboard:'Dashboard', nav_feedback:'Feedback', nav_preguntas:'Questions', nav_config:'Settings', logout:'Log out',
+    eyebrow:'Your business', page_title:'Questions', btn_new:'New question', loading:'Loading…',
+    footer:'Dicho — Voice questions via WhatsApp',
+    empty_title:'Create your first question', empty_text:'Write what you want to know. We\'ll give you a card with its QR code: people scan it and answer with a WhatsApp voice message.',
+    new_title:'New question', new_sub:'A card with its own QR code will be generated.',
+    q_ph:'Which dish would you like to see on our menu?',
+    q_tip:'💡 Open questions work best: <strong>“What would you change?”</strong> gets more than “Did you like it?”.',
+    btn_cancel:'Cancel', btn_create:'Create question', creating:'Creating…',
+    err_empty:'Write your question.', err_general:'Could not save. Please try again.',
+    st_activa:'Active', st_pausada:'Paused', st_cerrada:'Closed',
+    lbl_codigo:'Code', lbl_creada:'Created',
+    s_total:'Answers', s_total_sub:'received', s_semana:'This week', s_semana_sub:'last 7 days',
+    s_pos:'Sentiment', s_pos_sub:'positive', s_tema:'Top topic', s_tema_sub:'mentioned {n} times',
+    btn_resp:'View answers', btn_qr:'View QR', btn_pause:'Pause', btn_activate:'Activate',
+    temas_title:'Recurring topics', resp_title:'Answers', no_temas:'No topics yet.',
+    no_resp:'No answers yet. Print the card and put it where people have a moment to answer.',
+    f_all:'All', sent_positivo:'Positive', sent_neutro:'Neutral', sent_negativo:'Negative',
+    ver_tr:'Show transcript', ocultar_tr:'Hide transcript', showing:'Showing the {n} most recent',
+    qr_title:'Card to print', btn_save_img:'Save as image', btn_print:'Print card',
+    btn_dl_qr:'Download QR only', btn_test:'Test link', btn_copy:'Copy link', copied:'Copied!', generating:'Generating…',
+    k_eye:'We want to know', k_scan:'Scan me', k_text:'Just answer us with a voice message.', k_note:'(No apps, no sign-up ;)', k_via:'via',
+    toast_created:'Question created', toast_paused:'Question paused: the bot will say it is no longer active', toast_active:'Question activated',
+    err_load:'Could not load your questions.'
+  }
+};
+function t(k, n) { var s = (TR[LANG] || TR.es)[k]; if (s === undefined) s = TR.es[k] || k; return n !== undefined ? s.replace('{n}', n) : s; }
+
+function applyLang(lang) {
+  LANG = TR[lang] ? lang : 'es';
+  document.documentElement.lang = LANG;
+  document.body.style.visibility = 'visible';
+  document.querySelectorAll('[data-i18n]').forEach(function(el) { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el) { el.placeholder = t(el.getAttribute('data-i18n-ph')); });
+  document.title = 'Dicho · ' + t('page_title');
+  try { sessionStorage.setItem('dicho_lang_' + TOKEN, LANG); } catch (e) {}
+}
+try { var _cl = sessionStorage.getItem('dicho_lang_' + TOKEN); if (_cl) applyLang(_cl); } catch (e) {}
+setTimeout(function() { document.body.style.visibility = 'visible'; }, 300);
+
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function findP(id) { for (var i = 0; i < DATA.preguntas.length; i++) if (DATA.preguntas[i].id === id) return DATA.preguntas[i]; return null; }
+function toast(msg) { var el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(function() { el.classList.remove('show'); }, 2600); }
+
+// ── INIT ─────────────────────────────────────────────────────────
+(function init() {
+  document.getElementById('nav-dashboard').href = NAV.dashboard;
+  document.getElementById('nav-feedback').href  = NAV.feedback;
+  document.getElementById('nav-config').href    = NAV.config;
+  try { var b = sessionStorage.getItem('dicho_biz_' + TOKEN); if (b) document.getElementById('header-biz-name').textContent = b; } catch (e) {}
+  if (!TOKEN) { window.location.href = 'https://dichosea.com/login.html'; return; }
+
+  gasCall('api_preguntas', { token: TOKEN })
+    .then(function(data) {
+      if (!data || !data.ok) { window.location.href = 'https://dichosea.com/login.html'; return; }
+      DATA = data;
+      applyLang(data.idioma || 'es');
+      if (data.negocio) {
+        document.getElementById('header-biz-name').textContent = data.negocio;
+        try { sessionStorage.setItem('dicho_biz_' + TOKEN, data.negocio); } catch (e) {}
+      }
+      render();
+    })
+    .catch(function() {
+      applyLang(LANG);
+      document.getElementById('container').innerHTML = '<div class="empty-card"><h3>' + esc(t('err_load')) + '</h3></div>';
+    });
+})();
+
+// ── RENDER ───────────────────────────────────────────────────────
+function render() {
+  var c = document.getElementById('container');
+  var ps = DATA.preguntas || [];
+  document.getElementById('btn-new').style.display = ps.length ? '' : 'none';
+  if (!ps.length) {
+    c.innerHTML =
+      '<div class="empty-card">' +
+        '<h3>' + esc(t('empty_title')) + '</h3>' +
+        '<p>' + esc(t('empty_text')) + '</p>' +
+        '<textarea class="q-input" id="first-q" maxlength="120" rows="3" placeholder="' + esc(t('q_ph')) + '" oninput="countQ(\'first-q\',\'first-count\')"></textarea>' +
+        '<div class="q-count"><span id="first-count">0</span>/120</div>' +
+        '<div class="q-tip">' + t('q_tip') + '</div>' +
+        '<div class="form-err" id="first-err"></div>' +
+        '<div style="margin-top:16px"><button class="btn-primary" id="btn-first" onclick="createPregunta(\'first-q\',\'first-err\',\'btn-first\')">' + esc(t('btn_create')) + '</button></div>' +
+      '</div>';
+    return;
+  }
+  c.innerHTML = ps.map(buildModule).join('');
+}
+
+function buildModule(p) {
+  var s = p.stats || {};
+  var total = s.total || 0;
+  var activa = p.estado === 'activa';
+  var open = !!OPEN[p.id];
+  return '<div class="module-card' + (activa ? '' : ' paused') + '" id="card-' + esc(p.id) + '">' +
+    '<div class="module-head">' +
+      '<div style="min-width:0">' +
+        '<div class="module-q">' + esc(p.pregunta) + '</div>' +
+        '<div class="module-meta">' +
+          '<span class="meta-item"><strong>' + esc(t('lbl_codigo')) + '</strong>' + esc(p.codigo) + '</span>' +
+          (p.fecha ? '<span class="meta-item"><strong>' + esc(t('lbl_creada')) + '</strong>' + esc(p.fecha) + '</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<span class="pill ' + esc(p.estado) + '">' + esc(t('st_' + p.estado)) + '</span>' +
+    '</div>' +
+    '<div class="module-stats">' +
+      stat(t('s_total'), total, t('s_total_sub')) +
+      stat(t('s_semana'), total ? '+' + (s.semana || 0) : '—', t('s_semana_sub')) +
+      '<div class="stat"><div class="stat-lbl">' + esc(t('s_pos')) + '</div><div class="stat-val' + (s.pctPos >= 70 ? ' green' : '') + '">' + (total ? s.pctPos + '%' : '—') + '</div><div class="stat-sub">' + esc(t('s_pos_sub')) + '</div></div>' +
+      '<div class="stat"><div class="stat-lbl">' + esc(t('s_tema')) + '</div>' +
+        (s.topTopic ? '<div class="stat-chip">' + esc(s.topTopic) + '</div><div class="stat-sub">' + esc(t('s_tema_sub', s.topCount)) + '</div>' : '<div class="stat-val">—</div>') +
+      '</div>' +
+    '</div>' +
+    '<div class="module-actions">' +
+      '<button class="action-btn primary' + (open ? ' on' : '') + '" onclick="toggleResp(\'' + esc(p.id) + '\')">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' +
+        esc(t('btn_resp')) + (total ? ' (' + total + ')' : '') +
+        ' <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
+      '</button>' +
+      '<button class="action-btn" onclick="openQR(\'' + esc(p.id) + '\')">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="17" y="17" width="4" height="4" rx=".5"/></svg>' +
+        esc(t('btn_qr')) +
+      '</button>' +
+      '<button class="action-btn" id="btn-st-' + esc(p.id) + '" onclick="toggleEstado(\'' + esc(p.id) + '\')">' +
+        (activa
+          ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>' + esc(t('btn_pause'))
+          : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>' + esc(t('btn_activate'))) +
+      '</button>' +
+    '</div>' +
+    '<div class="resp-panel' + (open ? ' open' : '') + '" id="resp-' + esc(p.id) + '">' + (open ? buildResp(p) : '') + '</div>' +
+  '</div>';
+}
+
+function stat(lbl, val, sub) {
+  return '<div class="stat"><div class="stat-lbl">' + esc(lbl) + '</div><div class="stat-val">' + esc(val) + '</div><div class="stat-sub">' + esc(sub) + '</div></div>';
+}
+
+function buildResp(p) {
+  var rs = p.respuestas || [];
+  if (!rs.length) return '<div style="grid-column:1/-1" class="resp-empty">' + esc(t('no_resp')) + '</div>';
+  var temas = p.temas || [];
+  var max = temas.length ? temas[0].count : 1;
+  var left = '<div><div class="sub-title">' + esc(t('temas_title')) + '</div>' +
+    (temas.length ? temas.map(function(tm) {
+      var pct = Math.round(tm.count / max * 100);
+      return '<div class="topic-row"><div class="topic-row-top"><span>' + esc(tm.label) + '</span><b>' + tm.count + '</b></div><div class="bar"><i style="width:' + pct + '%"></i></div></div>';
+    }).join('') : '<div class="resp-empty" style="padding:0">' + esc(t('no_temas')) + '</div>') +
+  '</div>';
+  var f = FILTER[p.id] || '';
+  var list = rs.filter(function(r) { return !f || r.sent === f; });
+  var chips = ['', 'positivo', 'neutro', 'negativo'].map(function(k) {
+    return '<button class="chip' + (f === k ? ' active' : '') + '" onclick="setFilter(\'' + esc(p.id) + '\',\'' + k + '\')">' + esc(k ? t('sent_' + k) : t('f_all')) + '</button>';
+  }).join('');
+  var right = '<div><div class="sub-title">' + esc(t('resp_title')) + '</div><div class="resp-filter">' + chips + '</div>' +
+    list.map(function(r, i) {
+      var rid = esc(p.id) + '-' + i;
+      return '<div class="resp">' +
+        '<div class="resp-top"><span class="resp-date">' + esc(r.fecha) + '</span><span class="sent ' + esc(r.sent) + '">' + esc(t('sent_' + r.sent)) + '</span></div>' +
+        '<div class="resp-sum">' + esc(r.resumen || r.transcripcion || '—') + '</div>' +
+        (r.temas && r.temas.length ? '<div class="resp-tags">' + r.temas.map(function(x) { return '<span class="resp-tag">' + esc(x) + '</span>'; }).join('') + '</div>' : '') +
+        (r.transcripcion && r.resumen ? '<button class="resp-more" onclick="toggleTr(\'' + rid + '\', this)">' + esc(t('ver_tr')) + '</button><div class="resp-tr" id="tr-' + rid + '">«' + esc(r.transcripcion) + '»</div>' : '') +
+      '</div>';
+    }).join('') +
+    (rs.length >= 200 ? '<div class="resp-count">' + esc(t('showing', 200)) + '</div>' : '') +
+  '</div>';
+  return left + right;
+}
+
+function toggleResp(id) {
+  OPEN[id] = !OPEN[id];
+  var card = document.getElementById('card-' + id);
+  var p = findP(id);
+  if (card && p) card.outerHTML = buildModule(p);
+}
+function setFilter(id, f) {
+  FILTER[id] = f;
+  var panel = document.getElementById('resp-' + id);
+  var p = findP(id);
+  if (panel && p) panel.innerHTML = buildResp(p);
+}
+function toggleTr(rid, btn) {
+  var el = document.getElementById('tr-' + rid);
+  if (!el) return;
+  el.classList.toggle('open');
+  btn.textContent = el.classList.contains('open') ? t('ocultar_tr') : t('ver_tr');
+}
+
+// ── ESTADO ───────────────────────────────────────────────────────
+function toggleEstado(id) {
+  var p = findP(id); if (!p) return;
+  var nuevo = p.estado === 'activa' ? 'pausada' : 'activa';
+  var btn = document.getElementById('btn-st-' + id);
+  if (btn) btn.disabled = true;
+  gasCall('api_setEstadoPregunta', { token: TOKEN, id: id, estado: nuevo })
+    .then(function(res) {
+      if (res && res.ok) {
+        p.estado = nuevo;
+        var card = document.getElementById('card-' + id);
+        if (card) card.outerHTML = buildModule(p);
+        toast(nuevo === 'activa' ? t('toast_active') : t('toast_paused'));
+      } else { if (btn) btn.disabled = false; toast((res && res.error) || t('err_general')); }
+    })
+    .catch(function() { if (btn) btn.disabled = false; toast(t('err_general')); });
+}
+
+// ── NUEVA PREGUNTA ───────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openNewModal() {
+  document.getElementById('new-q').value = '';
+  countQ('new-q', 'new-count');
+  document.getElementById('new-err').style.display = 'none';
+  openModal('modal-new');
+  setTimeout(function() { document.getElementById('new-q').focus(); }, 80);
+}
+function countQ(inputId, countId) { document.getElementById(countId).textContent = document.getElementById(inputId).value.length; }
+
+function createPregunta(inputId, errId, btnId) {
+  var txt = document.getElementById(inputId).value.trim();
+  var err = document.getElementById(errId);
+  var btn = document.getElementById(btnId);
+  if (!txt) { err.textContent = t('err_empty'); err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  btn.disabled = true; btn.innerHTML = '<span class="spin w"></span> ' + esc(t('creating'));
+  gasCall('api_addPregunta', { token: TOKEN, pregunta: txt })
+    .then(function(res) {
+      btn.disabled = false; btn.textContent = t('btn_create');
+      if (res && res.ok && res.pregunta) {
+        DATA.preguntas.unshift(res.pregunta);
+        closeModal('modal-new');
+        render();
+        toast(t('toast_created'));
+        openQR(res.pregunta.id);
+      } else { err.textContent = (res && res.error) || t('err_general'); err.style.display = 'block'; }
+    })
+    .catch(function() { btn.disabled = false; btn.textContent = t('btn_create'); err.textContent = t('err_general'); err.style.display = 'block'; });
+}
+
+// ── TARJETA + QR ─────────────────────────────────────────────────
+var MIC_SVG = '<svg class="qr-mic-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">' +
+  '<circle cx="110" cy="110" r="44" fill="#ffffff"/><circle cx="110" cy="110" r="38" fill="#14532D"/>' +
+  '<path d="M99,102 C99,119 121,119 121,102" stroke="#ffffff" stroke-width="3.9" stroke-linecap="round" fill="none"/>' +
+  '<rect x="108.2" y="119.3" width="3.5" height="5" rx="1.8" fill="#ffffff"/>' +
+  '<rect x="100.1" y="123.5" width="19.8" height="3.5" rx="1.8" fill="#ffffff"/>' +
+  '<rect x="104.3" y="88.8" width="11.4" height="19.5" rx="5.7" fill="#ffffff"/></svg>';
+
+function headlineClass(q) { return 'cl-headline' + (q.length > 85 ? ' xs' : q.length > 55 ? ' sm' : ''); }
+
+function cardHtml(p) {
+  return '<div class="qr-card">' +
+    '<div class="card-left"><div>' +
+      '<div class="cl-eye">' + esc(t('k_eye')) + '</div>' +
+      '<p class="' + headlineClass(p.pregunta) + '">' + esc(p.pregunta) + '</p>' +
+      '<div class="cl-scan-label">' + esc(t('k_scan')) + '</div>' +
+      '<div class="cl-scan-text">' + esc(t('k_text')) + '<br><span class="cl-note">' + esc(t('k_note')) + '</span></div>' +
+    '</div><div class="cl-biz">' + esc(DATA.negocio || '') + '</div></div>' +
+    '<div class="card-right">' +
+      '<div class="cr-top"><span class="cr-via">' + esc(t('k_via')) + '</span><span class="cr-wa">WHATSAPP</span></div>' +
+      '<div class="cr-qr"><div class="qr-wrap"><img id="qr-img" src="' + esc(p.qrUrl) + '" alt="QR">' + MIC_SVG + '</div></div>' +
+      '<div class="cr-powered">powered by <strong>dicho.</strong></div>' +
+    '</div></div>';
+}
+
+function openQR(id) {
+  var p = findP(id); if (!p) return;
+  CUR_QR = p;
+  document.getElementById('qr-sub').textContent = t('lbl_codigo') + ': ' + p.codigo;
+  document.getElementById('qr-card-slot').innerHTML = cardHtml(p);
+  document.getElementById('btn-test').href = p.waUrl;
+  openModal('modal-qr');
+}
+
+var QR_GREEN = '#14532D';
+function rrPath(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r); ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r); ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r); ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r); ctx.closePath();
+}
+function drawMic(ctx, cx, cy, H, color) {
+  var s = H / 118, ox = cx - 50 * s, oy = cy - 59 * s;
+  ctx.save(); ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.lineWidth = 11 * s; ctx.beginPath(); ctx.moveTo(ox + 19*s, oy + 40*s);
+  ctx.bezierCurveTo(ox+19*s, oy+90*s, ox+81*s, oy+90*s, ox+81*s, oy+40*s); ctx.stroke();
+  rrPath(ctx, ox + 45*s, oy + 90*s, 10*s, 14*s, 5*s); ctx.fill();
+  rrPath(ctx, ox + 22*s, oy + 102*s, 56*s, 10*s, 5*s); ctx.fill();
+  rrPath(ctx, ox + 34*s, oy + 4*s, 32*s, 55*s, 16*s); ctx.fill();
+  ctx.restore();
+}
+function drawMicOverlay(ctx, cx, cy, R) {
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(cx, cy, R * 44 / 38, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = QR_GREEN;  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+  var iconH = R * 1.1; drawMic(ctx, cx, cy - iconH * 0.04, iconH, '#ffffff');
+}
+function fillRound(ctx, x, y, w, h, r, fill) { rrPath(ctx, x, y, w, h, r); ctx.fillStyle = fill; ctx.fill(); }
+function slug(s) { return String(s || 'dicho').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase().substr(0, 40); }
+
+function loadQrImage(url) {
+  return fetch(url).then(function(r) { return r.blob(); }).then(function(blob) {
+    return new Promise(function(res, rej) { var img = new Image(); img.onload = function() { res(img); }; img.onerror = rej; img.src = URL.createObjectURL(blob); });
+  });
+}
+
+function downloadQR() {
+  var p = CUR_QR; if (!p) return;
+  var name = 'qr-' + slug(p.pregunta) + '.png';
+  loadQrImage(p.qrUrl).then(function(img) {
+    var c = document.createElement('canvas'); c.width = c.height = 440;
+    var ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, 440, 440); drawMicOverlay(ctx, 220, 220, 76);
+    var a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = name; a.click();
+  }).catch(function() { var a = document.createElement('a'); a.href = p.qrUrl; a.download = name; a.target = '_blank'; a.click(); });
+}
+
+// Parte el texto en líneas que quepan en maxW
+function wrapLines(ctx, text, maxW) {
+  var words = String(text).split(/\s+/), lines = [], line = '';
+  words.forEach(function(w) {
+    var test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test;
+  });
+  if (line) lines.push(line);
+  return lines;
+}
+
+function saveAsImage() {
+  var p = CUR_QR; if (!p) return;
+  var btn = document.getElementById('btn-img'), span = btn.querySelector('span'), orig = span.textContent;
+  span.textContent = t('generating');
+  loadQrImage(p.qrUrl).then(function(img) {
+    var cw = 600, ch = 260, sc = 2;
+    var c = document.createElement('canvas'); c.width = cw * sc; c.height = ch * sc;
+    var ctx = c.getContext('2d'); ctx.scale(sc, sc);
+    fillRound(ctx, 0, 0, cw, ch, 22, '#F0FDF4');
+    ctx.strokeStyle = '#D1FAE5'; ctx.lineWidth = 1.5; rrPath(ctx, .75, .75, cw - 1.5, ch - 1.5, 22); ctx.stroke();
+
+    var leftW = 340, x = 26, y = 34;
+    ctx.fillStyle = '#6B7A6E'; ctx.font = '800 10px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText(t('k_eye').toUpperCase(), x, y); y += 26;
+    var fs = p.pregunta.length > 85 ? 17 : p.pregunta.length > 55 ? 20 : 23;
+    ctx.fillStyle = '#1C2B20'; ctx.font = '900 ' + fs + 'px "Plus Jakarta Sans", sans-serif';
+    wrapLines(ctx, p.pregunta, leftW - x - 10).slice(0, 5).forEach(function(l) { ctx.fillText(l, x, y); y += fs * 1.2; });
+    y += 10;
+    ctx.fillStyle = '#16A34A'; ctx.font = '800 10px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText(t('k_scan').toUpperCase(), x, y); y += 18;
+    ctx.fillStyle = '#3E4E41'; ctx.font = '500 13px "Jost", sans-serif';
+    ctx.fillText(t('k_text'), x, y); y += 17;
+    ctx.fillStyle = '#6B7A6E'; ctx.font = '500 11px "Jost", sans-serif';
+    ctx.fillText(t('k_note'), x, y);
+    ctx.fillStyle = '#6B7A6E'; ctx.font = '700 11px "Jost", sans-serif';
+    ctx.fillText(DATA.negocio || '', x, ch - 22);
+
+    var q = 170, pad = 12, bw = q + pad * 2, bx = leftW + (cw - leftW - bw) / 2, by = 30;
+    ctx.fillStyle = '#9CA3AF'; ctx.font = '700 9px "Jost", sans-serif'; ctx.textAlign = 'center';
+    fillRound(ctx, bx + bw / 2 - 2, by - 22, 72, 15, 7.5, '#16A34A');
+    ctx.fillStyle = '#9CA3AF'; ctx.fillText(t('k_via').toUpperCase(), bx + bw / 2 - 20, by - 11);
+    ctx.fillStyle = '#fff'; ctx.font = '800 8.5px "Jost", sans-serif'; ctx.fillText('WHATSAPP', bx + bw / 2 + 34, by - 11.5);
+    fillRound(ctx, bx, by, bw, bw, 16, '#ffffff');
+    ctx.drawImage(img, bx + pad, by + pad, q, q);
+    drawMicOverlay(ctx, bx + bw / 2, by + bw / 2, 38 * q / 220);
+    ctx.fillStyle = '#6B7A6E'; ctx.font = '600 10px "Jost", sans-serif';
+    ctx.fillText('powered by dicho.', bx + bw / 2, by + bw + 16);
+    ctx.textAlign = 'left';
+
+    var a = document.createElement('a'); a.href = c.toDataURL('image/png');
+    a.download = 'dicho-' + slug(DATA.negocio) + '-' + slug(p.pregunta) + '.png'; a.click();
+    span.textContent = orig;
+  }).catch(function() { span.textContent = orig; toast(t('err_general')); });
+}
+
+function printCard() {
+  var p = CUR_QR; if (!p) return;
+  var css = Array.prototype.map.call(document.querySelectorAll('style'), function(s) { return s.textContent; }).join('\n');
+  var w = window.open('', '_blank', 'width=520,height=420');
+  if (!w) return;
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Dicho · ' + esc(p.pregunta) + '</title>' +
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Jost:wght@400;500;600;700&display=swap">' +
+    '<style>' + css + ' body{zoom:1;background:#fff;padding:32px;display:flex;justify-content:center;visibility:visible} @media print{body{padding:8px}.qr-card{box-shadow:none}}</style>' +
+    '</head><body>' + cardHtml(p) + '</body></html>');
+  w.document.close(); w.focus();
+  setTimeout(function() { w.print(); }, 700);
+}
+
+function copyLink() {
+  var p = CUR_QR; if (!p || !navigator.clipboard) return;
+  var span = document.querySelector('#btn-copy span'), orig = span.textContent;
+  navigator.clipboard.writeText(p.waUrl).then(function() { span.textContent = t('copied'); setTimeout(function() { span.textContent = orig; }, 1800); }).catch(function() {});
+}
+
+function doLogout() {
+  if (SESSION) gasCall('api_logout', { session: SESSION }).catch(function() {});
+  window.location.href = 'https://dichosea.com/login.html';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeModal('modal-new'); closeModal('modal-qr'); } });
+</script>
+</body>
+</html>
