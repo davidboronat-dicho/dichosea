@@ -275,8 +275,12 @@
     var CACHE_TTL = 24 * 60 * 60 * 1000;
 
     function fetchData() {
-      return fetch(GAS_URL + '?page=getPreguntaInfo&scan=1&p=' + encodeURIComponent(codigo))
+      return fetch(GAS_URL + '?page=getPreguntaInfo&p=' + encodeURIComponent(codigo))
         .then(function(r) { return r.json(); });
+    }
+    // El escaneo se cuenta en una llamada aparte, sin esperar la respuesta
+    function contarEscaneo() {
+      try { fetch(GAS_URL + '?page=scanPregunta&p=' + encodeURIComponent(codigo), { mode: 'no-cors', keepalive: true }); } catch (e) {}
     }
 
     if (!/^p-[a-z0-9]{4}$/.test(codigo)) {
@@ -292,6 +296,7 @@
         }
       } catch (e) {}
       if (cached) render(cached);
+      contarEscaneo();
 
       fetchData().then(function(data) {
         if (!data || !data.ok) {
