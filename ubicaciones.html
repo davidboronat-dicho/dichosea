@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<title>Dicho · Ubicaciones</title>
+<title>Dicho · Feedback</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Jost:wght@400;500;600;700&display=swap">
 <style>
@@ -13,6 +13,7 @@
   --green:      #16A34A;
   --green-mid:  #15803d;
   --green-l:    #F0FDF4;
+  --green-b:    #D1FAE5;
   --surface:    #F5F1E8;
   --card:       #FFFFFF;
   --border:     #D8D2C3;
@@ -34,14 +35,16 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   display: flex; align-items: stretch; padding: 0 28px;
   position: sticky; top: 0; z-index: 50;
 }
-.header-brand { display: flex; align-items: center; gap: 10px; padding-right: 24px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px; flex-shrink: 0; }
+.header-brand { display: flex; align-items: center; gap: 10px; padding-right: 24px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px; flex-shrink: 0; cursor: pointer; }
 .logo { width: 28px; height: 28px; background: #fff; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: var(--green-deep); font-family: 'Plus Jakarta Sans', sans-serif; }
 .brand-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -.03em; }
 .brand-name span { color: #86efac; }
 .nav { display: flex; align-items: stretch; gap: 2px; padding-left: 4px; flex: 1; }
-.nav-item { display: inline-flex; align-items: center; gap: 7px; padding: 0 15px; font-size: 13px; font-weight: 500; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.62); border: none; background: none; border-bottom: 2px solid transparent; text-decoration: none; transition: .15s; }
+.nav-item { display: inline-flex; align-items: center; gap: 7px; padding: 0 15px; font-size: 13px; font-weight: 500; font-family: 'Jost', sans-serif; color: rgba(255,255,255,.62); border: none; background: none; border-bottom: 2px solid transparent; text-decoration: none; transition: .15s; white-space: nowrap; }
 .nav-item:hover { color: rgba(255,255,255,.88); }
 .nav-item.active { color: #fff; font-weight: 700; border-bottom-color: #86efac; background: rgba(255,255,255,.07); }
+.nav-item svg { flex-shrink: 0; opacity: .7; }
+.nav-item.active svg { opacity: 1; }
 .header-right { display: flex; align-items: center; gap: 10px; padding-left: 6px; margin-left: auto; }
 .header-biz { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.65); font-family: 'Jost', sans-serif; white-space: nowrap; padding-right: 16px; border-right: 1px solid rgba(255,255,255,.14); margin-right: 4px; }
 .header-biz strong { color: #fff; }
@@ -53,6 +56,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
 .page-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
 .page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 900; color: var(--text); letter-spacing: -.02em; line-height: 1.15; }
+.page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
 
 /* ── ADD BUTTON ── */
 .btn-new-loc { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; font-size: 13px; font-weight: 700; font-family: 'Jost', sans-serif; background: var(--green); color: #fff; border: none; border-radius: 9px; cursor: pointer; transition: .15s; white-space: nowrap; flex-shrink: 0; }
@@ -70,9 +74,10 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .module-meta-item { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
 .module-meta-item strong { font-weight: 700; color: var(--text); text-transform: uppercase; font-size: 10px; letter-spacing: .05em; }
 .module-meta-ok { color: var(--green-mid); font-weight: 600; }
-.module-stats { padding: 12px 20px; border-top: 1px solid var(--border-l); border-bottom: 1px solid var(--border-l); display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.stat { display: flex; flex-direction: column; gap: 2px; padding: 0 4px; }
-.stat + .stat { border-left: 1px solid var(--border-l); }
+.module-meta-warn { color: #B45309; font-weight: 600; }
+.module-stats { padding: 12px 20px; border-bottom: 1px solid var(--border-l); display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.stat { display: flex; flex-direction: column; gap: 2px; padding: 0 4px; min-width: 0; }
+.stat + .stat { border-left: 1px solid var(--border-l); padding-left: 12px; }
 .stat-lbl { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-l); margin-bottom: 2px; }
 .stat-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 900; color: var(--text); line-height: 1; }
 .stat-val.green { color: var(--green-mid); }
@@ -85,21 +90,60 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .action-btn.primary { color: var(--green); border-color: var(--green-b); background: var(--green-l); }
 .action-btn.primary:hover { background: #d1fae5; border-color: var(--green); }
 
-/* ── EMPTY ── */
+/* ── EMPTY / ACTIVAR ── */
 .empty { text-align: center; padding: 60px 24px; color: var(--muted); }
 .empty h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
 .empty p { font-size: 14px; line-height: 1.6; }
+.activate { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; display: flex; gap: 36px; align-items: center; box-shadow: 0 2px 8px rgba(20,83,45,.06); }
+.activate-text { flex: 1; min-width: 0; }
+.activate-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+.activate h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 10px; }
+.activate p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+.activate ul { list-style: none; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+.activate li { font-size: 13.5px; display: flex; gap: 8px; align-items: flex-start; }
+.activate li::before { content: '✓'; color: var(--green); font-weight: 800; }
+.btn-activate { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-size: 14px; font-weight: 700; font-family: 'Jost', sans-serif; background: var(--green); color: #fff; border: none; border-radius: 10px; cursor: pointer; }
+.btn-activate:hover { background: var(--green-mid); }
+.btn-activate:disabled { opacity: .6; cursor: default; }
+.activate-err { font-size: 12.5px; color: var(--danger); margin-top: 10px; display: none; }
+.preview-faded .cr-qr { position: relative; }
+.preview-faded .qr-ph { width: 110px; height: 110px; border-radius: 6px; background: repeating-linear-gradient(45deg, #EEF5F0, #EEF5F0 6px, #F8FBF9 6px, #F8FBF9 12px); }
+
+/* ── TARJETA FEEDBACK (igual que la de Código QR) ── */
+.qr-card { background: #F0FDF4; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.10); border: 1px solid #D1FAE5; display: flex; flex-direction: row; width: 340px; max-width: 100%; flex-shrink: 0; }
+.card-left { flex: 1; min-width: 0; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; }
+.card-right { width: 134px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 18px 23px 14px 8px; gap: 10px; }
+.cl-stars { color: #FACC15; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 7px; }
+.cl-headline { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 900; color: #1C2B20; line-height: 1.18; letter-spacing: -.02em; margin-bottom: 14px; }
+.cl-headline em { font-style: normal; color: #16A34A; display: block; }
+.cl-scan-label { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: #16A34A; margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.cl-via-row { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.cl-via { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #9CA3AF; }
+.cl-wa { background: #16A34A; color: #fff; font-size: 8px; font-weight: 800; letter-spacing: .04em; padding: 2px 7px; border-radius: 20px; }
+.cl-biz { font-size: 10px; font-weight: 700; color: #6B7A6E; margin-top: 12px; padding-top: 10px; border-top: 1px solid #D1FAE5; }
+.cr-qr { background: #fff; border-radius: 14px; padding: 9px; }
+.qr-wrap { position: relative; width: 110px; height: 110px; }
+.qr-wrap img { width: 110px; height: 110px; display: block; }
+.qr-mic-svg { position: absolute; top: 0; left: 0; width: 110px; height: 110px; pointer-events: none; }
+.cr-powered { font-size: 9px; font-weight: 600; color: #6B7A6E; }
+.cr-powered strong { color: #1C2B20; font-weight: 800; }
 
 /* ── MODAL ── */
 .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-bg.open { display: flex; }
-.modal { background: var(--card); border-radius: 16px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(20,83,45,.18); overflow: hidden; }
+.modal { background: var(--card); border-radius: 16px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(20,83,45,.18); overflow: hidden; max-height: 90vh; overflow-y: auto; }
+.modal.wide { max-width: 620px; }
 .modal-head { padding: 20px 24px; border-bottom: 1px solid var(--border-l); display: flex; align-items: center; justify-content: space-between; }
 .modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); }
-.modal-close { width: 30px; height: 30px; border: none; background: none; cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: .15s; font-size: 18px; }
+.modal-subtitle { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.modal-close { width: 30px; height: 30px; border: none; background: none; cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: .15s; font-size: 18px; flex-shrink: 0; }
 .modal-close:hover { background: var(--surface); color: var(--text); }
 .modal-body { padding: 22px 24px; }
 .modal-foot { padding: 14px 24px; border-top: 1px solid var(--border-l); display: flex; justify-content: flex-end; gap: 10px; }
+.qr-layout { display: flex; gap: 24px; align-items: flex-start; }
+.qr-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+.qr-hint { font-size: 12.5px; color: #92400E; background: #FEF3C7; border-radius: 8px; padding: 10px 12px; margin-top: 16px; line-height: 1.5; display: none; }
+.qr-hint button { background: none; border: none; color: #92400E; font-weight: 700; text-decoration: underline; cursor: pointer; font-family: inherit; font-size: inherit; padding: 0; }
 
 /* ── FORM ── */
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
@@ -166,32 +210,46 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 
 .new-modal-hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
 
-@media (max-width: 560px) {
-  #modules-container { grid-template-columns: 1fr; }
-  .nav-item { padding: 0 10px; font-size: 12px; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--green-deep); color: #fff; font-size: 13px; font-weight: 600; padding: 10px 18px; border-radius: 10px; opacity: 0; transition: .3s; z-index: 300; pointer-events: none; max-width: 90vw; text-align: center; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 860px) {
+  .page { padding: 20px 16px 48px; }
+  .activate { flex-direction: column; align-items: stretch; padding: 24px 20px; }
+  .module-stats { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+  .stat:nth-child(3) { border-left: none; padding-left: 4px; }
+  .qr-layout { flex-direction: column; align-items: stretch; }
+  .qr-actions { flex-direction: row; flex-wrap: wrap; }
+}
+@media (max-width: 640px) {
+  body { zoom: 1; }
+  .header { height: auto; flex-wrap: wrap; padding: 10px 16px; }
+  .nav { order: 3; flex: 1 1 100%; width: 100%; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,.1); padding: 2px 0; }
+  .nav-item { padding: 9px 10px; font-size: 12px; }
+  .header-biz { display: none; }
 }
 </style>
 </head>
 <body style="visibility:hidden">
 
-<!-- ── HEADER ── -->
+<!-- ── HEADER (menú común) ── -->
 <header class="header">
-  <div class="header-brand" onclick="window.location.href=document.getElementById('nav-dashboard').href" style="cursor:pointer">
+  <div class="header-brand" onclick="window.location.href=document.getElementById('nav-dashboard').href">
     <div class="logo">D</div>
     <span class="brand-name">dicho<span>.</span></span>
   </div>
   <nav class="nav">
     <a class="nav-item" id="nav-dashboard" href="#" target="_top">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
-    </a>
-    <a class="nav-item" id="nav-qr" href="#" target="_top">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="17" y="17" width="4" height="4" rx=".5"/><rect x="17" y="13" width="4" height="2" rx=".5"/><rect x="13" y="17" width="2" height="4" rx=".5"/></svg>
-      <span data-i18n="nav_qr">Código QR</span>
+      <span data-i18n="nav_dashboard">Dashboard</span>
     </a>
     <a class="nav-item active" href="javascript:void(0)">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span data-i18n="nav_ubicaciones">Ubicaciones</span>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span data-i18n="nav_feedback">Feedback</span>
+    </a>
+    <a class="nav-item" id="nav-preguntas" href="#" target="_top">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span data-i18n="nav_preguntas">Preguntas</span>
     </a>
     <a class="nav-item" id="nav-config" href="#" target="_top">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -200,7 +258,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   </nav>
   <div class="header-right">
     <span class="header-biz"><strong id="header-biz-name"></strong></span>
-    <button class="hdr-logout" onclick="doLogout()" id="btn-logout">Salir</button>
+    <button class="hdr-logout" onclick="doLogout()" id="btn-logout" data-i18n="logout">Salir</button>
   </div>
 </header>
 
@@ -209,9 +267,10 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   <div class="page-header">
     <div>
       <div class="page-eyebrow" data-i18n="eyebrow">Tu negocio</div>
-      <div class="page-title" data-i18n="page_title">Ubicaciones</div>
+      <div class="page-title" data-i18n="page_title">Feedback</div>
+      <div class="page-sub" data-i18n="page_sub">Tus puntos de feedback: cada ubicación tiene su propio QR.</div>
     </div>
-    <button class="btn-new-loc" id="btn-add-loc" onclick="openNewModal()">
+    <button class="btn-new-loc" id="btn-add-loc" onclick="openNewModal()" style="display:none">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       <span data-i18n="btn_add">Nueva ubicación</span>
     </button>
@@ -223,7 +282,48 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   </div>
 
   <div id="modules-container">
-    <div class="empty"><p style="color:var(--muted-l)">Cargando…</p></div>
+    <div class="empty"><p style="color:var(--muted-l)" data-i18n="loading">Cargando…</p></div>
+  </div>
+</div>
+
+<!-- ── MODAL VER QR (sustituye a la página Código QR) ── -->
+<div class="modal-bg" id="modal-qr" onclick="if(event.target===this)closeModal('modal-qr')">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="qr-modal-title"></div>
+        <div class="modal-subtitle" id="qr-modal-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-qr')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="qr-layout">
+        <div id="qr-card-slot"></div>
+        <div class="qr-actions">
+          <button class="action-btn primary" id="btn-img" onclick="saveAsImage()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span data-i18n="btn_save_img">Guardar como imagen</span>
+          </button>
+          <button class="action-btn" onclick="printCard()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <span data-i18n="btn_print">Imprimir tarjeta</span>
+          </button>
+          <button class="action-btn" onclick="downloadQR()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span data-i18n="btn_dl_qr">Descargar solo QR</span>
+          </button>
+          <a class="action-btn" id="btn-test" href="#" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span data-i18n="btn_test">Probar enlace</span>
+          </a>
+          <button class="action-btn" id="btn-copy" onclick="copyLink()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            <span data-i18n="btn_copy">Copiar enlace</span>
+          </button>
+        </div>
+      </div>
+      <div class="qr-hint" id="qr-hint"><span data-i18n="hint_maps">Para invitar a dejar reseña en Google Maps, añade tu enlace de reseñas.</span> <button onclick="fromQrToEdit()" data-i18n="hint_maps_btn">Añadir enlace</button></div>
+    </div>
   </div>
 </div>
 
@@ -251,7 +351,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
       </div>
     </div>
     <div class="modal-foot">
-      <span class="save-chip" id="chip-edit">✓ Guardado</span>
+      <span class="save-chip" id="chip-edit" data-i18n="chip_edit">✓ Guardado</span>
       <button class="btn-ghost" onclick="closeModal('modal-edit')" data-i18n="btn_cancel">Cancelar</button>
       <button class="btn-primary" id="btn-save-edit" onclick="saveEditLocation()">
         <span id="edit-spinner" style="display:none" class="spinner"></span>
@@ -269,14 +369,12 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
       <button class="modal-close" onclick="closeModal('modal-new')">✕</button>
     </div>
 
-    <!-- Indicador de pasos -->
     <div class="step-indicator">
       <div class="step-dot step-dot-active" id="sdot1">1</div>
       <div class="step-line"><div class="step-line-fill" id="sline1"></div></div>
       <div class="step-dot step-dot-inactive" id="sdot2">2</div>
     </div>
 
-    <!-- PASO 1: buscar dirección -->
     <div id="new-step1" class="step-panel">
       <div class="modal-body" style="padding-bottom:28px">
         <div class="form-group" style="margin-bottom:0">
@@ -291,7 +389,6 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
       </div>
     </div>
 
-    <!-- PASO 2: confirmar y personalizar -->
     <div id="new-step2" class="step-panel hidden">
       <div class="modal-body">
         <div class="map-wrap">
@@ -318,7 +415,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
         <input type="hidden" id="new-mapsurl">
       </div>
       <div class="modal-foot">
-        <span class="save-chip" id="chip-new">✓ Creada</span>
+        <span class="save-chip" id="chip-new" data-i18n="chip_new">✓ Creada</span>
         <button class="btn-ghost" onclick="newGoBack()">← Atrás</button>
         <button class="btn-primary" id="btn-save-new" onclick="saveNewLocation()">
           <span id="new-spinner" style="display:none" class="spinner"></span>
@@ -330,6 +427,8 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
 // ── GitHub Pages: leer params de URL + gasCall helper ────────────
 var GAS_URL    = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
@@ -338,6 +437,7 @@ var TOKEN      = _p.get('token')   || '';
 var SESSION    = _p.get('session') || '';
 var SCRIPT_URL = GAS_URL;
 var UB_DATA    = { ok: false, ubicaciones: [], feedbacks: [] };
+var CUR_LOC    = null;   // ubicación abierta en el modal QR
 
 function gasCall(page, params) {
   return new Promise(function(resolve, reject) {
@@ -367,132 +467,138 @@ function gasCall(page, params) {
 // ── TRANSLATIONS ─────────────────────────────────────────────────
 var TR = {
   es: {
-    nav_qr:          'Código QR',
-    nav_ubicaciones: 'Ubicaciones',
-    nav_config:      'Configuración',
-    logout:          'Salir',
-    eyebrow:         'Tu negocio',
-    page_title:      'Ubicaciones',
-    btn_add:         'Crear nueva ubicación',
-    modal_edit_title:'Editar ubicación',
-    modal_new_title: 'Nueva ubicación',
-    f_nombre:        'Nombre de la ubicación',
-    f_ciudad:        'Ciudad',
-    f_review_url:    'URL de reseñas (Google Maps)',
-    f_review_hint:   'Enlace donde tus clientes dejarán la reseña en Google Maps',
-    btn_cancel:      'Cancelar',
-    btn_save:        'Guardar',
-    btn_create:      'Crear ubicación',
-    lbl_feedbacks:   'Feedbacks', lbl_rebuts: 'recibidos',
-    lbl_valoracio:   'Valoración media', lbl_de5: 'de 5',
-    lbl_sentiment:   'Sentiment', lbl_positiu: 'positivo',
-    lbl_tema:        'Tema principal', lbl_mencionat: 'mencionado', lbl_vegades: 'veces',
-    lbl_ciudad:      'Ciudad', lbl_codi:        'Código', lbl_ressenyes: 'Reseñas',
-    lbl_configurat:  'Configurado ✓', lbl_no_config: 'Sin configurar',
-    btn_feedbacks:   'Ver feedbacks', btn_edit_info: 'Editar información',
-    btn_print:       'Imprimir tarjeta', btn_qr: 'Ver QR',
-    btn_edit:        'Editar',
-    empty_title:     'Aún no tienes ubicaciones',
-    empty_text:      'Crea tu primera ubicación y empieza a recibir feedback de tus clientes.',
-    plan_limit:      'Has alcanzado el límite de 3 ubicaciones del plan gratuito. Actualiza a Profesional para agregar hasta 5 ubicaciones.',
-    chip_edit:       '✓ Guardado', chip_new: '✓ Creada'
+    nav_dashboard: 'Dashboard', nav_feedback: 'Feedback', nav_preguntas: 'Preguntas', nav_config: 'Configuración', logout: 'Salir',
+    loading: 'Cargando…',
+    eyebrow: 'Tu negocio', page_title: 'Feedback', page_sub: 'Tus puntos de feedback: cada ubicación tiene su propio QR.',
+    btn_add: 'Nueva ubicación',
+    modal_edit_title: 'Editar ubicación', modal_new_title: 'Nueva ubicación',
+    f_nombre: 'Nombre de la ubicación', f_ciudad: 'Ciudad',
+    f_review_url: 'URL de reseñas (Google Maps)', f_review_hint: 'Enlace donde tus clientes dejarán la reseña en Google Maps',
+    btn_cancel: 'Cancelar', btn_save: 'Guardar', btn_create: 'Crear ubicación',
+    lbl_feedbacks: 'Feedbacks', lbl_rebuts: 'recibidos',
+    lbl_valoracio: 'Valoración media', lbl_de5: 'de 5',
+    lbl_sentiment: 'Sentimiento', lbl_positiu: 'positivo',
+    lbl_tema: 'Tema principal', lbl_mencionat: 'mencionado', lbl_vegades: 'veces',
+    lbl_ciudad: 'Ciudad', lbl_codi: 'Código', lbl_ressenyes: 'Reseñas',
+    lbl_configurat: 'Configurado ✓', lbl_no_config: 'Sin configurar',
+    btn_feedbacks: 'Ver feedbacks', btn_edit_info: 'Editar información', btn_qr: 'Ver QR',
+    plan_limit: 'Has alcanzado el límite de 3 ubicaciones del plan gratuito. Actualiza a Profesional para agregar hasta 5 ubicaciones.',
+    chip_edit: '✓ Guardado', chip_new: '✓ Creada',
+    // Activar Feedback
+    act_eyebrow: 'Feedback y reseñas', act_title: 'Activa el feedback de tu negocio',
+    act_text: 'Además de tus preguntas, deja que tus clientes te cuenten lo que quieran con un audio. Te damos un QR para tu local.',
+    act_li1: 'Opiniones libres por voz, sin apps ni formularios',
+    act_li2: 'La IA resume el sentimiento y los temas',
+    act_li3: 'Invitación a dejar reseña en Google Maps',
+    act_btn: 'Activar Feedback', act_loading: 'Activando…', act_err: 'No se pudo activar. Inténtalo de nuevo.',
+    act_done: '¡Feedback activado! Ya puedes imprimir tu tarjeta.',
+    // Tarjeta y QR
+    cl_h1: 'Tu opinión', cl_h2: 'nos importa.', cl_hem: '¡Y mucho!', cl_scan_label: 'Escáneame y envía audio', cr_via: 'vía', cr_wa: 'WHATSAPP',
+    btn_save_img: 'Guardar como imagen', btn_print: 'Imprimir tarjeta', btn_dl_qr: 'Descargar solo QR',
+    btn_test: 'Probar enlace', btn_copy: 'Copiar enlace', copied: '¡Copiado!', generating: 'Generando…',
+    qr_title: 'Tarjeta de', hint_maps: 'Para invitar a dejar reseña en Google Maps, añade tu enlace de reseñas.', hint_maps_btn: 'Añadir enlace'
   },
   ca: {
-    nav_qr:          'Codi QR', nav_ubicaciones: 'Ubicacions',
-    nav_config:      'Configuració', logout: 'Sortir',
-    eyebrow:         'El teu negoci', page_title: 'Ubicacions',
-    btn_add:         'Crear nova ubicació',
-    modal_edit_title:'Editar ubicació', modal_new_title: 'Nova ubicació',
-    f_nombre:        "Nom de l'ubicació", f_ciudad: 'Ciutat',
-    f_review_url:    'URL de ressenyes (Google Maps)',
-    f_review_hint:   'Enllaç on els teus clients deixaran la ressenya a Google Maps',
-    btn_cancel:      'Cancel·lar', btn_save: 'Desar', btn_create: 'Crear ubicació',
-    lbl_feedbacks:   'Feedbacks', lbl_rebuts: 'rebuts',
-    lbl_valoracio:   'Valoració mitjana', lbl_de5: 'de 5',
-    lbl_sentiment:   'Sentiment', lbl_positiu: 'positiu',
-    lbl_tema:        'Tema principal', lbl_mencionat: 'mencionat', lbl_vegades: 'vegades',
-    lbl_ciudad:      'Ciutat', lbl_codi:        'Codi', lbl_ressenyes: 'Ressenyes',
-    lbl_configurat:  'Configurat ✓', lbl_no_config: 'Sense configurar',
-    btn_feedbacks:   'Veure feedbacks', btn_edit_info: 'Editar informació',
-    btn_print:       'Imprimir targeta', btn_qr: 'Veure QR',
-    btn_edit:        'Editar',
-    empty_title:     'Encara no tens ubicacions',
-    empty_text:      'Crea la teva primera ubicació i comença a rebre feedback dels teus clients.',
-    plan_limit:      "Has arribat al límit de 3 ubicacions del pla gratuït. Actualitza a Professional per afegir fins a 5 ubicacions.",
-    chip_edit:       '✓ Desat', chip_new: '✓ Creada'
+    nav_dashboard: 'Dashboard', nav_feedback: 'Feedback', nav_preguntas: 'Preguntes', nav_config: 'Configuració', logout: 'Sortir',
+    loading: 'Carregant…',
+    eyebrow: 'El teu negoci', page_title: 'Feedback', page_sub: 'Els teus punts de feedback: cada ubicació té el seu propi QR.',
+    btn_add: 'Nova ubicació',
+    modal_edit_title: 'Editar ubicació', modal_new_title: 'Nova ubicació',
+    f_nombre: "Nom de l'ubicació", f_ciudad: 'Ciutat',
+    f_review_url: 'URL de ressenyes (Google Maps)', f_review_hint: 'Enllaç on els teus clients deixaran la ressenya a Google Maps',
+    btn_cancel: 'Cancel·lar', btn_save: 'Desar', btn_create: 'Crear ubicació',
+    lbl_feedbacks: 'Feedbacks', lbl_rebuts: 'rebuts',
+    lbl_valoracio: 'Valoració mitjana', lbl_de5: 'de 5',
+    lbl_sentiment: 'Sentiment', lbl_positiu: 'positiu',
+    lbl_tema: 'Tema principal', lbl_mencionat: 'mencionat', lbl_vegades: 'vegades',
+    lbl_ciudad: 'Ciutat', lbl_codi: 'Codi', lbl_ressenyes: 'Ressenyes',
+    lbl_configurat: 'Configurat ✓', lbl_no_config: 'Sense configurar',
+    btn_feedbacks: 'Veure feedbacks', btn_edit_info: 'Editar informació', btn_qr: 'Veure QR',
+    plan_limit: "Has arribat al límit de 3 ubicacions del pla gratuït. Actualitza a Professional per afegir fins a 5 ubicacions.",
+    chip_edit: '✓ Desat', chip_new: '✓ Creada',
+    act_eyebrow: 'Feedback i ressenyes', act_title: 'Activa el feedback del teu negoci',
+    act_text: 'A més de les teves preguntes, deixa que els teus clients t\'expliquin el que vulguin amb un àudio. Et donem un QR per al teu local.',
+    act_li1: 'Opinions lliures per veu, sense apps ni formularis',
+    act_li2: 'La IA resumeix el sentiment i els temes',
+    act_li3: 'Invitació a deixar ressenya a Google Maps',
+    act_btn: 'Activar Feedback', act_loading: 'Activant…', act_err: 'No s\'ha pogut activar. Torna-ho a provar.',
+    act_done: 'Feedback activat! Ja pots imprimir la teva targeta.',
+    cl_h1: 'La teva opinió', cl_h2: 'ens importa.', cl_hem: 'I molt!', cl_scan_label: 'Escaneja i envia àudio', cr_via: 'via', cr_wa: 'WHATSAPP',
+    btn_save_img: 'Desar com a imatge', btn_print: 'Imprimir targeta', btn_dl_qr: 'Descarregar només QR',
+    btn_test: 'Provar enllaç', btn_copy: 'Copiar enllaç', copied: 'Copiat!', generating: 'Generant…',
+    qr_title: 'Targeta de', hint_maps: 'Per convidar a deixar ressenya a Google Maps, afegeix el teu enllaç de ressenyes.', hint_maps_btn: 'Afegir enllaç'
   },
   en: {
-    nav_qr:          'QR Code', nav_ubicaciones: 'Locations',
-    nav_config:      'Settings', logout: 'Sign out',
-    eyebrow:         'Your business', page_title: 'Locations',
-    btn_add:         'Create new location',
-    modal_edit_title:'Edit location', modal_new_title: 'New location',
-    f_nombre:        'Location name', f_ciudad: 'City',
-    f_review_url:    'Review URL (Google Maps)',
-    f_review_hint:   'Link where customers will leave their Google Maps review',
-    btn_cancel:      'Cancel', btn_save: 'Save', btn_create:  'Create location',
-    lbl_feedbacks:   'Feedbacks', lbl_rebuts: 'received',
-    lbl_valoracio:   'Avg. rating', lbl_de5: 'out of 5',
-    lbl_sentiment:   'Sentiment', lbl_positiu: 'positive',
-    lbl_tema:        'Top topic', lbl_mencionat: 'mentioned', lbl_vegades: 'times',
-    lbl_ciudad:      'City', lbl_codi:        'Code', lbl_ressenyes: 'Reviews',
-    lbl_configurat:  'Configured ✓', lbl_no_config: 'Not configured',
-    btn_feedbacks:   'View feedbacks', btn_edit_info: 'Edit info',
-    btn_print:       'Print card', btn_qr: 'View QR',
-    btn_edit:        'Edit',
-    empty_title:     'No locations yet',
-    empty_text:      'Create your first location and start receiving feedback from your customers.',
-    plan_limit:      'You have reached the 3-location limit of the free plan. Upgrade to Professional to add up to 5 locations.',
-    chip_edit:       '✓ Saved', chip_new: '✓ Created'
+    nav_dashboard: 'Dashboard', nav_feedback: 'Feedback', nav_preguntas: 'Questions', nav_config: 'Settings', logout: 'Log out',
+    loading: 'Loading…',
+    eyebrow: 'Your business', page_title: 'Feedback', page_sub: 'Your feedback points: each location has its own QR code.',
+    btn_add: 'New location',
+    modal_edit_title: 'Edit location', modal_new_title: 'New location',
+    f_nombre: 'Location name', f_ciudad: 'City',
+    f_review_url: 'Review URL (Google Maps)', f_review_hint: 'Link where customers will leave their Google Maps review',
+    btn_cancel: 'Cancel', btn_save: 'Save', btn_create: 'Create location',
+    lbl_feedbacks: 'Feedbacks', lbl_rebuts: 'received',
+    lbl_valoracio: 'Avg. rating', lbl_de5: 'out of 5',
+    lbl_sentiment: 'Sentiment', lbl_positiu: 'positive',
+    lbl_tema: 'Top topic', lbl_mencionat: 'mentioned', lbl_vegades: 'times',
+    lbl_ciudad: 'City', lbl_codi: 'Code', lbl_ressenyes: 'Reviews',
+    lbl_configurat: 'Configured ✓', lbl_no_config: 'Not configured',
+    btn_feedbacks: 'View feedbacks', btn_edit_info: 'Edit info', btn_qr: 'View QR',
+    plan_limit: 'You have reached the 3-location limit of the free plan. Upgrade to Professional to add up to 5 locations.',
+    chip_edit: '✓ Saved', chip_new: '✓ Created',
+    act_eyebrow: 'Feedback & reviews', act_title: 'Turn on feedback for your business',
+    act_text: 'On top of your questions, let your customers tell you anything with a voice message. We\'ll give you a QR code for your venue.',
+    act_li1: 'Free voice opinions, no apps or forms',
+    act_li2: 'AI summarizes sentiment and topics',
+    act_li3: 'Invitation to leave a Google Maps review',
+    act_btn: 'Turn on Feedback', act_loading: 'Turning on…', act_err: 'Could not turn it on. Please try again.',
+    act_done: 'Feedback is on! You can now print your card.',
+    cl_h1: 'Your opinion', cl_h2: 'matters.', cl_hem: 'A lot!', cl_scan_label: 'Scan & send audio', cr_via: 'via', cr_wa: 'WHATSAPP',
+    btn_save_img: 'Save as image', btn_print: 'Print card', btn_dl_qr: 'Download QR only',
+    btn_test: 'Test link', btn_copy: 'Copy link', copied: 'Copied!', generating: 'Generating…',
+    qr_title: 'Card for', hint_maps: 'To invite people to leave a Google Maps review, add your review link.', hint_maps_btn: 'Add link'
   }
 };
 var LANG = 'es';
+function t(k) { return (TR[LANG] || TR.es)[k] || TR.es[k] || k; }
 
 function applyLang(lang) {
   LANG = TR[lang] ? lang : 'es';
   document.body.style.visibility = 'visible';
-  var tr = TR[lang] || TR['es'];
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     var key = el.getAttribute('data-i18n');
-    if (tr[key] !== undefined) el.textContent = tr[key];
+    if ((TR[LANG] || TR.es)[key] !== undefined) el.textContent = t(key);
   });
-  var btnLogout = document.getElementById('btn-logout');
-  if (btnLogout) btnLogout.textContent = (lang === 'ca') ? 'Sortir' : 'Salir';
-  document.documentElement.lang = lang === 'en' ? 'en' : lang === 'ca' ? 'ca' : 'es';
-  try { sessionStorage.setItem('dicho_lang_' + TOKEN, lang); } catch(e) {}
+  document.documentElement.lang = LANG;
+  try { sessionStorage.setItem('dicho_lang_' + TOKEN, LANG); } catch(e) {}
 }
 
-// Aplicar idioma cacheado inmediatamente (evita flash)
 try {
   var _cachedLang = sessionStorage.getItem('dicho_lang_' + TOKEN);
   if (_cachedLang && TR[_cachedLang]) applyLang(_cachedLang);
 } catch(e) {}
-// Fallback: si no hay caché, mostrar igual en 300ms para no bloquear
 setTimeout(function() { document.body.style.visibility = 'visible'; }, 300);
+
+function toast(msg) { var el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(function() { el.classList.remove('show'); }, 3200); }
+function landingUrl(loc) { return 'https://dichosea.com/landing.html?store_id=' + encodeURIComponent(loc.codigo || loc.id); }
+function findLoc(id) { var l = UB_DATA.ubicaciones || []; for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; }
 
 // ── BUILD MODULE CARD ────────────────────────────────────────────
 function buildModule(loc) {
-  var tr    = TR[LANG] || TR['es'];
   var stats = loc.stats || {};
   var total      = stats.total    || 0;
   var avg        = stats.avgScore || 0;
   var pctPos     = stats.pctPos   || 0;
   var topTopic   = stats.topTopic || '';
   var topCount   = stats.topCount || 0;
-  var dashUrl = 'https://dichosea.com/dashboard.html?token=' + encodeURIComponent(TOKEN) + '&loc=' + encodeURIComponent(loc.id || '');
-  var qrUrl   = 'https://dichosea.com/codigoqr.html?token='  + encodeURIComponent(TOKEN);
+  var dashUrl = 'https://dichosea.com/dashboard.html?token=' + encodeURIComponent(TOKEN) + '&tab=feedback&loc=' + encodeURIComponent(loc.id || '');
 
-  // Stars
   var starFull = Math.round(avg);
   var starsHtml = '';
   for (var s = 1; s <= 5; s++) starsHtml += (s <= starFull ? '★' : '☆');
-
-  // Sentiment color
   var sentClass = pctPos >= 70 ? ' green' : '';
 
   return '<div class="module-card" id="card-' + escHtml(loc.id || '') + '">'
-
-    // ── Head
     + '<div class="module-card-head">'
     +   '<div class="module-info">'
     +     '<div class="module-name-row">'
@@ -500,82 +606,122 @@ function buildModule(loc) {
     +       '<div class="module-dot"></div>'
     +     '</div>'
     +     '<div class="module-meta">'
-    +       (loc.ciudad ? '<span class="module-meta-item"><strong>' + tr.lbl_ciudad + '</strong>' + escHtml(loc.ciudad) + '</span>' : '')
-    +       (loc.codigo ? '<span class="module-meta-item"><strong>' + tr.lbl_codi + '</strong>' + escHtml(loc.codigo) + '</span>' : '')
-    +       '<span class="module-meta-item"><strong>' + tr.lbl_ressenyes + '</strong>'
-    +         (loc.reviewUrl ? '<span class="module-meta-ok">' + tr.lbl_configurat + '</span>' : tr.lbl_no_config)
+    +       (loc.ciudad ? '<span class="module-meta-item"><strong>' + t('lbl_ciudad') + '</strong>' + escHtml(loc.ciudad) + '</span>' : '')
+    +       (loc.codigo ? '<span class="module-meta-item"><strong>' + t('lbl_codi') + '</strong>' + escHtml(loc.codigo) + '</span>' : '')
+    +       '<span class="module-meta-item"><strong>' + t('lbl_ressenyes') + '</strong>'
+    +         (loc.reviewUrl ? '<span class="module-meta-ok">' + t('lbl_configurat') + '</span>' : '<span class="module-meta-warn">' + t('lbl_no_config') + '</span>')
     +       '</span>'
     +     '</div>'
     +   '</div>'
     + '</div>'
-
-    // ── Stats
     + '<div class="module-stats">'
-    +   '<div class="stat">'
-    +     '<div class="stat-lbl">' + tr.lbl_feedbacks + '</div>'
-    +     '<div class="stat-val">' + total + '</div>'
-    +     '<div class="stat-sub">' + tr.lbl_rebuts + '</div>'
+    +   '<div class="stat"><div class="stat-lbl">' + t('lbl_feedbacks') + '</div><div class="stat-val">' + total + '</div><div class="stat-sub">' + t('lbl_rebuts') + '</div></div>'
+    +   '<div class="stat"><div class="stat-lbl">' + t('lbl_valoracio') + '</div><div class="stat-val">' + (total > 0 ? avg : '—') + '</div>'
+    +     (total > 0 ? '<div class="stat-stars">' + starsHtml + '</div><div class="stat-sub">' + t('lbl_de5') + '</div>' : '<div class="stat-sub">—</div>')
     +   '</div>'
-    +   '<div class="stat">'
-    +     '<div class="stat-lbl">' + tr.lbl_valoracio + '</div>'
-    +     '<div class="stat-val">' + (total > 0 ? avg : '—') + '</div>'
-    +     (total > 0 ? '<div class="stat-stars">' + starsHtml + '</div><div class="stat-sub">' + tr.lbl_de5 + '</div>' : '<div class="stat-sub">—</div>')
-    +   '</div>'
-    +   '<div class="stat">'
-    +     '<div class="stat-lbl">' + tr.lbl_sentiment + '</div>'
-    +     '<div class="stat-val' + sentClass + '">' + (total > 0 ? pctPos + '%' : '—') + '</div>'
-    +     '<div class="stat-sub">' + tr.lbl_positiu + '</div>'
-    +   '</div>'
-    +   '<div class="stat">'
-    +     '<div class="stat-lbl">' + tr.lbl_tema + '</div>'
-    +     (topTopic ? '<div class="stat-chip">' + escHtml(topTopic) + '</div><div class="stat-sub">' + tr.lbl_mencionat + ' ' + topCount + ' ' + tr.lbl_vegades + '</div>' : '<div class="stat-val">—</div>')
+    +   '<div class="stat"><div class="stat-lbl">' + t('lbl_sentiment') + '</div><div class="stat-val' + sentClass + '">' + (total > 0 ? pctPos + '%' : '—') + '</div><div class="stat-sub">' + t('lbl_positiu') + '</div></div>'
+    +   '<div class="stat"><div class="stat-lbl">' + t('lbl_tema') + '</div>'
+    +     (topTopic ? '<div class="stat-chip">' + escHtml(topTopic) + '</div><div class="stat-sub">' + t('lbl_mencionat') + ' ' + topCount + ' ' + t('lbl_vegades') + '</div>' : '<div class="stat-val">—</div>')
     +   '</div>'
     + '</div>'
-
-    // ── Actions
     + '<div class="module-actions">'
     +   '<a class="action-btn primary" href="' + dashUrl + '" target="_top">'
     +     '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'
-    +     tr.btn_feedbacks
+    +     t('btn_feedbacks')
     +   '</a>'
+    +   '<button class="action-btn" onclick="openQRModal(\'' + escHtml(loc.id || '') + '\')">'
+    +     '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="17" y="17" width="4" height="4" rx=".5"/></svg>'
+    +     t('btn_qr')
+    +   '</button>'
     +   '<button class="action-btn" onclick="openEditModal(\'' + escHtml(loc.id || '') + '\')">'
     +     '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
-    +     tr.btn_edit_info
+    +     t('btn_edit_info')
     +   '</button>'
-    +   '<a class="action-btn" href="' + qrUrl + '&print=1" target="_top">'
-    +     '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>'
-    +     tr.btn_print
-    +   '</a>'
-    +   '<a class="action-btn" href="' + qrUrl + '" target="_top">'
-    +     '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>'
-    +     tr.btn_qr
-    +   '</a>'
     + '</div>'
     + '</div>';
 }
 
+// ── TARJETA DE FEEDBACK ──────────────────────────────────────────
+var MIC_SVG = '<svg class="qr-mic-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">' +
+  '<circle cx="110" cy="110" r="44" fill="#ffffff"/><circle cx="110" cy="110" r="38" fill="#14532D"/>' +
+  '<path d="M99,102 C99,119 121,119 121,102" stroke="#ffffff" stroke-width="3.9" stroke-linecap="round" fill="none"/>' +
+  '<rect x="108.2" y="119.3" width="3.5" height="5" rx="1.8" fill="#ffffff"/>' +
+  '<rect x="100.1" y="123.5" width="19.8" height="3.5" rx="1.8" fill="#ffffff"/>' +
+  '<rect x="104.3" y="88.8" width="11.4" height="19.5" rx="5.7" fill="#ffffff"/></svg>';
+
+function cardHtml(loc, preview) {
+  var qr = preview ? '<div class="qr-ph"></div>' : '<img src="' + escHtml(loc.qrUrl || '') + '" alt="QR">';
+  return '<div class="qr-card' + (preview ? ' preview-faded' : '') + '">' +
+    '<div class="card-left"><div>' +
+      '<div class="cl-stars">★★★★★</div>' +
+      '<p class="cl-headline">' + escHtml(t('cl_h1')) + '<br>' + escHtml(t('cl_h2')) + '<em>' + escHtml(t('cl_hem')) + '</em></p>' +
+      '<div class="cl-scan-label">' + escHtml(t('cl_scan_label')) + '</div>' +
+      '<div class="cl-via-row"><span class="cl-via">' + escHtml(t('cr_via')) + '</span><span class="cl-wa">' + escHtml(t('cr_wa')) + '</span></div>' +
+    '</div><div class="cl-biz">' + escHtml((loc && loc.nombre) || UB_DATA.negocio || '') + '</div></div>' +
+    '<div class="card-right">' +
+      '<div class="cr-qr"><div class="qr-wrap">' + qr + MIC_SVG + '</div></div>' +
+      '<div class="cr-powered">powered by <strong>dicho.</strong></div>' +
+    '</div></div>';
+}
+
+// ── RENDER ───────────────────────────────────────────────────────
 function renderModules() {
   var locs = UB_DATA.ubicaciones || [];
   var container = document.getElementById('modules-container');
-  if (!locs.length) {
-    var tr = TR[LANG] || TR['es'];
-    container.innerHTML = '<div class="empty"><h3>' + tr.empty_title + '</h3><p>' + tr.empty_text + '</p></div>';
-    return;
-  }
+  document.getElementById('btn-add-loc').style.display = locs.length ? '' : 'none';
+  if (!locs.length) { renderActivate(); return; }
   container.innerHTML = locs.map(buildModule).join('');
 }
 
+// Estado "Activar Feedback": el cliente aún no tiene ubicaciones
+function renderActivate() {
+  document.getElementById('modules-container').innerHTML =
+    '<div class="activate">' +
+      '<div class="activate-text">' +
+        '<div class="activate-eyebrow">' + escHtml(t('act_eyebrow')) + '</div>' +
+        '<h3>' + escHtml(t('act_title')) + '</h3>' +
+        '<p>' + escHtml(t('act_text')) + '</p>' +
+        '<ul><li>' + escHtml(t('act_li1')) + '</li><li>' + escHtml(t('act_li2')) + '</li><li>' + escHtml(t('act_li3')) + '</li></ul>' +
+        '<button class="btn-activate" id="btn-activate" onclick="activarFeedback()">' + escHtml(t('act_btn')) + '</button>' +
+        '<div class="activate-err" id="activate-err"></div>' +
+      '</div>' +
+      cardHtml({ nombre: UB_DATA.negocio || '' }, true) +
+    '</div>';
+}
+
+function activarFeedback() {
+  var btn = document.getElementById('btn-activate');
+  var err = document.getElementById('activate-err');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + escHtml(t('act_loading'));
+  err.style.display = 'none';
+  gasCall('api_addLocation', { token: TOKEN, nombre: UB_DATA.negocio || 'Sede principal', ciudad: '' })
+    .then(function(res) {
+      if (!res || !res.ok) throw new Error((res && res.error) || 'error');
+      return gasCall('api_ubicaciones', { token: TOKEN });
+    })
+    .then(function(data) {
+      if (data && data.ok) UB_DATA = data;
+      renderModules();
+      var first = (UB_DATA.ubicaciones || [])[0];
+      if (first) openQRModal(first.id);
+      toast(t('act_done'));
+    })
+    .catch(function() {
+      btn.disabled = false; btn.textContent = t('act_btn');
+      err.textContent = t('act_err'); err.style.display = 'block';
+    });
+}
+
 function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ── INIT ─────────────────────────────────────────────────────────
 (function init() {
-  document.getElementById('nav-dashboard').href = 'https://dichosea.com/dashboard.html?token='   + encodeURIComponent(TOKEN);
-  document.getElementById('nav-qr').href        = 'https://dichosea.com/codigoqr.html?token='    + encodeURIComponent(TOKEN);
-  document.getElementById('nav-config').href    = 'https://dichosea.com/configuracion.html?token='+ encodeURIComponent(TOKEN);
+  document.getElementById('nav-dashboard').href = 'https://dichosea.com/dashboard.html?token='        + encodeURIComponent(TOKEN);
+  document.getElementById('nav-preguntas').href = 'https://dichosea.com/preguntas-panel.html?token='  + encodeURIComponent(TOKEN);
+  document.getElementById('nav-config').href    = 'https://dichosea.com/configuracion.html?token='    + encodeURIComponent(TOKEN);
 
-  // Pre-populate business name from sessionStorage while API loads
   try {
     var _cachedBiz = sessionStorage.getItem('dicho_biz_' + TOKEN);
     if (_cachedBiz) document.getElementById('header-biz-name').textContent = _cachedBiz;
@@ -594,14 +740,13 @@ function escHtml(s) {
       }
       applyLang((data && data.idioma) || 'es');
 
-      // Plan limit banner
       var plan      = data.plan || 'sin_costo';
       var locs      = data.ubicaciones || [];
       var maxLocs   = plan === 'enterprise' ? Infinity : plan === 'profesional' ? 5 : 3;
       var atLimit   = locs.length >= maxLocs;
       var bannerEl  = document.getElementById('plan-banner');
       if (atLimit && plan !== 'enterprise') {
-        document.getElementById('plan-banner-text').innerHTML = (TR[LANG] || TR['es']).plan_limit;
+        document.getElementById('plan-banner-text').innerHTML = t('plan_limit');
         bannerEl.style.display = 'flex';
         document.getElementById('btn-add-loc').disabled = true;
         document.getElementById('btn-add-loc').style.opacity = '.5';
@@ -609,6 +754,10 @@ function escHtml(s) {
       }
 
       renderModules();
+
+      // Enlaces antiguos de Código QR: ?qr=1 (o ?qr=<id>) abre directamente el QR
+      var q = _p.get('qr');
+      if (q && locs.length) openQRModal(findLoc(q) ? q : locs[0].id);
     })
     .catch(function(err) {
       document.getElementById('modules-container').innerHTML =
@@ -619,11 +768,118 @@ function escHtml(s) {
 // ── MODAL HELPERS ────────────────────────────────────────────────
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') ['modal-qr','modal-edit','modal-new'].forEach(closeModal); });
 
+// ── VER QR (pop-up) ──────────────────────────────────────────────
+function openQRModal(locId) {
+  var loc = findLoc(locId); if (!loc) return;
+  CUR_LOC = loc;
+  document.getElementById('qr-modal-title').textContent = t('qr_title') + ' ' + (loc.nombre || '');
+  document.getElementById('qr-modal-sub').textContent   = t('lbl_codi') + ': ' + (loc.codigo || '') + (loc.ciudad ? ' · ' + loc.ciudad : '');
+  document.getElementById('qr-card-slot').innerHTML     = cardHtml(loc, false);
+  document.getElementById('btn-test').href              = landingUrl(loc);
+  document.getElementById('qr-hint').style.display      = loc.reviewUrl ? 'none' : 'block';
+  openModal('modal-qr');
+}
+function fromQrToEdit() { var id = CUR_LOC && CUR_LOC.id; closeModal('modal-qr'); if (id) openEditModal(id); }
+
+var QR_GREEN = '#14532D';
+function rrPath(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r); ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r); ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r); ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r); ctx.closePath();
+}
+function drawMic(ctx, cx, cy, H, color) {
+  var s = H / 118, ox = cx - 50 * s, oy = cy - 59 * s;
+  ctx.save(); ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.lineWidth = 11 * s; ctx.beginPath(); ctx.moveTo(ox + 19*s, oy + 40*s);
+  ctx.bezierCurveTo(ox+19*s, oy+90*s, ox+81*s, oy+90*s, ox+81*s, oy+40*s); ctx.stroke();
+  rrPath(ctx, ox + 45*s, oy + 90*s, 10*s, 14*s, 5*s); ctx.fill();
+  rrPath(ctx, ox + 22*s, oy + 102*s, 56*s, 10*s, 5*s); ctx.fill();
+  rrPath(ctx, ox + 34*s, oy + 4*s, 32*s, 55*s, 16*s); ctx.fill();
+  ctx.restore();
+}
+function drawMicOverlay(ctx, cx, cy, R) {
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(cx, cy, R * 44 / 38, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = QR_GREEN;  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+  var iconH = R * 1.1; drawMic(ctx, cx, cy - iconH * 0.04, iconH, '#ffffff');
+}
+function fillRound(ctx, x, y, w, h, r, fill) { rrPath(ctx, x, y, w, h, r); ctx.fillStyle = fill; ctx.fill(); }
+function slug(s) { return String(s || 'dicho').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase().substr(0, 40); }
+function loadQrImage(url) {
+  return fetch(url).then(function(r) { return r.blob(); }).then(function(blob) {
+    return new Promise(function(res, rej) { var img = new Image(); img.onload = function() { res(img); }; img.onerror = rej; img.src = URL.createObjectURL(blob); });
+  });
+}
+
+function downloadQR() {
+  var loc = CUR_LOC; if (!loc) return;
+  var name = 'qr-' + slug(loc.nombre) + '.png';
+  loadQrImage(loc.qrUrl).then(function(img) {
+    var c = document.createElement('canvas'); c.width = c.height = 440;
+    var ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, 440, 440); drawMicOverlay(ctx, 220, 220, 76);
+    var a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = name; a.click();
+  }).catch(function() { var a = document.createElement('a'); a.href = loc.qrUrl; a.download = name; a.target = '_blank'; a.click(); });
+}
+
+function saveAsImage() {
+  var loc = CUR_LOC; if (!loc) return;
+  var btn = document.getElementById('btn-img'), span = btn.querySelector('span'), orig = span.textContent;
+  span.textContent = t('generating');
+  loadQrImage(loc.qrUrl).then(function(img) {
+    var cw = 560, ch = 230, sc = 2;
+    var c = document.createElement('canvas'); c.width = cw * sc; c.height = ch * sc;
+    var ctx = c.getContext('2d'); ctx.scale(sc, sc);
+    fillRound(ctx, 0, 0, cw, ch, 20, '#F0FDF4');
+    ctx.strokeStyle = '#D1FAE5'; ctx.lineWidth = 1.5; rrPath(ctx, .75, .75, cw - 1.5, ch - 1.5, 20); ctx.stroke();
+    var lx = 22, ly = 34;
+    ctx.font = '13px sans-serif'; ctx.fillStyle = '#FACC15'; ctx.fillText('★★★★★', lx, ly); ly += 32;
+    ctx.font = '900 22px "Plus Jakarta Sans", sans-serif'; ctx.fillStyle = '#1C2B20';
+    ctx.fillText(t('cl_h1'), lx, ly); ly += 27; ctx.fillText(t('cl_h2'), lx, ly); ly += 27;
+    ctx.fillStyle = '#16A34A'; ctx.fillText(t('cl_hem'), lx, ly); ly += 30;
+    ctx.font = '800 9.5px "Plus Jakarta Sans", sans-serif'; ctx.fillStyle = '#16A34A';
+    ctx.fillText(t('cl_scan_label').toUpperCase(), lx, ly); ly += 16;
+    ctx.font = '700 8px "Jost", sans-serif'; ctx.fillStyle = '#9CA3AF'; ctx.fillText(t('cr_via').toUpperCase(), lx, ly + 2);
+    fillRound(ctx, lx + 22, ly - 9, 64, 15, 7.5, '#16A34A');
+    ctx.fillStyle = '#fff'; ctx.font = '800 8px "Jost", sans-serif'; ctx.textAlign = 'center'; ctx.fillText('WHATSAPP', lx + 54, ly + 1.5); ctx.textAlign = 'left';
+    ctx.font = '700 10.5px "Jost", sans-serif'; ctx.fillStyle = '#6B7A6E'; ctx.fillText(loc.nombre || '', lx, ch - 18);
+    var leftW = 300, q = 168, pad = 10, bw = q + pad * 2, bx = leftW + (cw - leftW - bw) / 2, by = 14;
+    fillRound(ctx, bx, by, bw, bw, 14, '#ffffff');
+    ctx.drawImage(img, bx + pad, by + pad, q, q);
+    drawMicOverlay(ctx, bx + bw / 2, by + bw / 2, 38 * q / 220);
+    ctx.font = '600 9.5px "Jost", sans-serif'; ctx.fillStyle = '#6B7A6E'; ctx.textAlign = 'center';
+    ctx.fillText('powered by dicho.', bx + bw / 2, by + bw + 15); ctx.textAlign = 'left';
+    var a = document.createElement('a'); a.href = c.toDataURL('image/png');
+    a.download = 'QR.' + slug(UB_DATA.negocio) + '.' + slug(loc.nombre) + '.png'; a.click();
+    span.textContent = orig;
+  }).catch(function() { span.textContent = orig; });
+}
+
+function printCard() {
+  var loc = CUR_LOC; if (!loc) return;
+  var css = Array.prototype.map.call(document.querySelectorAll('style'), function(s) { return s.textContent; }).join('\n');
+  var w = window.open('', '_blank', 'width=520,height=420');
+  if (!w) return;
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Dicho · ' + escHtml(loc.nombre) + '</title>' +
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Jost:wght@400;500;600;700&display=swap">' +
+    '<style>' + css + ' body{zoom:1;background:#fff;padding:32px;display:flex;justify-content:center;visibility:visible} @media print{body{padding:8px}.qr-card{box-shadow:none}}</style>' +
+    '</head><body>' + cardHtml(loc, false) + '</body></html>');
+  w.document.close(); w.focus();
+  setTimeout(function() { w.print(); }, 700);
+}
+
+function copyLink() {
+  var loc = CUR_LOC; if (!loc || !navigator.clipboard) return;
+  var span = document.querySelector('#btn-copy span'), orig = span.textContent;
+  navigator.clipboard.writeText(landingUrl(loc)).then(function() { span.textContent = t('copied'); setTimeout(function() { span.textContent = orig; }, 1800); }).catch(function() {});
+}
+
+// ── EDITAR ───────────────────────────────────────────────────────
 function openEditModal(locId) {
-  var locs = UB_DATA.ubicaciones || [];
-  var loc  = null;
-  for (var i = 0; i < locs.length; i++) { if (locs[i].id === locId) { loc = locs[i]; break; } }
+  var loc = findLoc(locId);
   if (!loc) return;
   document.getElementById('edit-loc-id').value      = loc.id;
   document.getElementById('edit-nombre').value      = loc.nombre    || '';
@@ -635,15 +891,12 @@ function openEditModal(locId) {
 
 // ── NUEVA UBICACIÓN: modal de 2 pasos ────────────────────────────
 function openNewModal() {
-  // Reset step 1
   document.getElementById('new-dir').value = '';
   document.getElementById('new-dir-dropdown').classList.remove('open');
-  // Reset step 2
   document.getElementById('new-nombre').value   = '';
   document.getElementById('new-ciudad').value   = '';
   document.getElementById('new-mapsurl').value  = '';
   document.getElementById('new-map-iframe').src = '';
-  // Pretext from UB_DATA
   var pretext = (UB_DATA && UB_DATA.pretext) || 'Opina sobre';
   document.getElementById('new-preview-pretext').textContent = pretext;
   document.getElementById('new-preview-name').textContent    = '…';
@@ -703,15 +956,8 @@ function saveEditLocation() {
     .then(function(res) {
       btn.disabled = false; sp.style.display = 'none'; lbl.style.display = '';
       if (res && res.ok) {
-        var locs = UB_DATA.ubicaciones || [];
-        for (var i = 0; i < locs.length; i++) {
-          if (locs[i].id === locId) {
-            locs[i].nombre    = nombre;
-            locs[i].ciudad    = ciudad;
-            locs[i].reviewUrl = reviewUrl;
-            break;
-          }
-        }
+        var loc = findLoc(locId);
+        if (loc) { loc.nombre = nombre; loc.ciudad = ciudad; loc.reviewUrl = reviewUrl; }
         renderModules();
         showChip('chip-edit');
         setTimeout(function() { closeModal('modal-edit'); }, 900);
@@ -758,7 +1004,7 @@ function showChip(id) {
   setTimeout(function() { chip.classList.remove('visible'); }, 2500);
 }
 function doLogout() {
-  gasCall('api_logout', { session: SESSION }).catch(function() {});
+  if (SESSION) gasCall('api_logout', { session: SESSION }).catch(function() {});
   window.location.href = 'https://dichosea.com/login.html';
 }
 
@@ -828,23 +1074,15 @@ function initAutocomplete(inputId, dropdownId, opts) {
   }
 }
 
-// Inicializar autocomplete del modal nueva ubicación
 initAutocomplete('new-dir', 'new-dir-dropdown', {
   onSelect: function(r) {
-    // Guardar campos ocultos
     document.getElementById('new-mapsurl').value = r.mapsUrl;
     document.getElementById('new-ciudad').value  = r.city || '';
-
-    // Nombre sugerido: primer segmento del display_name de Nominatim (el lugar, sin el negocio)
     var placeName = r.displayName ? r.displayName.split(',')[0].trim() : (r.neighbourhood || r.suburb || r.district || r.city || '');
     document.getElementById('new-nombre').value = placeName;
-
-    // Cargar iframe del mapa con OpenStreetMap (no requiere API key)
     var lat = parseFloat(r.lat), lon = parseFloat(r.lon), d = 0.005;
     document.getElementById('new-map-iframe').src =
       'https://www.openstreetmap.org/export/embed.html?bbox=' + (lon-d) + ',' + (lat-d) + ',' + (lon+d) + ',' + (lat+d) + '&layer=mapnik&marker=' + lat + ',' + lon;
-
-    // Actualizar preview y avanzar al paso 2
     updateNewPreview();
     newShowStep(2);
   }
