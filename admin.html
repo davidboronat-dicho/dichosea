@@ -151,12 +151,13 @@
        vertical-align:middle; }
   tr:last-child td { border-bottom:none; }
   tbody tr:hover td { background:#F8FAFD; }
-  .td-actions { display:flex; gap:6px; align-items:center; }
+  .td-actions { display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
 
   /* Chips / Badges */
   .badge { display:inline-block; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:600; }
   .badge-blue  { background:#e8eef8; color:var(--accent); }
   .badge-green { background:#eaf3ee; color:var(--green); }
+  .badge-amber { background:#FEF3C7; color:#92400E; }
   .code-chip { font-family:monospace; font-size:11.5px; background:#f0f3f8;
                padding:3px 7px; border-radius:4px; color:var(--text); border:1px solid var(--border); }
 
@@ -175,6 +176,7 @@
   .client-info { display:flex; flex-direction:column; gap:2px; }
   .client-name { font-size:15px; font-weight:600; color:var(--text); }
   .client-meta { font-size:12px; color:var(--muted); }
+  .client-preg { font-size:12px; color:#92400E; margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 
   /* Location row */
   .loc-name { font-weight:600; }
@@ -223,7 +225,7 @@
   @media (max-width:600px) {
     .form-row { grid-template-columns:1fr; }
     .client-row { grid-template-columns:1fr; }
-    .td-actions { flex-wrap:wrap; }
+    .td-actions { flex-wrap:wrap; justify-content:flex-start; }
   }
 </style>
 </head>
@@ -404,6 +406,7 @@ var GAS_URL        = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY
 var clients        = [];
 var locations      = [];
 var feedbackCounts = {};
+var preguntaCounts = {};   // NUEVO: { clienteId: { preguntas, respuestas } }
 var activeClient   = null;
 
 // ── JSONP helper ───────────────────────────────────────────
@@ -491,12 +494,20 @@ function init() {
   loadClients();
   loadAllLocations();
   loadFeedbackCounts();
+  loadPreguntaCounts();
 }
 
 function loadFeedbackCounts() {
   gasCall('api_admin_getFeedbackCounts', { pwd: ADMIN_PASSWORD })
     .then(function(res) { feedbackCounts = (res && res.data) || {}; renderClients(); })
     .catch(function() { feedbackCounts = {}; });
+}
+
+// NUEVO: nº de preguntas y respuestas por cliente
+function loadPreguntaCounts() {
+  gasCall('api_admin_getPreguntaCounts', { pwd: ADMIN_PASSWORD })
+    .then(function(res) { preguntaCounts = (res && res.ok && res.data) || {}; renderClients(); })
+    .catch(function() { preguntaCounts = {}; });
 }
 
 function loadClients() {
@@ -529,20 +540,39 @@ function renderClients() {
   var html = clients.map(function(c) {
     var locCount = locations.filter(function(l) { return l.clienteId === c.id; }).length;
     var fbCount  = (feedbackCounts[c.id] || 0);
-    var dashUrl  = 'https://dichosea.com/dashboard.html?token=' + encodeURIComponent(c.id);
+    var pc       = preguntaCounts[c.id] || { preguntas: 0, respuestas: 0 };
+    var tienePreguntas = pc.preguntas > 0;
+    var tok          = encodeURIComponent(c.id);
+    var dashUrl      = 'https://dichosea.com/dashboard.html?token=' + tok;
+    var preguntasUrl = 'https://dichosea.com/preguntas-panel.html?token=' + tok;
+    // Si solo tiene preguntas, "Ver dashboard" abre su panel de Preguntas
+    var verDashUrl   = (tienePreguntas && !locCount) ? preguntasUrl : dashUrl;
+
     var meta = [];
     if (c.email)  meta.push(esc(c.email));
     if (c.plan)   meta.push('<span class="badge badge-blue">' + esc(c.plan.split('/')[0].trim()) + '</span>');
     if (c.ciudad) meta.push(esc(c.ciudad));
-    meta.push(fbCount + ' feedbacks');
-    meta.push(locCount + ' ubicaciones');
+    if (locCount || !tienePreguntas) {
+      meta.push(fbCount + ' feedbacks');
+      meta.push(locCount + ' ubicaciones');
+    }
+
+    var pregLine = tienePreguntas
+      ? '<span class="client-preg"><span class="badge badge-amber">Preguntas</span>' +
+          pc.preguntas + (pc.preguntas === 1 ? ' pregunta' : ' preguntas') + ' · ' +
+          pc.respuestas + (pc.respuestas === 1 ? ' respuesta' : ' respuestas') +
+        '</span>'
+      : '';
+
     return '<div class="client-row">' +
       '<div class="client-info">' +
         '<span class="client-name">' + esc(c.nombre) + '</span>' +
         '<span class="client-meta">' + meta.join(' · ') + '</span>' +
+        pregLine +
       '</div>' +
       '<div class="td-actions">' +
-        '<a class="btn btn-green-outline" href="' + dashUrl + '" target="_blank">Ver dashboard</a>' +
+        '<a class="btn btn-green-outline" href="' + verDashUrl + '" target="_blank">Ver dashboard</a>' +
+        (tienePreguntas && locCount ? '<a class="btn btn-green-outline" href="' + preguntasUrl + '" target="_blank">Ver preguntas</a>' : '') +
         '<button class="btn btn-ghost" onclick="showUbicacionesById(\'' + esc(c.id) + '\')">Gestionar ubicaciones</button>' +
         '<button class="btn btn-danger" onclick="removeClient(\'' + esc(c.id) + '\')">Eliminar</button>' +
       '</div>' +
@@ -630,7 +660,7 @@ function addClient() {
 function removeClient(id) {
   if (!confirm('¿Eliminar este cliente y todas sus ubicaciones?')) return;
   gasCall('api_admin_deleteClient', { pwd: ADMIN_PASSWORD, id: id })
-    .then(function() { toast('Cliente eliminado'); loadClients(); loadAllLocations(); })
+    .then(function() { toast('Cliente eliminado'); loadClients(); loadAllLocations(); loadPreguntaCounts(); })
     .catch(function(e) { toast('Error: ' + e.message); });
 }
 
