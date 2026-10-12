@@ -118,6 +118,8 @@ body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify
 .qr-col { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 24px; padding-top: 8px; }
 .qr-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
 .qr-hint { font-size: 12.5px; color: var(--muted); max-width: 340px; }
+.qr-col .qr-actions { max-width: 300px; flex-direction: column; }
+.qr-col .btn-print, .qr-col .btn-dl { width: 100%; white-space: nowrap; }
 
 .qr-card { background: #F0FDF4; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.10); border: 1px solid #D1FAE5; display: flex; flex-direction: row; max-width: 360px; }
 .card-left { flex: 1; min-width: 0; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -147,11 +149,8 @@ body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify
 .btn-dl { display: flex; align-items: center; justify-content: center; gap: 6px; background: transparent; color: var(--ink-2); padding: 11px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; border: 1.5px solid var(--border); font-family: inherit; cursor: pointer; transition: border-color .15s, color .15s; }
 .btn-dl:hover { border-color: var(--muted); color: var(--ink); }
 
-@media print {
-  body * { visibility: hidden; }
-  .qr-card, .qr-card * { visibility: visible; }
-  .qr-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 340px; box-shadow: none; }
-}
+#printable-card { max-width: 100%; }
+@media (max-width: 360px) { #printable-card { font-size: 9px; } }
 @media (max-width: 860px) {
   .confirm-wrap { grid-template-columns: 1fr; gap: 40px; }
   .qr-col { position: static; }
@@ -271,36 +270,29 @@ body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify
   <div class="qr-col">
     <span class="qr-label" id="qr-label" data-i18n="q_label" hidden>Tu tarjeta para imprimir</span>
 
-    <div class="qr-card" id="printable-card">
-      <div class="card-left">
-        <div>
-          <div class="cl-eye" data-i18n="k_eye">Queremos saber</div>
-          <p class="cl-headline" id="card-q"></p>
-          <div class="cl-scan-label" data-i18n="k_scan">Escáneame</div>
-          <div class="cl-scan-text"><span data-i18n="k_text">Respóndenos con un audio y listo.</span><br><span class="cl-note" data-i18n="k_note">(Sin apps ni registros ;)</span></div>
-        </div>
-        <div class="cl-biz" id="card-biz"></div>
+    <div class="dp-poster" id="printable-card">
+      <div class="dp-biz" id="card-biz"></div><div class="dp-rule"></div>
+      <div class="dp-eye" data-i18n="k_eye">Queremos saber</div>
+      <p class="dp-q" id="card-q"></p>
+      <div class="dp-sp"></div>
+      <div class="dp-bottom">
+        <div class="dp-qr"><div class="dp-qr-in preview" id="qr-wrap">
+          <img id="qr-img" alt="QR">
+          <canvas id="qr-overlay" width="220" height="220"></canvas>
+        </div></div>
+        <div class="dp-cta"><span data-i18n="p_cta">Escanea y respóndenos con un audio de WhatsApp</span><small data-i18n="p_sub">10 segundos · sin apps</small></div>
       </div>
-      <div class="card-right">
-        <div class="cr-top"><span class="cr-via" data-i18n="k_via">vía</span><span class="cr-wa">WHATSAPP</span></div>
-        <div class="cr-qr">
-          <div class="qr-wrap preview" id="qr-wrap">
-            <img id="qr-img" alt="QR">
-            <canvas id="qr-overlay" width="220" height="220"></canvas>
-          </div>
-        </div>
-        <div class="cr-powered">powered by <strong>dicho.</strong></div>
-      </div>
+      <div class="dp-foot"><b>dicho<span>.</span></b><span>dichosea.com</span></div>
     </div>
 
     <div class="qr-actions" id="qr-actions" hidden>
-      <button class="btn-print" onclick="window.print()">
+      <button class="btn-print" onclick="imprimirCartel()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        <span data-i18n="q_print">Imprimir tarjeta</span>
+        <span data-i18n="q_print">Imprimir cartel A4</span>
       </button>
-      <button class="btn-dl" onclick="descargarQR()">
+      <button class="btn-dl" id="btn-dl" onclick="descargarCartel()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span data-i18n="q_dl">Descargar QR</span>
+        <span data-i18n="q_dl">Descargar cartel</span>
       </button>
     </div>
   </div>
@@ -333,10 +325,10 @@ var TR = {
     l_eye:'¡Tu pregunta ya está activa!', l_h:'Bienvenido,',
     l_sub:'Tu QR está listo para imprimir. Ponlo donde la gente tenga un momento para responder: en la mesa, la recepción, la sala de descanso o la salida.',
     l_s1h:'Pregunta creada', l_s1p:'Tu cuenta y tu primera pregunta están registradas en Dicho.',
-    l_s2h:'Imprime la tarjeta y colócala', l_s2p:'Usa la tarjeta de la derecha. Un clic para imprimir.',
+    l_s2h:'Imprime el cartel y colócalo', l_s2p:'Un clic para imprimirlo en A4 o descargarlo como imagen.',
     l_s3h:'Escucha las respuestas en tu panel', l_s3p:'Verás cada audio transcrito, los temas que se repiten y un resumen de la IA.',
     l_mail:'Te enviamos el acceso a', l_mail_def:'tu correo', l_dash:'Ir a mi panel', l_home:'Volver al inicio',
-    l_org_def:'tu organización.', q_label:'Tu tarjeta para imprimir', q_print:'Imprimir tarjeta', q_dl:'Descargar QR',
+    l_org_def:'tu organización.', q_label:'Tu cartel para imprimir', q_print:'Imprimir cartel A4', q_dl:'Descargar cartel', p_cta:'Escanea y respóndenos con un audio de WhatsApp', p_sub:'10 segundos · sin apps',
     k_eye:'Queremos saber', k_scan:'Escáneame', k_text:'Respóndenos con un audio y listo.', k_note:'(Sin apps ni registros ;)',
     k_via:'vía', k_org_def:'Tu organización'
   },
@@ -358,10 +350,10 @@ var TR = {
     l_eye:'La teva pregunta ja està activa!', l_h:'Benvingut,',
     l_sub:'El teu QR està llest per imprimir. Posa\'l on la gent tingui un moment per respondre: a la taula, la recepció, la sala de descans o la sortida.',
     l_s1h:'Pregunta creada', l_s1p:'El teu compte i la teva primera pregunta estan registrats a Dicho.',
-    l_s2h:'Imprimeix la targeta i col·loca-la', l_s2p:'Fes servir la targeta de la dreta. Un clic per imprimir.',
+    l_s2h:'Imprimeix el cartell i col·loca\'l', l_s2p:'Un clic per imprimir-lo en A4 o descarregar-lo com a imatge.',
     l_s3h:'Escolta les respostes al teu panell', l_s3p:'Veuràs cada àudio transcrit, els temes que es repeteixen i un resum de la IA.',
     l_mail:'T\'hem enviat l\'accés a', l_mail_def:'el teu correu', l_dash:'Anar al meu panell', l_home:'Tornar a l\'inici',
-    l_org_def:'la teva organització.', q_label:'La teva targeta per imprimir', q_print:'Imprimir targeta', q_dl:'Descarregar QR',
+    l_org_def:'la teva organització.', q_label:'El teu cartell per imprimir', q_print:'Imprimir cartell A4', q_dl:'Descarregar cartell', p_cta:'Escaneja i respon-nos amb un àudio de WhatsApp', p_sub:'10 segons · sense apps',
     k_eye:'Volem saber', k_scan:'Escaneja\'m', k_text:'Respon-nos amb un àudio i llestos.', k_note:'(Sense apps ni registres ;)',
     k_via:'via', k_org_def:'La teva organització'
   },
@@ -383,10 +375,10 @@ var TR = {
     l_eye:'Your question is live!', l_h:'Welcome,',
     l_sub:'Your QR code is ready to print. Put it where people have a moment to answer: on the table, at reception, in the break room or by the exit.',
     l_s1h:'Question created', l_s1p:'Your account and your first question are registered in Dicho.',
-    l_s2h:'Print the card and put it up', l_s2p:'Use the card on the right. One click to print.',
+    l_s2h:'Print the poster and put it up', l_s2p:'One click to print it on A4 or download it as an image.',
     l_s3h:'Listen to the answers in your dashboard', l_s3p:'You\'ll see every voice message transcribed, recurring topics and an AI summary.',
     l_mail:'We sent your access link to', l_mail_def:'your email', l_dash:'Go to my dashboard', l_home:'Back to home',
-    l_org_def:'your organization.', q_label:'Your card to print', q_print:'Print card', q_dl:'Download QR',
+    l_org_def:'your organization.', q_label:'Your poster to print', q_print:'Print A4 poster', q_dl:'Download poster', p_cta:'Scan and answer us with a WhatsApp voice message', p_sub:'10 seconds · no apps',
     k_eye:'We want to know', k_scan:'Scan me', k_text:'Just answer us with a voice message.', k_note:'(No apps, no sign-up ;)',
     k_via:'via', k_org_def:'Your organization'
   }
@@ -445,7 +437,7 @@ function renderCard() {
   var q = qEl.value.trim() || t.c_q_ph;
   var h = document.getElementById('card-q');
   h.textContent = q;
-  h.className = 'cl-headline' + (q.length > 85 ? ' xs' : q.length > 55 ? ' sm' : '');
+  h.className = dpQClass(q);
   document.getElementById('card-biz').textContent = bizEl.value.trim() || t.k_org_def;
   document.getElementById('f-count').textContent = qEl.value.length;
   if (!state.qrUrl) document.getElementById('qr-img').src = previewQR(q + '|' + bizEl.value);
@@ -491,6 +483,174 @@ function drawBadge(ctx) {
   var iconH = QR_R * 1.1; drawMic(ctx, QR_CX, QR_CY - iconH * 0.04, iconH, '#ffffff');
 }
 drawBadge(document.getElementById('qr-overlay').getContext('2d'));
+
+// ── CARTEL DE PREGUNTA (mismo diseño que dichosea.com/preguntas) ───────────
+// Todo en "em": el mismo HTML sirve para la vista previa (10px → 300px de ancho)
+// y para imprimir en A4 (7mm → 210mm). La imagen PNG se dibuja en canvas a 150 ppp.
+var DP_CSS =
+  '.dp-poster{font-size:10px;width:30em;aspect-ratio:210/297;background:#FBF8F1;color:#1C2B20;padding:3em 2.6em 2.2em;' +
+    'display:flex;flex-direction:column;box-sizing:border-box;font-family:"Plus Jakarta Sans",sans-serif;border-radius:.6em;' +
+    'box-shadow:0 2em 5em rgba(28,43,32,.18),0 0 0 1px rgba(28,43,32,.06);text-align:left}' +
+  '.dp-biz{font-size:1.1em;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#3E4E41;line-height:1.3;overflow-wrap:anywhere}' +
+  '.dp-rule{width:3.2em;height:.3em;background:#16A34A;border-radius:.2em;margin:1.4em 0 1.8em}' +
+  '.dp-eye{font-size:1.1em;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#16A34A;margin-bottom:.8em}' +
+  '.dp-q{font-family:"Playfair Display",serif;font-style:italic;font-weight:700;font-size:2.7em;line-height:1.18;letter-spacing:-.01em;' +
+    'color:#1C2B20;text-wrap:balance;overflow-wrap:anywhere;margin:0}' +
+  '.dp-q.sm{font-size:2.2em}.dp-q.xs{font-size:1.8em}' +
+  '.dp-sp{flex:1}' +
+  '.dp-bottom{display:flex;gap:1.4em;align-items:center;margin-bottom:1.6em}' +
+  '.dp-qr{width:9.2em;height:9.2em;flex-shrink:0;background:#fff;padding:.6em;border-radius:.6em;box-shadow:0 0 0 1px rgba(28,43,32,.1);box-sizing:border-box}' +
+  '.dp-qr-in{position:relative;width:100%;height:100%}' +
+  '.dp-qr-in img{width:100%;height:100%;display:block}' +
+  '.dp-qr-in svg,.dp-qr-in canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}' +
+  '.dp-qr-in.preview img{opacity:.28;filter:blur(.6px)}' +
+  '.dp-cta{font-size:1.3em;font-weight:700;line-height:1.4;color:#1C2B20}' +
+  '.dp-cta small{display:block;font-size:.85em;font-weight:500;color:#6B7A6E;margin-top:.3em}' +
+  '.dp-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #E4DED0;padding-top:1em;font-size:1em;color:#6B7A6E}' +
+  '.dp-foot b{font-size:1.3em;font-weight:800;color:#16A34A}.dp-foot b span{color:#1C2B20}';
+(function() { var st = document.createElement('style'); st.textContent = DP_CSS; document.head.appendChild(st); })();
+
+var DP_FONTS = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap';
+var DP_MIC = '<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">' +
+  '<circle cx="110" cy="110" r="44" fill="#ffffff"/><circle cx="110" cy="110" r="38" fill="#14532D"/>' +
+  '<path d="M99,102 C99,119 121,119 121,102" stroke="#ffffff" stroke-width="3.9" stroke-linecap="round" fill="none"/>' +
+  '<rect x="108.2" y="119.3" width="3.5" height="5" rx="1.8" fill="#ffffff"/>' +
+  '<rect x="100.1" y="123.5" width="19.8" height="3.5" rx="1.8" fill="#ffffff"/>' +
+  '<rect x="104.3" y="88.8" width="11.4" height="19.5" rx="5.7" fill="#ffffff"/></svg>';
+
+function dpEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function dpQClass(q) { q = String(q || ''); return 'dp-q' + (q.length > 95 ? ' xs' : q.length > 60 ? ' sm' : ''); }
+
+// d = { negocio, pregunta, qrUrl, eye, cta, sub }
+function posterHtml(d) {
+  return '<div class="dp-poster">' +
+    '<div class="dp-biz">' + dpEsc(d.negocio) + '</div><div class="dp-rule"></div>' +
+    '<div class="dp-eye">' + dpEsc(d.eye) + '</div>' +
+    '<p class="' + dpQClass(d.pregunta) + '">' + dpEsc(d.pregunta) + '</p>' +
+    '<div class="dp-sp"></div>' +
+    '<div class="dp-bottom"><div class="dp-qr"><div class="dp-qr-in"><img src="' + dpEsc(d.qrUrl) + '" alt="QR">' + DP_MIC + '</div></div>' +
+      '<div class="dp-cta">' + dpEsc(d.cta) + '<small>' + dpEsc(d.sub) + '</small></div></div>' +
+    '<div class="dp-foot"><b>dicho<span>.</span></b><span>dichosea.com</span></div>' +
+  '</div>';
+}
+
+// Imprime el cartel en una hoja A4 vertical.
+// La ventana se abre al momento (si no, el navegador la bloquea) y el QR se incrusta como imagen
+// para que siempre salga en la impresión.
+function dpToDataUrl(url) {
+  if (!url || /^data:/.test(url)) return Promise.resolve(url);
+  return fetch(url).then(function(r) { return r.blob(); }).then(function(b) {
+    return new Promise(function(res) { var fr = new FileReader(); fr.onload = function() { res(fr.result); }; fr.onerror = function() { res(url); }; fr.readAsDataURL(b); });
+  }).catch(function() { return url; });
+}
+function printPoster(d) {
+  var w = window.open('', '_blank', 'width=640,height=880');
+  if (!w) return;
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Dicho</title></head><body style="font-family:sans-serif;color:#6B7A6E;padding:24px">…</body></html>');
+  dpToDataUrl(d.qrUrl).then(function(qr) {
+    var dd = {}; for (var k in d) dd[k] = d[k]; dd.qrUrl = qr;
+    w.document.open();
+    w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Dicho · ' + dpEsc(d.pregunta) + '</title>' +
+      '<link rel="stylesheet" href="' + DP_FONTS + '">' +
+      '<style>' + DP_CSS + '@page{size:A4 portrait;margin:0}html,body{margin:0;background:#E9E5DA}' +
+      'body{display:flex;justify-content:center;padding:24px 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+      '.dp-poster{font-size:7mm;width:210mm;height:297mm;aspect-ratio:auto;border-radius:0}' +
+      '@media screen{.dp-poster{zoom:.55}}' +
+      '@media print{html,body{background:#FBF8F1}body{padding:0}.dp-poster{box-shadow:none;zoom:1}}</style>' +
+      '</head><body>' + posterHtml(dd) + '</body></html>');
+    w.document.close(); w.focus();
+    var go = function() { try { w.print(); } catch (e) {} };
+    var fontsOk = (w.document.fonts && w.document.fonts.ready) ? w.document.fonts.ready : Promise.resolve();
+    Promise.race([fontsOk, new Promise(function(r) { setTimeout(r, 2500); })]).then(function() { setTimeout(go, 300); });
+  });
+}
+
+// Dibuja el cartel A4 (1240×1754 px, 150 ppp) y lo descarga como PNG
+function posterPNG(d, filename) {
+  var W = 1240, H = 1754, u = W / 30;
+  var fontsOk = (document.fonts && document.fonts.load)
+    ? Promise.all(['italic 700 40px "Playfair Display"', '800 40px "Plus Jakarta Sans"', '700 40px "Plus Jakarta Sans"', '500 40px "Plus Jakarta Sans"']
+        .map(function(f) { return document.fonts.load(f); })).catch(function() {})
+    : Promise.resolve();
+  var qrP = fetch(d.qrUrl).then(function(r) { return r.blob(); }).then(function(blob) {
+    return new Promise(function(res, rej) { var im = new Image(); im.onload = function() { res(im); }; im.onerror = rej; im.src = URL.createObjectURL(blob); });
+  });
+  return Promise.all([qrP, fontsOk]).then(function(r) {
+    var img = r[0];
+    var c = document.createElement('canvas'); c.width = W; c.height = H;
+    var ctx = c.getContext('2d');
+    var ls = function(px) { if ('letterSpacing' in ctx) ctx.letterSpacing = px + 'px'; };
+    var wrap = function(text, maxW) {
+      var words = String(text).split(/\s+/), lines = [], line = '';
+      words.forEach(function(w) { var t = line ? line + ' ' + w : w; if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; });
+      if (line) lines.push(line); return lines;
+    };
+    ctx.fillStyle = '#FBF8F1'; ctx.fillRect(0, 0, W, H);
+    var x = 2.6 * u, maxW = W - 2 * x, y = 3 * u;
+    ctx.textBaseline = 'alphabetic';
+
+    // Negocio
+    ctx.fillStyle = '#3E4E41'; ctx.font = '800 ' + (1.1 * u) + 'px "Plus Jakarta Sans", sans-serif'; ls(0.154 * u);
+    wrap(String(d.negocio || '').toUpperCase(), maxW).slice(0, 2).forEach(function(l) { y += 1.1 * u * 1.05; ctx.fillText(l, x, y); y += 1.1 * u * .25; });
+    // Raya
+    y += 1.4 * u; ctx.fillStyle = '#16A34A'; ctx.fillRect(x, y, 3.2 * u, 0.3 * u); y += 0.3 * u + 1.8 * u;
+    // Queremos saber
+    ctx.font = '700 ' + (1.1 * u) + 'px "Plus Jakarta Sans", sans-serif'; ls(0.11 * u);
+    y += 1.1 * u; ctx.fillText(String(d.eye || '').toUpperCase(), x, y); y += 0.8 * u + 0.3 * u;
+    // Pregunta
+    ls(0);
+    var q = String(d.pregunta || ''), fs = (q.length > 95 ? 1.8 : q.length > 60 ? 2.2 : 2.7) * u;
+    ctx.fillStyle = '#1C2B20'; ctx.font = 'italic 700 ' + fs + 'px "Playfair Display", serif';
+    wrap(q, maxW).slice(0, 7).forEach(function(l) { y += fs * 1.18; ctx.fillText(l, x, y - fs * .22); });
+
+    // Pie
+    var footY = H - 2.2 * u, lineY = footY - 1.0 * u - 1.0 * u;
+    ctx.fillStyle = '#E4DED0'; ctx.fillRect(x, lineY, maxW, Math.max(2, u * .05));
+    ctx.font = '800 ' + (1.3 * u) + 'px "Plus Jakarta Sans", sans-serif'; ctx.fillStyle = '#16A34A';
+    ctx.fillText('dicho', x, footY); var dw = ctx.measureText('dicho').width;
+    ctx.fillStyle = '#1C2B20'; ctx.fillText('.', x + dw, footY);
+    ctx.font = '500 ' + (1.0 * u) + 'px "Plus Jakarta Sans", sans-serif'; ctx.fillStyle = '#6B7A6E'; ctx.textAlign = 'right';
+    ctx.fillText('dichosea.com', W - x, footY); ctx.textAlign = 'left';
+
+    // QR + texto
+    var box = 9.2 * u, by = lineY - 1.6 * u - box, pad = 0.6 * u, r = 0.6 * u;
+    ctx.save(); ctx.beginPath();
+    ctx.moveTo(x + r, by); ctx.arcTo(x + box, by, x + box, by + box, r); ctx.arcTo(x + box, by + box, x, by + box, r);
+    ctx.arcTo(x, by + box, x, by, r); ctx.arcTo(x, by, x + box, by, r); ctx.closePath();
+    ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.strokeStyle = 'rgba(28,43,32,.12)'; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+    var qs = box - 2 * pad; ctx.drawImage(img, x + pad, by + pad, qs, qs);
+    // micrófono (mismo dibujo que el SVG)
+    var mic = new Image();
+    var svgUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(DP_MIC.replace('<svg ', '<svg width="220" height="220" '));
+    return new Promise(function(res) { mic.onload = function() { ctx.drawImage(mic, x + pad, by + pad, qs, qs); res(); }; mic.onerror = function() { res(); }; mic.src = svgUrl; })
+      .then(function() {
+        var tx = x + box + 1.4 * u, tw = W - x - tx;
+        ctx.font = '700 ' + (1.3 * u) + 'px "Plus Jakarta Sans", sans-serif';
+        var cl = wrap(d.cta, tw).slice(0, 3);
+        var sfs = 1.3 * u * .85, blockH = cl.length * 1.3 * u * 1.4 + 0.3 * u + sfs * 1.4;
+        var ty = by + box / 2 - blockH / 2;
+        ctx.fillStyle = '#1C2B20';
+        cl.forEach(function(l) { ty += 1.3 * u * 1.4; ctx.fillText(l, tx, ty - 1.3 * u * .3); });
+        ctx.font = '500 ' + sfs + 'px "Plus Jakarta Sans", sans-serif'; ctx.fillStyle = '#6B7A6E';
+        ty += 0.3 * u + sfs * 1.4; ctx.fillText(d.sub, tx, ty - sfs * .3);
+        var a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = filename || 'dicho-cartel.png'; a.click();
+      });
+  });
+}
+
+function datosCartel() {
+  var t = TR[LANG];
+  return { negocio: state.negocio || bizEl.value.trim(), pregunta: qEl.value.trim(), qrUrl: state.qrUrl, eye: t.k_eye, cta: t.p_cta, sub: t.p_sub };
+}
+function imprimirCartel() { if (state.qrUrl) printPoster(datosCartel()); }
+function descargarCartel() {
+  if (!state.qrUrl) return;
+  var b = document.getElementById('btn-dl'), sp = b.querySelector('span'), orig = sp.textContent;
+  sp.textContent = '…';
+  var slug = function(x) { return String(x || 'dicho').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase().substr(0, 40); };
+  posterPNG(datosCartel(), 'dicho-' + slug(state.negocio) + '-' + slug(qEl.value) + '.png')
+    .then(function() { sp.textContent = orig; }).catch(function() { sp.textContent = orig; descargarQR(); });
+}
 
 // ── PASAR A ESTADO "LISTO" ──────────────────────────────────────
 function showListo(d) {
