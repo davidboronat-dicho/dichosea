@@ -154,7 +154,7 @@
       <div class="closed" id="closedMsg">Esta pregunta ya no está activa. ¡Gracias por tu interés!</div>
 
       <div class="cta-wrap">
-        <a class="cta" id="ctaBtn" href="#" onclick="handleCta()">
+        <a class="cta" id="ctaBtn" href="#" onclick="return handleCta(event)">
           <div class="cta-main" id="ctaText"></div>
         </a>
         <div class="countdown" id="countdown"></div>
@@ -173,37 +173,48 @@
     var waLink = '#';
     var countdownInterval = null;
     var started = false;
+    // Si la persona ya abrió WhatsApp desde aquí hace poco y vuelve al navegador,
+    // no se le vuelve a abrir WhatsApp solo (ni se cuenta otro escaneo).
+    var OPEN_KEY = 'dicho_open_' + codigo, OPEN_TTL = 30 * 60 * 1000;
+    function marcarAbierto() { try { localStorage.setItem(OPEN_KEY, String(Date.now())); } catch (e) {} }
+    function abiertoReciente() {
+      try { var v = Number(localStorage.getItem(OPEN_KEY) || 0); return v && (Date.now() - v) < OPEN_TTL; } catch (e) { return false; }
+    }
+    var yaAbierto = abiertoReciente();
 
     var copy = {
       es: {
         eyebrow: 'Queremos saber',
         answer: 'Respóndenos con <em>solo</em> un audio de WhatsApp',
-        cta: 'Abrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">y responder con un audio</span>',
+        cta: 'Abrir WhatsApp<br><span style="display:block;font-weight:500;font-size:13px;opacity:.75;">y responder con un audio</span>',
         countdown: 'Se abrirá en', countdownUnit: 'segundos', countdownReady: 'Abriendo WhatsApp…',
         confidential: '🔒 100% confidencial', loading: 'Un momento…',
         closed: 'Esta pregunta ya no está activa. ¡Gracias por tu interés!',
         notFound: 'No hemos encontrado esta pregunta.',
-        prefill: 'Para responder a «{pregunta}»\nToca primero el botón verde >'
+        prefill: 'Para responder a «{pregunta}»\nToca primero el botón verde >',
+        again: 'Ya has abierto WhatsApp. Si quieres volver a responder, toca el botón.'
       },
       ca: {
         eyebrow: 'Volem saber',
         answer: "Respon-nos amb <em>només</em> un àudio de WhatsApp",
-        cta: 'Obrir WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">i respondre amb un àudio</span>',
+        cta: 'Obrir WhatsApp<br><span style="display:block;font-weight:500;font-size:13px;opacity:.75;">i respondre amb un àudio</span>',
         countdown: "S'obrirà en", countdownUnit: 'segons', countdownReady: 'Obrint WhatsApp…',
         confidential: '🔒 100% confidencial', loading: 'Un moment…',
         closed: 'Aquesta pregunta ja no està activa. Gràcies pel teu interès!',
         notFound: "No hem trobat aquesta pregunta.",
-        prefill: 'Per respondre a «{pregunta}»\nToca primer el botó verd >'
+        prefill: 'Per respondre a «{pregunta}»\nToca primer el botó verd >',
+        again: 'Ja has obert WhatsApp. Si vols tornar a respondre, toca el botó.'
       },
       en: {
         eyebrow: 'We want to know',
         answer: 'Answer with <em>just</em> a WhatsApp voice message',
-        cta: 'Open WhatsApp<br><span style="font-weight:700;font-size:13px;opacity:0.85;">and answer with a voice note</span>',
+        cta: 'Open WhatsApp<br><span style="display:block;font-weight:500;font-size:13px;opacity:.75;">and answer with a voice note</span>',
         countdown: 'WhatsApp opens in', countdownUnit: 'seconds', countdownReady: 'Opening WhatsApp…',
         confidential: '🔒 100% confidential', loading: 'One moment…',
         closed: 'This question is no longer active. Thanks for your interest!',
         notFound: "We couldn't find this question.",
-        prefill: 'To answer «{pregunta}»\nTap the green button first >'
+        prefill: 'To answer «{pregunta}»\nTap the green button first >',
+        again: "You've already opened WhatsApp. To answer again, tap the button."
       }
     };
     function tr(lang) {
@@ -231,6 +242,7 @@
         if (secs <= 0) {
           clearInterval(countdownInterval);
           cdEl.textContent = t.countdownReady;
+          marcarAbierto();
           window.location.href = waLink;
         } else {
           cdEl.innerHTML = t.countdown + ' <strong>' + secs + '</strong> ' + t.countdownUnit;
@@ -260,13 +272,38 @@
       var activa = (data.estado || 'activa') === 'activa';
       page.classList.toggle('is-closed', !activa);
       show('page');
-      if (activa && !started) { started = true; startCountdown(t); }
+      // Sin apertura automática: en iPhone WhatsApp solo se abre directo cuando la persona toca el botón
+      if (activa && !started) {
+        started = true;
+        if (yaAbierto) document.getElementById('countdown').textContent = t.again;
+      }
       if (!activa && countdownInterval) { clearInterval(countdownInterval); document.getElementById('countdown').textContent = ''; }
     }
 
-    function handleCta() {
+    // Chrome, Firefox y los navegadores dentro de otras apps en iPhone no abren wa.me en la app:
+    // pasan por la web de WhatsApp. Ahí abrimos la app directamente (whatsapp://) y,
+    // si no está instalada, a los 1,5 s vamos a wa.me para que pueda descargarla.
+    function iosSinSafari() {
+      var ua = navigator.userAgent || '';
+      var ios = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      return ios && /CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|FBAN|FBAV|Instagram|Line\/|Twitter/i.test(ua);
+    }
+    function deepLink(url) {
+      var m = String(url).match(/wa\.me\/(\d+)\?text=(.*)$/);
+      return m ? 'whatsapp://send?phone=' + m[1] + '&text=' + m[2] : '';
+    }
+    function handleCta(e) {
+      marcarAbierto();
       clearInterval(countdownInterval);
       document.getElementById('countdown').textContent = '';
+      var dl = deepLink(waLink);
+      if (dl && iosSinSafari()) {
+        if (e) e.preventDefault();
+        window.location.href = dl;
+        setTimeout(function() { if (!document.hidden) window.location.href = waLink; }, 1500);
+        return false;
+      }
+      return true;
     }
 
     // Caché de 24 h para que abra al instante; siempre se consulta el servidor
@@ -296,7 +333,7 @@
         }
       } catch (e) {}
       if (cached) render(cached);
-      contarEscaneo();
+      if (!yaAbierto) contarEscaneo();
 
       fetchData().then(function(data) {
         if (!data || !data.ok) {
@@ -309,6 +346,9 @@
         if (!cached) { document.getElementById('errorMsg').textContent = tr(urlLang).notFound; show('error'); }
       });
     }
+    window.addEventListener('pageshow', function(e) {
+      if (e.persisted && countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+    });
   </script>
 </body>
 </html>
