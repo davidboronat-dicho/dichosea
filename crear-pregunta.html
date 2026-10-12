@@ -494,9 +494,9 @@ var DP_CSS =
   '.dp-biz{font-size:1.1em;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#3E4E41;line-height:1.3;overflow-wrap:anywhere}' +
   '.dp-rule{width:3.2em;height:.3em;background:#16A34A;border-radius:.2em;margin:1.4em 0 1.8em}' +
   '.dp-eye{font-size:1.1em;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#16A34A;margin-bottom:.8em}' +
-  '.dp-q{font-family:"Playfair Display",serif;font-style:normal;font-weight:700;font-size:3em;line-height:1.16;letter-spacing:-.01em;' +
+  '.dp-q{font-family:"Playfair Display",serif;font-style:normal;font-weight:700;font-size:2.4em;line-height:1.18;letter-spacing:-.01em;' +
     'color:#1C2B20;text-wrap:balance;overflow-wrap:anywhere;margin:0}' +
-  '.dp-q.sm{font-size:2.45em}.dp-q.xs{font-size:2em}' +
+  '.dp-q.sm{font-size:2.05em}.dp-q.xs{font-size:1.75em}' +
   '.dp-sp{flex:1}' +
   '.dp-bottom{display:flex;gap:1.4em;align-items:center;margin-bottom:1.6em}' +
   '.dp-qr{width:9.2em;height:9.2em;flex-shrink:0;background:#fff;padding:.6em;border-radius:.6em;box-shadow:0 0 0 1px rgba(28,43,32,.1);box-sizing:border-box}' +
@@ -599,9 +599,9 @@ function posterPNG(d, filename) {
     y += 1.1 * u; ctx.fillText(String(d.eye || '').toUpperCase(), x, y); y += 0.8 * u + 0.3 * u;
     // Pregunta
     ls(0);
-    var q = String(d.pregunta || ''), fs = (q.length > 95 ? 2.0 : q.length > 60 ? 2.45 : 3.0) * u;
+    var q = String(d.pregunta || ''), fs = (q.length > 95 ? 1.75 : q.length > 60 ? 2.05 : 2.4) * u;
     ctx.fillStyle = '#1C2B20'; ctx.font = '700 ' + fs + 'px "Playfair Display", serif';
-    wrap(q, maxW).slice(0, 7).forEach(function(l) { y += fs * 1.16; ctx.fillText(l, x, y - fs * .22); });
+    wrap(q, maxW).slice(0, 7).forEach(function(l) { y += fs * 1.18; ctx.fillText(l, x, y - fs * .22); });
 
     // Pie
     var footY = H - 2.2 * u, lineY = footY - 1.0 * u - 1.0 * u;
