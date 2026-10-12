@@ -107,6 +107,13 @@
   canvas { width:100%!important; }
 
   .topics-wrap { display:flex; flex-direction:column; gap:8px; min-height:120px; }
+  .dest-item { padding:10px 0; border-top:1px solid var(--rule); }
+  .dest-item:first-child { border-top:none; padding-top:0; }
+  .dest-q { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; display:flex; gap:6px; align-items:center; }
+  .dest-t { font-size:13.5px; font-weight:600; color:var(--text); line-height:1.4; }
+  .dest-s { font-size:12px; color:var(--muted); margin-top:3px; }
+  .cat-pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; background:var(--green-light, #F0FDF4); color:#14532D; white-space:nowrap; }
+  .cita-line { font-size:12px; font-style:italic; color:var(--muted); margin-top:3px; }
   .topic-row { display:flex; align-items:center; gap:8px; }
   .topic-bar-bg { flex:1; background:var(--rule); border-radius:4px; height:6px; overflow:hidden; }
   .topic-bar { height:6px; background:var(--green); border-radius:4px; transition:.4s; }
@@ -385,7 +392,7 @@
         <div class="stat-card">
           <div class="stat-label" data-i18n="pq_s_total">Respuestas</div>
           <div class="stat-value" id="pq-total">0</div>
-          <div class="stat-sub" data-i18n="pq_s_total_sub">Recibidas en total</div>
+          <div class="stat-sub" id="pq-total-sub"></div>
         </div>
         <div class="stat-card">
           <div class="stat-label" data-i18n="pq_s_semana">Esta semana</div>
@@ -393,25 +400,20 @@
           <div class="stat-sub" data-i18n="pq_s_semana_sub">Respuestas en 7 días</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label" data-i18n="pq_s_pos">Sentimiento positivo</div>
+          <div class="stat-label" data-i18n="pq_s_tasa">Tasa de respuesta</div>
           <div class="stat-value green" id="pq-pos">—</div>
-          <div class="stat-sub" data-i18n="pq_s_pos_sub">De las respuestas recibidas</div>
+          <div class="stat-sub" id="pq-tasa-sub"></div>
         </div>
       </div>
 
       <div class="row2">
         <div class="card">
           <div class="card-title" data-i18n="pq_chart_title">Respuestas por día</div>
-          <div style="display:flex;gap:16px;margin-bottom:12px;font-size:12px">
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--pos);margin-right:4px"></span><span data-i18n="legend_pos">Positivo</span></span>
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neu);margin-right:4px"></span><span data-i18n="legend_neu">Neutro</span></span>
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--neg);margin-right:4px"></span><span data-i18n="legend_neg">Negativo</span></span>
-          </div>
           <div class="chart-wrap"><canvas id="chart-preg"></canvas></div>
         </div>
         <div class="card">
-          <div class="card-title" data-i18n="topics_title">Temas más mencionados</div>
-          <div class="topics-wrap" id="pq-topics"></div>
+          <div class="card-title" data-i18n="pq_dest_title">Lo más destacado</div>
+          <div id="pq-topics"></div>
         </div>
       </div>
 
@@ -426,8 +428,8 @@
               <tr>
                 <th data-i18n="th_fecha">Fecha</th>
                 <th class="q-col" data-i18n="th_pregunta">Pregunta</th>
-                <th data-i18n="th_resumen">Resumen</th>
-                <th data-i18n="th_sent">Sentimiento</th>
+                <th data-i18n="th_idea">Respuesta</th>
+                <th data-i18n="th_cat">Tema</th>
               </tr>
             </thead>
             <tbody id="pq-tbody"></tbody>
@@ -629,6 +631,9 @@ var TR = {
     pq_s_semana: 'Esta semana', pq_s_semana_sub: 'Respuestas en 7 días',
     pq_s_pos: 'Sentimiento positivo', pq_s_pos_sub: 'De las respuestas recibidas',
     pq_chart_title: 'Respuestas por día', pq_last: 'Últimas respuestas',
+    pq_s_tasa: 'Tasa de respuesta', pq_tasa_sub: 'de {n} escaneos del QR', pq_tasa_sub0: 'Aún sin escaneos', pq_utiles_de: 'Útiles de {n} recibidas',
+    pq_dest_title: 'Lo más destacado', pq_dest_empty: 'Aparecerá en cuanto lleguen las primeras respuestas.', pq_positivas: 'de valoraciones positivas', pq_top: 'Lo más repetido:', pq_gana: 'Va ganando:', pq_votos: 'votos', pq_resp: 'respuestas',
+    th_idea: 'Respuesta', th_cat: 'Tema',
     no_resp: 'Todavía no hay respuestas. Imprime la tarjeta de tu pregunta y colócala donde la gente tenga un momento para responder.',
     ver: '[ver]',
     footer: 'Dicho — Feedback por voz via WhatsApp · Datos en tiempo real desde Google Sheets',
@@ -682,6 +687,9 @@ var TR = {
     pq_s_semana: 'Aquesta setmana', pq_s_semana_sub: 'Respostes en 7 dies',
     pq_s_pos: 'Sentiment positiu', pq_s_pos_sub: 'De les respostes rebudes',
     pq_chart_title: 'Respostes per dia', pq_last: 'Últimes respostes',
+    pq_s_tasa: 'Taxa de resposta', pq_tasa_sub: 'de {n} escanejos del QR', pq_tasa_sub0: 'Encara sense escanejos', pq_utiles_de: 'Útils de {n} rebudes',
+    pq_dest_title: 'El més destacat', pq_dest_empty: 'Apareixerà quan arribin les primeres respostes.', pq_positivas: 'de valoracions positives', pq_top: 'El més repetit:', pq_gana: 'Va guanyant:', pq_votos: 'vots', pq_resp: 'respostes',
+    th_idea: 'Resposta', th_cat: 'Tema',
     no_resp: 'Encara no hi ha respostes. Imprimeix la targeta de la teva pregunta i posa-la on la gent tingui un moment per respondre.',
     ver: '[veure]',
     footer: 'Dicho — Feedback per veu via WhatsApp · Dades en temps real des de Google Sheets',
@@ -735,6 +743,9 @@ var TR = {
     pq_s_semana: 'This week', pq_s_semana_sub: 'Answers in 7 days',
     pq_s_pos: 'Positive sentiment', pq_s_pos_sub: 'Of answers received',
     pq_chart_title: 'Answers by day', pq_last: 'Latest answers',
+    pq_s_tasa: 'Response rate', pq_tasa_sub: 'of {n} QR scans', pq_tasa_sub0: 'No scans yet', pq_utiles_de: 'Useful out of {n} received',
+    pq_dest_title: 'Highlights', pq_dest_empty: 'Will appear as soon as the first answers arrive.', pq_positivas: 'positive ratings', pq_top: 'Most repeated:', pq_gana: 'Leading:', pq_votos: 'votes', pq_resp: 'answers',
+    th_idea: 'Answer', th_cat: 'Topic',
     no_resp: 'No answers yet. Print your question\'s card and put it where people have a moment to answer.',
     ver: '[view]',
     footer: 'Dicho — Voice feedback via WhatsApp · Real-time data from Google Sheets',
@@ -882,11 +893,14 @@ function renderDashboard() {
 }
 
 // ══════════ VISTA PREGUNTAS ══════════
+var PQ_ICON = { ideas: '💡', mejora: '🔧', valoracion: '⭐', eleccion: '☑️' };
 function allRespuestas() {
   var out = [];
   ((pregData && pregData.preguntas) || []).forEach(function(p) {
     (p.respuestas || []).forEach(function(r) {
-      out.push({ fecha: r.fecha, fechaObj: r.fechaObj, sent: r.sent, temas: r.temas || [], resumen: r.resumen, transcripcion: r.transcripcion, pregunta: p.pregunta, pregId: p.id });
+      if (r.util === false) return;   // las no útiles no cuentan en el dashboard
+      out.push({ fecha: r.fecha, fechaObj: r.fechaObj, sent: r.sent, temas: r.temas || [], resumen: r.resumen, cita: r.cita || '',
+                 transcripcion: r.transcripcion, pregunta: p.pregunta, pregId: p.id });
     });
   });
   return out.sort(function(a, b) { return (b.fechaObj || 0) - (a.fechaObj || 0); });
@@ -898,50 +912,59 @@ function renderPreguntas() {
   document.getElementById('pq-content').style.display = ps.length ? '' : 'none';
   if (!ps.length) return;
   var rs = allRespuestas();
+  var recibidas = ps.reduce(function(a, p) { return a + ((p.respuestas || []).length); }, 0);
+  var escaneos = ps.reduce(function(a, p) { return a + (p.escaneos || 0); }, 0);
   var activas = ps.filter(function(p) { return p.estado === 'activa'; }).length;
   var semanaMs = Date.now() - 7 * 86400000;
   var semana = rs.filter(function(r) { return r.fechaObj >= semanaMs; }).length;
-  var pos = rs.filter(function(r) { return r.sent === 'positivo'; }).length;
   document.getElementById('pq-activas').textContent = activas;
   document.getElementById('pq-activas-sub').textContent = t('pq_of').replace('{n}', ps.length);
   document.getElementById('pq-total').textContent = rs.length;
+  document.getElementById('pq-total-sub').textContent = recibidas > rs.length ? t('pq_utiles_de').replace('{n}', recibidas) : t('pq_s_total_sub');
   document.getElementById('pq-semana').textContent = semana;
-  document.getElementById('pq-pos').textContent = rs.length ? Math.round(pos / rs.length * 100) + '%' : '—';
-
-  var tm = {};
-  rs.forEach(function(r) { r.temas.forEach(function(x) { tm[x] = (tm[x] || 0) + 1; }); });
-  var topics = Object.keys(tm).map(function(k) { return { label: k, count: tm[k] }; })
-    .sort(function(a, b) { return b.count - a.count; }).slice(0, 8);
-  renderTopics(topics, 'pq-topics');
+  document.getElementById('pq-pos').textContent = escaneos ? Math.min(100, Math.round(rs.length / escaneos * 100)) + '%' : '—';
+  document.getElementById('pq-tasa-sub').textContent = escaneos ? t('pq_tasa_sub').replace('{n}', escaneos) : t('pq_tasa_sub0');
+  renderDestacados(ps);
   renderPregFilter();
   renderPregTable();
+}
+
+// Lo más destacado de cada pregunta: titular del resumen de IA, o el tema que más se repite
+function renderDestacados(ps) {
+  var c = document.getElementById('pq-topics');
+  var con = ps.filter(function(p) { return ((p.stats && p.stats.utiles) || 0) > 0; }).slice(0, 4);
+  if (!con.length) { c.innerHTML = '<div class="empty" style="padding:10px 0">' + esc(t('pq_dest_empty')) + '</div>'; return; }
+  c.innerHTML = con.map(function(p) {
+    var r = p.resumen, st = p.stats || {}, txt, sub = '';
+    if (r && r.titular) { txt = r.titular; sub = (r.puntos || []).slice(0, 2).map(function(x) { return x.titulo + (x.n ? ' (' + x.n + ')' : ''); }).join(' · '); }
+    else if (p.tipo === 'valoracion') { txt = st.pctPos + '% ' + t('pq_positivas'); sub = st.topTopic ? t('pq_top') + ' ' + st.topTopic : ''; }
+    else if (p.tipo === 'eleccion' && (p.opciones || [])[0]) { txt = t('pq_gana') + ' ' + p.opciones[0].label; sub = p.opciones[0].count + ' ' + t('pq_votos'); }
+    else { txt = st.topTopic ? t('pq_top') + ' ' + st.topTopic : '—'; sub = st.topCount ? st.topCount + ' ' + t('pq_resp') : ''; }
+    return '<div class="dest-item"><div class="dest-q">' + (PQ_ICON[p.tipo] || '💡') + ' <span>' + esc(p.pregunta) + '</span></div>' +
+      '<div class="dest-t">' + esc(txt) + '</div>' + (sub ? '<div class="dest-s">' + esc(sub) + '</div>' : '') + '</div>';
+  }).join('');
 }
 
 function renderPregChart() {
   if (!pregData || !(pregData.preguntas || []).length || typeof Chart === 'undefined') return;
   var rs = allRespuestas();
-  var labels = [], pos = [], neu = [], neg = [];
+  var labels = [], vals = [];
   for (var d = 13; d >= 0; d--) {
     var day = new Date(); day.setHours(0, 0, 0, 0); day.setDate(day.getDate() - d);
     var start = day.getTime(), end = start + 86400000;
     labels.push(day.getDate() + '/' + (day.getMonth() + 1));
-    var dayRs = rs.filter(function(r) { return r.fechaObj >= start && r.fechaObj < end; });
-    pos.push(dayRs.filter(function(r) { return r.sent === 'positivo'; }).length);
-    neu.push(dayRs.filter(function(r) { return r.sent === 'neutro'; }).length);
-    neg.push(dayRs.filter(function(r) { return r.sent === 'negativo'; }).length);
+    vals.push(rs.filter(function(r) { return r.fechaObj >= start && r.fechaObj < end; }).length);
   }
   if (chartPreg) chartPreg.destroy();
   chartPreg = new Chart(document.getElementById('chart-preg').getContext('2d'), {
     type: 'bar',
     data: { labels: labels, datasets: [
-      { label: t('legend_pos'), data: pos, backgroundColor: 'rgba(22,163,74,.75)',  borderRadius: 3, stack: 's' },
-      { label: t('legend_neu'), data: neu, backgroundColor: 'rgba(156,163,175,.6)', borderRadius: 3, stack: 's' },
-      { label: t('legend_neg'), data: neg, backgroundColor: 'rgba(220,38,38,.7)',   borderRadius: 3, stack: 's' }
+      { label: t('pq_s_total'), data: vals, backgroundColor: 'rgba(22,163,74,.75)', borderRadius: 3 }
     ] },
     options: { responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-      scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45, minRotation: 30 } },
-                y: { stacked: true, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: { size: 10 }, stepSize: 1 }, beginAtZero: true } } }
+      scales: { x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45, minRotation: 30 } },
+                y: { grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: { size: 10 }, stepSize: 1 }, beginAtZero: true } } }
   });
 }
 
@@ -961,13 +984,13 @@ function renderPregTable() {
   var rs = allRespuestas().filter(function(r) { return !activePregId || r.pregId === activePregId; }).slice(0, 50);
   if (!rs.length) { tb.innerHTML = '<tr><td colspan="4" class="empty">' + esc(t('no_resp')) + '</td></tr>'; return; }
   tb.innerHTML = rs.map(function(r, i) {
-    var sentKey = r.sent || 'neutro';
     var row = '<tr>' +
       '<td style="white-space:nowrap;color:var(--muted);font-size:12px">' + esc(r.fecha) + '</td>' +
       '<td class="q-cell">' + esc(r.pregunta) + '</td>' +
       '<td>' + esc(r.resumen || r.transcripcion || '—') +
-        (r.transcripcion && r.resumen ? ' <button class="expand-btn" onclick="toggleTr(\'pq' + i + '\')">' + esc(t('ver')) + '</button>' : '') + '</td>' +
-      '<td><span class="sent-pill sent-' + esc(sentKey) + '">' + esc(t('sent_' + sentKey)) + '</span></td>' +
+        (r.transcripcion && r.resumen ? ' <button class="expand-btn" onclick="toggleTr(\'pq' + i + '\')">' + esc(t('ver')) + '</button>' : '') +
+        (r.cita ? '<div class="cita-line">«' + esc(r.cita) + '»</div>' : '') + '</td>' +
+      '<td>' + (r.temas[0] ? '<span class="cat-pill">' + esc(r.temas[0]) + '</span>' : '') + '</td>' +
     '</tr>';
     if (r.transcripcion && r.resumen) row += '<tr id="tr-pq' + i + '" style="display:none"><td></td><td colspan="3" class="transcript">' + esc(r.transcripcion) + '</td></tr>';
     return row;
