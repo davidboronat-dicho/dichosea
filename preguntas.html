@@ -10,34 +10,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
-/* ── TOKENS (idénticos a la home) ── */
+/* ── TOKENS (estilo blanco, como la home) ── */
 :root {
-  --bg:       #F5F1E8;
-  --surface:  #FFFFFF;
-  --ink:      #1C2B20;
-  --ink-2:    #3E4E41;
-  --g:        #16A34A;
-  --g-d:      #14532D;
-  --g-l:      #DCFCE7;
-  --g-f:      #F0FDF4;
-  --muted:    #6B7A6E;
-  --border:   #D8D2C3;
-  --sh:       0 2px 8px rgba(28,43,32,.06);
-  --sh-lg:    0 12px 40px rgba(28,43,32,.11);
-  --always-dark: #111D15;
-  --always-dark-2: #1A2E1E;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg:#111A14; --surface:#192219; --ink:#EBF0EC; --ink-2:#B0C2B3;
-    --g:#22C55E; --g-d:#4ADE80; --g-l:#14532D; --g-f:#0A2016;
-    --muted:#7B9180; --border:#2A3B2C;
-  }
-}
-:root[data-theme="dark"] {
-  --bg:#111A14; --surface:#192219; --ink:#EBF0EC; --ink-2:#B0C2B3;
-  --g:#22C55E; --g-d:#4ADE80; --g-l:#14532D; --g-f:#0A2016;
-  --muted:#7B9180; --border:#2A3B2C;
+  --bg: #FFFFFF; --surface: #FFFFFF; --soft: #F6F7F5;
+  --ink: #16201A; --ink-2: #4A554D;
+  --g: #16A34A; --g-d: #14532D; --g-l: #DCFCE7; --g-f: #F0FDF4;
+  --muted: #8A938C; --border: #E6E9E4;
+  --sh: 0 2px 8px rgba(22,32,26,.05); --sh-lg: 0 18px 40px rgba(22,32,26,.08);
+  --always-dark: #16201A; --always-dark-2: #1F2B23;
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -362,21 +342,108 @@ body {
   .lead-form { padding: 24px 20px; }
   .footer-links { flex-wrap: wrap; justify-content: center; }
 }
+
+/* ── Estilo blanco ── */
+.label { font-size: 12px; font-weight: 800; letter-spacing: .14em; }
+.hero-ghost { display: none; }
+.hero { grid-template-columns: 1fr 330px; gap: 64px; min-height: auto; padding-block: 80px 96px; }
+.hero-h { font-size: clamp(38px, 5vw, 62px); line-height: 1.06; letter-spacing: -.02em; }
+.hero-sub { font-size: clamp(16px, 1.8vw, 18px); }
+.btn-primary { background: var(--ink); }
+.btn-primary:hover { background: #000; }
+.steps-row { gap: 18px; }
+.step-card, .ben-card, .b-panel, .who-card { border: 1px solid var(--border); border-radius: 18px !important; box-shadow: none; }
+.step-n { background: #fff; border: 1.5px solid var(--border); }
+.ben-icon { background: #F3F6F2; }
+.b-input, .b-textarea { background: #fff; }
+.kpi, .ask { background: var(--soft); }
+.dash-side { background: var(--soft); }
+#como, #beneficios { background: var(--soft); }
+#como .step-card, #beneficios .ben-card { background: #fff; }
+.who-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 44px; }
+.who-card { background: #fff; padding: 30px 28px; }
+.who-card h3 { font-size: 20px; font-weight: 800; margin: 18px 0 8px; }
+.who-card p { font-size: 15px; color: var(--ink-2); line-height: 1.6; margin-bottom: 16px; }
+.who-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.who-card li { font-family: 'Playfair Display', serif; font-size: 17px; line-height: 1.35; padding-left: 14px; border-left: 2px solid var(--g-l); }
+.who-ic { width: 46px; height: 46px; border-radius: 12px; background: #F3F6F2; color: var(--g); display: flex; align-items: center; justify-content: center; }
+@media (max-width: 860px) { .who-grid { grid-template-columns: 1fr; } .hero .ip { display: none; } }
+/* menú */
+.nav { height: 68px; background: rgba(255,255,255,.9); }
+.nav-logo { font-size: 22px; }
+.nav-links { align-items: center; gap: 30px; }
+.nav-links > a, .dd > button { font: 500 14.5px 'Plus Jakarta Sans', sans-serif; color: var(--muted); text-decoration: none; background: none; border: 0; cursor: pointer; }
+.nav-links > a:hover, .dd > button:hover { color: var(--ink); }
+.dd { position: relative; }
+.dd > button::after { content: ''; display: inline-block; margin-left: 6px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-3px); }
+.dd-menu { position: absolute; top: calc(100% + 14px); left: -18px; width: 340px; background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 18px 40px rgba(22,32,26,.12); padding: 8px; opacity: 0; visibility: hidden; transform: translateY(-4px); transition: .15s; z-index: 10; }
+.dd:hover .dd-menu, .dd.open .dd-menu { opacity: 1; visibility: visible; transform: none; }
+.dd-menu::before { content: ''; position: absolute; top: -16px; left: 0; right: 0; height: 16px; }
+.dd-menu a { display: flex; gap: 12px; align-items: flex-start; padding: 11px 12px; border-radius: 10px; text-decoration: none; }
+.dd-menu a:hover { background: var(--soft); }
+.dd-ic { width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0; background: #F3F6F2; color: var(--g); display: flex; align-items: center; justify-content: center; }
+.dd-menu b { display: block; font-size: 14px; color: var(--ink); line-height: 1.3; }
+.dd-menu small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.nav-cta { background: var(--ink); padding: 10px 20px; border-radius: 9px; }
+.nav-cta:hover { background: #000; }
+/* pie */
+.sfooter { border-top: 1px solid var(--border); padding-block: 40px; display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 32px; font-size: 14px; color: var(--muted); }
+.sfooter h4 { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); margin-bottom: 12px; }
+.sfooter a { display: block; text-decoration: none; color: var(--muted); margin-bottom: 7px; }
+.sfooter a:hover { color: var(--ink); }
+.sfooter .footer-logo { font-size: 22px; text-decoration: none; display: inline-block; margin: 0; }
+.sfooter .footer-lang { margin-top: 14px; }
+@media (max-width: 760px) { .sfooter { grid-template-columns: 1fr; } }
+/* ── iPhone con WhatsApp (iOS) ── */
+.ip { position: relative; width: 322px; height: 660px; border-radius: 58px; padding: 5px; background: linear-gradient(145deg,#8E8A85,#4C4946 30%,#2B2A28 55%,#6C6863 85%,#9B9690); box-shadow: var(--psh), inset 0 0 2px rgba(255,255,255,.5); }
+.ip .bt { position: absolute; width: 4px; border-radius: 2px; background: linear-gradient(90deg,#5A5652,#8E8A85); }
+.ip .b-a { left: -3px; top: 118px; height: 30px; } .ip .b-v1 { left: -3px; top: 170px; height: 56px; } .ip .b-v2 { left: -3px; top: 238px; height: 56px; } .ip .b-p { right: -3px; top: 200px; height: 90px; }
+.ip-in { width: 100%; height: 100%; border-radius: 53px; background: #000; padding: 11px; }
+.ip-scr { position: relative; width: 100%; height: 100%; border-radius: 43px; overflow: hidden; background: #EFE7DE; display: flex; flex-direction: column; font-family: -apple-system, 'SF Pro Text', 'Plus Jakarta Sans', sans-serif; }
+.sb { height: 50px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 6px 26px 0 34px; background: #F6F6F6; font-size: 15px; font-weight: 700; color: #000; position: relative; }
+.sb .si { display: flex; gap: 5px; align-items: center; fill: #000; color: #000; }
+.di { position: absolute; left: 50%; top: 11px; transform: translateX(-50%); width: 104px; height: 31px; border-radius: 20px; background: #000; }
+.wh { background: #F6F6F6; display: flex; align-items: center; gap: 8px; padding: 4px 12px 9px; border-bottom: .5px solid #D8D8D8; }
+.wh .bk { font-size: 30px; line-height: 20px; color: #007AFF; margin-top: -4px; }
+.wh .av { width: 34px; height: 34px; border-radius: 50%; background: #16A34A; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; }
+.wh .wn { flex: 1; display: flex; flex-direction: column; line-height: 1.2; } .wh .wn b { font-size: 15px; color: #000; } .wh .wn span { font-size: 11.5px; color: #8A8A8E; }
+.wc { flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 6px; background: #EFE7DE radial-gradient(rgba(0,0,0,.035) 1px, transparent 1.5px) 0 0/14px 14px; overflow: hidden; }
+.wc .day { align-self: center; background: #fff; color: #555; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 7px; margin-bottom: 2px; box-shadow: 0 1px 1px rgba(0,0,0,.06); }
+.wc .m { max-width: 82%; background: #fff; color: #111; font-size: 13px; line-height: 1.38; padding: 6px 9px; border-radius: 12px; box-shadow: 0 1px 1px rgba(0,0,0,.08); align-self: flex-start; white-space: pre-line; }
+.wc .m.o { align-self: flex-end; background: #DCF8C6; }
+.wc .m i { display: block; text-align: right; font-style: normal; font-size: 10px; color: #8A8F8C; margin-top: 1px; white-space: normal; }
+.wc .m.o i { color: #5E8E5A; }
+.wc .au { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 196px; }
+.wc .au i { width: 100%; margin-top: -2px; }
+.wc .pl { color: #555; font-size: 14px; }
+.wc .wf { flex: 1; height: 18px; background: repeating-linear-gradient(90deg,#7A9C76 0 2px,transparent 2px 5px); clip-path: polygon(0 40%,8% 20%,15% 55%,22% 10%,30% 45%,38% 25%,46% 60%,55% 15%,63% 50%,72% 30%,80% 55%,90% 20%,100% 45%,100% 100%,0 100%); }
+.wc .ma { width: 30px; height: 30px; border-radius: 50%; background: #C7D6C4; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.wc .card { align-self: flex-start; max-width: 86%; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.wc .card .st { height: 3px; background: linear-gradient(90deg,#16A34A,#25D366); }
+.wc .card .cb { padding: 8px 10px; font-size: 12px; line-height: 1.4; }
+.wc .card .k { font-size: 9.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #16A34A; margin-bottom: 3px; }
+.wc .card .stars { color: #FBBC04; font-size: 13px; }
+.wc .link { align-self: flex-start; background: #fff; color: #007AFF; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 12px; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+.wi { background: #F6F6F6; display: flex; align-items: center; gap: 10px; padding: 8px 12px 26px; border-top: .5px solid #D8D8D8; }
+.wi .pls { color: #007AFF; font-size: 26px; line-height: 20px; }
+.wi .fd { flex: 1; height: 32px; border-radius: 17px; background: #fff; border: .5px solid #D2D2D2; }
+.wi .mc { font-size: 18px; }
+.ip .home { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 120px; height: 5px; border-radius: 3px; background: #000; }
+
 </style>
 </head>
 <body>
 <!-- NAV -->
 <header>
   <nav class="nav wrap">
-    <a class="nav-logo" href="/"><b style="font-weight:800">dicho<span>.</span></b><small data-i18n="nav_tag">Preguntas</small></a>
+    <a class="nav-logo" href="index.html"><b style="font-weight:800">dicho<span>.</span></b></a>
     <div class="nav-links">
+      <div class="dd" id="dd"><button type="button" data-i18n="nav_sol" onclick="this.parentNode.classList.toggle('open')">Soluciones</button><div class="dd-menu"><a href="feedback.html"><span class="dd-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span><span><b data-i18n="s_feedback"></b><small data-i18n="s_feedback_d"></small></span></a><a href="preguntas.html"><span class="dd-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span><b data-i18n="s_preguntas"></b><small data-i18n="s_preguntas_d"></small></span></a><a href="ideas.html"><span class="dd-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg></span><span><b data-i18n="s_ideas"></b><small data-i18n="s_ideas_d"></small></span></a><a href="resenas.html"><span class="dd-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span><b data-i18n="s_resenas"></b><small data-i18n="s_resenas_d"></small></span></a></div></div>
       <a href="#como" data-i18n="nav_como">Cómo funciona</a>
       <a href="#crear" data-i18n="nav_crear">Crea tu pregunta</a>
-      <a href="#panel" data-i18n="nav_panel">Tu panel</a>
     </div>
     <div class="nav-right">
       <a href="https://dichosea.com/login.html" class="nav-acceder" id="nav-acceder-link" data-i18n="nav_acceder">Acceder</a>
-      <div class="nav-sep"></div>
       <button class="nav-cta" data-i18n="nav_prueba" onclick="goCrear()">Empieza gratis</button>
     </div>
   </nav>
@@ -395,42 +462,20 @@ body {
       <button class="btn-ghost" data-i18n="hero_sec" onclick="goTo('panel')">Ver el panel</button>
     </div>
   </div>
-  <div class="hero-phone" aria-hidden="true">
-    <div class="phone-shell">
-      <div class="phone-pill"><div class="phone-pill-inner"><div class="pill-cam"></div><div class="pill-mic"></div></div></div>
-      <div class="phone-screen">
-        <div class="wa-bar">
-          <div class="wa-av">EM</div>
-          <div class="wa-info">
-            <div class="wa-name" data-i18n="ph_name">El Mirador · Preguntas</div>
-            <div class="wa-status" data-i18n="ph_status">en línea</div>
-          </div>
-        </div>
-        <div class="chat-area">
-          <div class="day-chip" data-i18n="ph_day">HOY</div>
-          <div class="brow bot"><div class="bav">EM</div><div>
-            <div class="bub bot"><span data-i18n="ph_b1">👋 Estamos preparando la carta de otoño.</span><span class="bub-q" data-i18n="ph_q">¿Qué plato te gustaría ver?</span></div>
-            <div class="bt">13:02</div>
-          </div></div>
-          <div class="brow bot"><div class="bav">EM</div><div>
-            <div class="bub bot" data-i18n-html="ph_b2">Respóndenos con un <strong>audio</strong> 🎤</div>
-            <div class="bt">13:02</div>
-          </div></div>
-          <div class="brow usr"><div>
-            <div class="vn">
-              <div class="vn-btn"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="3" y="0" width="4" height="8" rx="2" fill="#fff"/><path d="M1 5.5a4 4 0 008 0" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/><line x1="5" y1="9.5" x2="5" y2="11.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-              <div class="vn-wave" id="vn-wave"></div>
-              <div class="vn-dur">0:11</div>
-            </div>
-            <div class="bt" style="text-align:right">13:03</div>
-          </div></div>
-          <div class="brow bot"><div class="bav">EM</div><div>
-            <div class="bub bot" data-i18n="ph_b3">¡Gracias! 🙏 Tu respuesta ya está en nuestra lista. Si lo añadimos a la carta, te avisamos.</div>
-            <div class="bt">13:03</div>
-          </div></div>
-        </div>
+  <div class="ip" aria-hidden="true"><span class="bt b-a"></span><span class="bt b-v1"></span><span class="bt b-v2"></span><span class="bt b-p"></span>
+    <div class="ip-in"><div class="ip-scr">
+      <div class="sb"><span>9:41</span><span class="di"></span><span class="si"><svg width="17" height="11" viewBox="0 0 17 11"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12"><rect x=".5" y=".5" width="21" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="18" height="8" rx="2"/><rect x="23" y="4" width="1.5" height="4" rx=".75" opacity=".4"/></svg></span></div>
+      <div class="wh"><span class="bk">‹</span><span class="av">D</span><div class="wn"><b>Dicho</b><span data-i18n="ph_status">en línea</span></div></div>
+      <div class="wc">
+        <div class="day" data-i18n="ph_day">Hoy</div>
+        <div class="m o"><span data-i18n="ph_m1"></span><i>13:02 ✓✓</i></div>
+        <div class="m"><span data-i18n="ph_m2"></span><i>13:02</i></div>
+        <div class="m o au"><span class="pl">▶</span><span class="wf"></span><span class="ma">🎙</span><i>0:11 · 13:03 ✓✓</i></div>
+        <div class="m"><span data-i18n="ph_m3"></span><i>13:03</i></div>
       </div>
-    </div>
+      <div class="wi"><span class="pls">+</span><span class="fd"></span><span class="mc">🎤</span></div>
+      <div class="home"></div>
+    </div></div>
   </div>
 </section>
 
@@ -464,6 +509,23 @@ body {
       <div class="step-h" data-i18n="step3_h">Escucha las respuestas</div>
       <p class="step-p" data-i18n="step3_p">Tus clientes responden con un audio. La IA lo transcribe, lo agrupa por temas y te resume qué piensa la mayoría.</p>
     </div>
+  </div>
+</section>
+
+<!-- CLIENTES Y EQUIPO -->
+<section class="section wrap" id="equipo">
+  <span class="label reveal" data-i18n="w_label">A quién preguntar</span>
+  <div class="section-head reveal">
+    <h2 class="section-h" data-i18n-html="w_h">A tus clientes. <em>Y también a tu equipo.</em></h2>
+    <p class="section-p" data-i18n="w_p">Cada pregunta tiene su QR. Pégalo en el local, mándalo por correo o ponlo en la sala de descanso.</p>
+  </div>
+  <div class="who-grid">
+    <div class="who-card reveal"><span class="who-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
+      <h3 data-i18n="w1_h">Tus clientes</h3><p data-i18n="w1_p">Para decidir con lo que piensan quienes te compran, te visitan o te leen.</p>
+      <ul><li data-i18n="w1_e1"></li><li data-i18n="w1_e2"></li><li data-i18n="w1_e3"></li></ul></div>
+    <div class="who-card reveal" style="transition-delay:.06s"><span class="who-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+      <h3 data-i18n="w2_h">Tu equipo, de forma anónima</h3><p data-i18n="w2_p">Tu panel solo muestra lo que se dijo, nunca quién lo dijo. Así la gente se atreve a contar lo que de verdad piensa.</p>
+      <ul><li data-i18n="w2_e1"></li><li data-i18n="w2_e2"></li><li data-i18n="w2_e3"></li></ul></div>
   </div>
 </section>
 
@@ -605,23 +667,15 @@ body {
 
 <!-- FOOTER -->
 <footer class="wrap">
-  <div class="footer">
-    <div class="footer-logo">dicho<span>.</span></div>
-    <div data-i18n="footer_copy">© 2026 Dicho · hecho con ❤️</div>
-    <div class="footer-right">
-      <div class="footer-links">
-        <a href="/" data-i18n="footer_op">Opiniones y reseñas</a>
-        <a href="privacy.html" data-i18n="footer_privacy">Privacidad</a>
-        <a href="terms.html" data-i18n="footer_terms">Términos</a>
-        <a href="#contacto" data-i18n="footer_contact">Contacto</a>
-      </div>
-      <div class="footer-sep"></div>
+  <div class="sfooter">
+    <div><a class="footer-logo" href="index.html">dicho<span>.</span></a><p style="margin-top:10px;max-width:260px" data-i18n="f_tag"></p>
       <div class="footer-lang">
         <button class="footer-lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
         <button class="footer-lang-btn" data-lang="ca" onclick="setLang('ca')">CA</button>
         <button class="footer-lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
-      </div>
-    </div>
+      </div></div>
+    <div><h4 data-i18n="nav_sol"></h4><a href="feedback.html" data-i18n="s_feedback"></a><a href="preguntas.html" data-i18n="s_preguntas"></a><a href="ideas.html" data-i18n="s_ideas"></a><a href="resenas.html" data-i18n="s_resenas"></a></div>
+    <div><h4>Dicho</h4><a href="login.html" data-i18n="nav_acceder"></a><a href="privacy.html" data-i18n="footer_privacy"></a><a href="terms.html" data-i18n="footer_terms"></a><span style="display:block;margin-top:14px">© 2026 Dicho</span></div>
   </div>
 </footer>
 
@@ -635,14 +689,44 @@ body {
 var LANG = 'es';
 var TR = {
   es: {
-    nav_tag:'Preguntas', nav_como:'Cómo funciona', nav_crear:'Crea tu pregunta', nav_panel:'Tu panel',
+    nav_sol:"Soluciones",
+    nav_como:"Cómo funciona",
+    nav_crear:"Crea tu pregunta",
+    s_feedback:"Saber qué opinan mis clientes",
+    s_feedback_d:"Qué gusta y qué falla, solo para ti",
+    s_preguntas:"Preguntar lo que quiera a mis clientes o a mi equipo",
+    s_preguntas_d:"Respuestas por voz, también anónimas",
+    s_ideas:"Recoger ideas nuevas",
+    s_ideas_d:"De producto, de mejora, de lo que quieras",
+    s_resenas:"Conseguir más reseñas en Google",
+    s_resenas_d:"Convierte clientes contentos en reseñas",
+    f_tag:"Feedback por voz en WhatsApp, resumido con IA.",
+    ph_day:"Hoy",
+    ph_m1:"Para responder a «¿Qué plato te gustaría ver en nuestra carta?»",
+    ph_m2:"¡Perfecto! 🎙️ Solo envíanos un audio con tu opinión. 🙌\n\n🔒 100% confidencial",
+    ph_m3:"¡Mil gracias por tu tiempo! 🙏",
+    hero_sub1:"Escribe una pregunta, ponla en un cartel con QR y tus clientes o tu equipo te responden con un audio de WhatsApp.",
+    w_label:"A quién preguntar",
+    w_h:"A tus clientes. <em>Y también a tu equipo.</em>",
+    w_p:"Cada pregunta tiene su QR. Pégalo en el local, mándalo por correo o ponlo en la sala de descanso.",
+    w1_h:"Tus clientes",
+    w1_p:"Para decidir con lo que piensan quienes te compran, te visitan o te leen.",
+    w1_e1:"«¿Qué plato te gustaría ver en nuestra carta?»",
+    w1_e2:"«¿Qué horario te va mejor los domingos?»",
+    w1_e3:"«¿Qué te pareció la nueva terraza?»",
+    w2_h:"Tu equipo, de forma anónima",
+    w2_p:"Tu panel solo muestra lo que se dijo, nunca quién lo dijo. Así la gente se atreve a contar lo que de verdad piensa.",
+    w2_e1:"«¿Qué te haría más fácil el día a día?»",
+    w2_e2:"«¿Qué cambiarías de cómo trabajamos?»",
+    w2_e3:"«¿Qué te ha parecido la formación de hoy?»",
+    nav_tag:'Preguntas', nav_panel:'Tu panel',
     nav_acceder:'Acceder', nav_prueba:'Empieza gratis',
     hero_label:'Preguntas por voz · Respuestas con IA',
     hero_h:'¿Qué te gustaría preguntar?<br><em>Te responden con su voz.</em>',
-    hero_sub1:'Escribe una pregunta, ponla en un cartel con QR y tus clientes te responden con un audio de WhatsApp.',
+    
     hero_sub2:'La IA transcribe, agrupa y resume todas las respuestas para que decidas con lo que de verdad piensan.',
     hero_cta:'Crea tu primera pregunta', hero_sec:'Ver el panel',
-    ph_name:'El Mirador · Preguntas', ph_status:'en línea', ph_day:'HOY',
+    ph_name:'El Mirador · Preguntas', ph_status:'en línea', 
     ph_b1:'👋 Estamos preparando la carta de otoño.', ph_q:'¿Qué plato te gustaría ver?',
     ph_b2:'Respóndenos con un <strong>audio</strong> 🎤',
     ph_b3:'¡Gracias! 🙏 Tu respuesta ya está en nuestra lista. Si lo añadimos a la carta, te avisamos.',
@@ -709,14 +793,44 @@ var TR = {
     cookie_privacy:'política de privacidad', cookie_accept:'Aceptar'
   },
   ca: {
-    nav_tag:'Preguntes', nav_como:'Com funciona', nav_crear:'Crea la teva pregunta', nav_panel:'El teu panell',
+    nav_sol:"Solucions",
+    nav_como:"Com funciona",
+    nav_crear:"Crea la teva pregunta",
+    s_feedback:"Saber què opinen els meus clients",
+    s_feedback_d:"Què agrada i què falla, només per a tu",
+    s_preguntas:"Preguntar el que vulgui als meus clients o al meu equip",
+    s_preguntas_d:"Respostes per veu, també anònimes",
+    s_ideas:"Recollir idees noves",
+    s_ideas_d:"De producte, de millora, del que vulguis",
+    s_resenas:"Aconseguir més ressenyes a Google",
+    s_resenas_d:"Converteix clients contents en ressenyes",
+    f_tag:"Feedback per veu a WhatsApp, resumit amb IA.",
+    ph_day:"Avui",
+    ph_m1:"Per respondre a «Quin plat t'agradaria veure a la nostra carta?»",
+    ph_m2:"Perfecte! 🎙️ Només envia'ns un àudio amb la teva opinió. 🙌\n\n🔒 100% confidencial",
+    ph_m3:"Moltes gràcies pel teu temps! 🙏",
+    hero_sub1:"Escriu una pregunta, posa-la en un cartell amb QR i els teus clients o el teu equip et responen amb un àudio de WhatsApp.",
+    w_label:"A qui preguntar",
+    w_h:"Als teus clients. <em>I també al teu equip.</em>",
+    w_p:"Cada pregunta té el seu QR. Enganxa'l al local, envia'l per correu o posa'l a la sala de descans.",
+    w1_h:"Els teus clients",
+    w1_p:"Per decidir amb el que pensen els qui et compren, et visiten o et llegeixen.",
+    w1_e1:"«Quin plat t'agradaria veure a la nostra carta?»",
+    w1_e2:"«Quin horari et va millor els diumenges?»",
+    w1_e3:"«Què et va semblar la nova terrassa?»",
+    w2_h:"El teu equip, de manera anònima",
+    w2_p:"El teu panell només mostra el que es va dir, mai qui ho va dir. Així la gent s'atreveix a explicar el que de debò pensa.",
+    w2_e1:"«Què et faria més fàcil el dia a dia?»",
+    w2_e2:"«Què canviaries de com treballem?»",
+    w2_e3:"«Què t'ha semblat la formació d'avui?»",
+    nav_tag:'Preguntes', nav_panel:'El teu panell',
     nav_acceder:'Accedeix', nav_prueba:'Comença gratis',
     hero_label:'Preguntes per veu · Respostes amb IA',
     hero_h:'Què t\'agradaria preguntar?<br><em>Et responen amb la seva veu.</em>',
-    hero_sub1:'Escriu una pregunta, posa-la en un cartell amb QR i els teus clients et responen amb un àudio de WhatsApp.',
+    
     hero_sub2:'La IA transcriu, agrupa i resumeix totes les respostes perquè decideixis amb el que realment pensen.',
     hero_cta:'Crea la teva primera pregunta', hero_sec:'Veure el panell',
-    ph_name:'El Mirador · Preguntes', ph_status:'en línia', ph_day:'AVUI',
+    ph_name:'El Mirador · Preguntes', ph_status:'en línia', 
     ph_b1:'👋 Estem preparant la carta de tardor.', ph_q:'Quin plat t\'agradaria veure-hi?',
     ph_b2:'Respon-nos amb un <strong>àudio</strong> 🎤',
     ph_b3:'Gràcies! 🙏 La teva resposta ja és a la nostra llista. Si l\'afegim a la carta, t\'avisem.',
@@ -783,14 +897,44 @@ var TR = {
     cookie_privacy:'política de privadesa', cookie_accept:'Acceptar'
   },
   en: {
-    nav_tag:'Questions', nav_como:'How it works', nav_crear:'Create your question', nav_panel:'Your dashboard',
+    nav_sol:"Solutions",
+    nav_como:"How it works",
+    nav_crear:"Create your question",
+    s_feedback:"Know what my customers think",
+    s_feedback_d:"What works and what doesn't, just for you",
+    s_preguntas:"Ask my customers or my team anything",
+    s_preguntas_d:"Voice answers, anonymous if you like",
+    s_ideas:"Collect new ideas",
+    s_ideas_d:"For products, improvements, anything",
+    s_resenas:"Get more Google reviews",
+    s_resenas_d:"Turn happy customers into reviews",
+    f_tag:"Voice feedback on WhatsApp, summarised by AI.",
+    ph_day:"Today",
+    ph_m1:"To answer «What dish would you like to see on our menu?»",
+    ph_m2:"Perfect! 🎙️ Just send us a voice message with your opinion. 🙌\n\n🔒 100% confidential",
+    ph_m3:"Thank you so much for your time! 🙏",
+    hero_sub1:"Write a question, put it on a poster with a QR code, and your customers or your team answer with a WhatsApp voice message.",
+    w_label:"Who to ask",
+    w_h:"Your customers. <em>And your team, too.</em>",
+    w_p:"Every question has its own QR. Put it up in your venue, send it by email or pin it in the break room.",
+    w1_h:"Your customers",
+    w1_p:"To decide based on what the people who buy from you, visit you or read you really think.",
+    w1_e1:"«What dish would you like to see on our menu?»",
+    w1_e2:"«What opening hours suit you best on Sundays?»",
+    w1_e3:"«What did you think of the new terrace?»",
+    w2_h:"Your team, anonymously",
+    w2_p:"Your dashboard only shows what was said, never who said it. That way people dare to say what they really think.",
+    w2_e1:"«What would make your day-to-day easier?»",
+    w2_e2:"«What would you change about how we work?»",
+    w2_e3:"«What did you think of today's training?»",
+    nav_tag:'Questions', nav_panel:'Your dashboard',
     nav_acceder:'Log in', nav_prueba:'Start free',
     hero_label:'Voice questions · AI-powered answers',
     hero_h:'What would you like to ask?<br><em>They answer with their voice.</em>',
-    hero_sub1:'Write a question, put it on a poster with a QR code, and your customers answer with a WhatsApp voice message.',
+    
     hero_sub2:'AI transcribes, groups and summarizes every answer so you can decide based on what they really think.',
     hero_cta:'Create your first question', hero_sec:'See the dashboard',
-    ph_name:'El Mirador · Questions', ph_status:'online', ph_day:'TODAY',
+    ph_name:'El Mirador · Questions', ph_status:'online', 
     ph_b1:'👋 We\'re putting together our autumn menu.', ph_q:'Which dish would you like to see?',
     ph_b2:'Answer us with a <strong>voice message</strong> 🎤',
     ph_b3:'Thank you! 🙏 Your answer is on our list. If we add it to the menu, we\'ll let you know.',
@@ -909,11 +1053,6 @@ function setLang(lang) {
   renderChips(); renderPoster(); renderDash();
 }
 
-// ── WAVE (hero) ──────────────────────────────────────────────────
-(function(){
-  var h = [4,9,6,13,7,11,4,9,14,8,5,10,7,12,6,9];
-  document.getElementById('vn-wave').innerHTML = h.map(function(x){ return '<div class="vn-bar" style="height:'+x+'px"></div>'; }).join('');
-})();
 
 // ── BUILDER ──────────────────────────────────────────────────────
 var builder = { ex: 0, edited: false };
@@ -997,6 +1136,8 @@ function renderDash() {
     return '<div class="resp"><div class="play">' + PLAY + '</div><div><div class="resp-t">' + esc(r[0]) + '</div><div class="resp-m">' + r[1] + ' · ' + ago + '</div></div></div>';
   }).join('');
 }
+
+document.addEventListener('click', function(e) { var dd = document.getElementById('dd'); if (dd && !dd.contains(e.target)) dd.classList.remove('open'); });
 
 // ── INIT ─────────────────────────────────────────────────────────
 qEl.value = TR.es.ex[0][1];
