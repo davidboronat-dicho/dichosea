@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Dicho · Presentación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
+<style>
+:root { --ink:#16201A; --green:#16A34A; --deep:#14532D; --muted:#5C665F; --soft:#8A938C; --soft2:#9AA39C; --line:#EEF0EC; --track:#F0F2EE; --bar3:#C9CEC9; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+/* Escenario 1600×900 escalado a la pantalla (16:9, centrado) */
+#stage { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform-origin: 0 0; background: #fff; }
+.view { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .6s ease, visibility 0s linear .6s; }
+.view.on { opacity: 1; visibility: visible; transition: opacity .6s ease; }
+
+.pf { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; }
+.lab { font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--soft); }
+.brand { position: absolute; bottom: 52px; left: 96px; font-size: 20px; font-weight: 800; color: var(--green); line-height: 20px; }
+.brand span { color: var(--ink); }
+.count { position: absolute; bottom: 52px; right: 96px; font-size: 18px; color: var(--muted); line-height: 20px; }
+.count b { font-size: 20px; color: var(--ink); }
+
+/* ── Vista 1: la pregunta ── */
+#v-q .biz { position: absolute; top: 56px; left: 96px; font-size: 15px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--soft); }
+#v-q .left { position: absolute; top: 205px; left: 96px; width: 820px; }
+#v-q .eye { font-size: 15px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--green); margin-bottom: 22px; line-height: 1; }
+#q-text { font-size: 68px; line-height: 1.14; letter-spacing: -.01em; }
+#q-text.sm { font-size: 56px; } #q-text.xs { font-size: 46px; }
+#q-sub { margin-top: 44px; font-size: 22px; color: var(--muted); }
+#q-sub.paused { color: #B45309; }
+#v-q .right { position: absolute; top: 205px; right: 120px; width: 420px; display: flex; flex-direction: column; align-items: center; }
+.qr { position: relative; width: 420px; height: 420px; }
+.qr img { display: block; width: 100%; height: 100%; }
+.qr svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+#q-count { margin-top: 34px; font-size: 18px; color: var(--muted); }
+#q-count b { font-size: 28px; color: var(--ink); vertical-align: middle; }
+#q-count span { vertical-align: middle; }
+
+/* ── Vista 2: en directo ── */
+#l-q { position: absolute; top: 56px; left: 96px; width: 1180px; font-size: 17px; font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#l-head { position: absolute; top: 110px; left: 96px; width: 1120px; font-size: 42px; line-height: 1.18; }
+#l-head.sm { font-size: 36px; }
+#l-head.wait { color: var(--soft2); }
+#l-qr { position: absolute; top: 118px; right: 96px; width: 120px; height: 120px; }
+#l-ideas { position: absolute; top: 292px; left: 96px; width: 830px; }
+#ideas-list { height: 440px; overflow: hidden; margin-top: 14px; -webkit-mask-image: linear-gradient(#000 78%, transparent); mask-image: linear-gradient(#000 78%, transparent); }
+.idea { padding: 15px 0; border-top: 1px solid var(--line); }
+.idea .t { font-size: 23px; font-weight: 600; line-height: 1.32; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.idea .m { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--soft2); margin-top: 6px; }
+.idea.first .m .c { color: var(--green); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--green); margin-right: 10px; vertical-align: middle; position: relative; top: -2px; }
+.idea.new { animation: entra .8s cubic-bezier(.2,.7,.2,1); }
+@keyframes entra { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+.empty { padding: 18px 0; border-top: 1px solid var(--line); font-size: 20px; color: var(--soft2); }
+#l-temas { position: absolute; top: 292px; right: 96px; width: 500px; }
+#temas-list { margin-top: 14px; }
+.tema { display: grid; grid-template-columns: 200px 1fr 34px; align-items: center; gap: 20px; padding: 13px 0; }
+.tema .n { font-size: 21px; font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tema .tr { height: 10px; border-radius: 5px; background: var(--track); }
+.tema .b { height: 10px; border-radius: 5px; background: var(--bar3); transition: width 1s cubic-bezier(.2,.7,.2,1); }
+.tema .k { font-size: 20px; font-weight: 800; text-align: right; color: var(--soft2); }
+.tema.top .n { font-weight: 800; color: var(--ink); } .tema.top .b { background: var(--ink); } .tema.top .k { color: var(--ink); }
+.tema.first .b { background: var(--green); }
+
+/* ── Mensaje de error / carga ── */
+#msg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 26px; color: var(--muted); background: #fff; z-index: 5; }
+#msg.hide { display: none; }
+
+/* ── Controles (aparecen al mover el ratón) ── */
+#ctrl { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); display: flex; gap: 6px; padding: 6px; background: rgba(22,32,26,.92); border-radius: 12px; z-index: 10; opacity: 0; transition: opacity .3s; font-family: 'Plus Jakarta Sans', sans-serif; }
+#ctrl.show { opacity: 1; }
+#ctrl button { border: 0; background: transparent; color: #CBD3CD; font: 600 14px 'Plus Jakarta Sans', sans-serif; padding: 9px 14px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+#ctrl button:hover { background: rgba(255,255,255,.08); color: #fff; }
+#ctrl button.on { background: #fff; color: var(--ink); }
+#ctrl .sep { width: 1px; background: rgba(255,255,255,.15); margin: 6px 2px; }
+body.idle { cursor: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- Vista 1: la pregunta con su QR -->
+  <section class="view" id="v-q">
+    <div class="biz" id="q-biz"></div>
+    <div class="left">
+      <div class="eye" id="q-eye"></div>
+      <div class="pf" id="q-text"></div>
+      <div id="q-sub"></div>
+    </div>
+    <div class="right">
+      <div class="qr">
+        <img id="q-qr" alt="">
+        <svg viewBox="0 0 220 220"><circle cx="110" cy="110" r="44" fill="#fff"/><circle cx="110" cy="110" r="38" fill="#14532D"/><path d="M99,102 C99,119 121,119 121,102" stroke="#fff" stroke-width="3.9" stroke-linecap="round" fill="none"/><rect x="108.2" y="119.3" width="3.5" height="5" rx="1.8" fill="#fff"/><rect x="100.1" y="123.5" width="19.8" height="3.5" rx="1.8" fill="#fff"/><rect x="104.3" y="88.8" width="11.4" height="19.5" rx="5.7" fill="#fff"/></svg>
+      </div>
+      <div id="q-count"><span class="dot"></span><b>0</b> <span></span></div>
+    </div>
+    <div class="brand">dicho<span>.</span></div>
+  </section>
+
+  <!-- Vista 2: resumen en directo -->
+  <section class="view" id="v-l">
+    <div id="l-q"></div>
+    <div class="pf" id="l-head"></div>
+    <img id="l-qr" alt="">
+    <div id="l-ideas"><div class="lab" id="lab-ideas"></div><div id="ideas-list"></div></div>
+    <div id="l-temas"><div class="lab" id="lab-temas"></div><div id="temas-list"></div></div>
+    <div class="brand">dicho<span>.</span></div>
+    <div class="count" id="l-count"></div>
+  </section>
+
+  <div id="msg"></div>
+</div>
+
+<div id="ctrl">
+  <button id="b-q" onclick="setView('q', true)"></button>
+  <button id="b-l" onclick="setView('l', true)"></button>
+  <div class="sep"></div>
+  <button id="b-auto" onclick="toggleAuto()"></button>
+  <button id="b-fs" onclick="toggleFs()"></button>
+</div>
+
+<script>
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEgnKWZYNMFUclYoY3k9ujIMzF2nvL_TXq5cDoJ3cyOEKJwWLfEjjoqbcFVcV9DEvB1w/exec';
+var POLL_MS = 10000, AUTO_MS = 20000;
+var _p = new URLSearchParams(location.search);
+var T = (_p.get('t') || '').trim();
+var VIEW = _p.get('v') === 'vivo' ? 'l' : 'q';
+var AUTO = _p.get('auto') === '1';
+var D = null, LANG = 'es', seen = {}, firstRender = true, autoTimer = null, pollTimer = null;
+
+var TR = {
+  es: { eye: 'Queremos saber', sub: 'Escanea y responde con un audio de WhatsApp', paused: 'Esta pregunta está en pausa',
+        r1: 'respuesta', rN: 'respuestas', ideas: 'Últimas ideas recibidas', temas: 'Temas más mencionados', opciones: 'Opciones más elegidas',
+        wait: 'Esperando las primeras respuestas…', noIdeas: 'Las ideas aparecerán aquí en cuanto lleguen.',
+        now: 'ahora mismo', min: 'hace {n} min', h: 'hace {n} h', d: 'hace {n} d',
+        bQ: 'Pregunta', bL: 'En vivo', bAuto: 'Alternar', bFs: 'Pantalla completa', bad: 'Este enlace de presentación no es válido.', load: 'Cargando…' },
+  ca: { eye: 'Volem saber', sub: 'Escaneja i respon amb un àudio de WhatsApp', paused: 'Aquesta pregunta està en pausa',
+        r1: 'resposta', rN: 'respostes', ideas: 'Últimes idees rebudes', temas: 'Temes més mencionats', opciones: 'Opcions més triades',
+        wait: 'Esperant les primeres respostes…', noIdeas: 'Les idees apareixeran aquí tan bon punt arribin.',
+        now: 'ara mateix', min: 'fa {n} min', h: 'fa {n} h', d: 'fa {n} d',
+        bQ: 'Pregunta', bL: 'En directe', bAuto: 'Alternar', bFs: 'Pantalla completa', bad: 'Aquest enllaç de presentació no és vàlid.', load: 'Carregant…' },
+  en: { eye: 'We want to know', sub: 'Scan and answer with a WhatsApp voice message', paused: 'This question is paused',
+        r1: 'answer', rN: 'answers', ideas: 'Latest ideas', temas: 'Most mentioned topics', opciones: 'Most chosen options',
+        wait: 'Waiting for the first answers…', noIdeas: 'Ideas will appear here as soon as they arrive.',
+        now: 'just now', min: '{n} min ago', h: '{n} h ago', d: '{n} d ago',
+        bQ: 'Question', bL: 'Live', bAuto: 'Rotate', bFs: 'Full screen', bad: 'This presentation link is not valid.', load: 'Loading…' }
+};
+function t(k) { return (TR[LANG] || TR.es)[k]; }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function(c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function cap(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); }
+function qrSrc(url, size) { return 'https://api.qrserver.com/v1/create-qr-code/?size=' + size + 'x' + size + '&ecc=H&margin=0&color=16201A&bgcolor=ffffff&data=' + encodeURIComponent(url); }
+function respuestas(n) { return '<b>' + n + '</b> <span>' + (n === 1 ? t('r1') : t('rN')) + '</span>'; }
+function hace(ts) {
+  if (!ts) return '';
+  var m = Math.floor((Date.now() - ts) / 60000);
+  if (m < 1) return t('now');
+  if (m < 60) return t('min').replace('{n}', m);
+  var h = Math.floor(m / 60);
+  if (h < 24) return t('h').replace('{n}', h);
+  return t('d').replace('{n}', Math.floor(h / 24));
+}
+
+// ── Escala el escenario 1600×900 a la ventana ──
+function fit() {
+  var s = Math.min(innerWidth / 1600, innerHeight / 900), st = document.getElementById('stage');
+  st.style.transform = 'translate(-50%, -50%) scale(' + s + ')';
+  st.style.transformOrigin = 'center center';
+}
+addEventListener('resize', fit);
+
+function msg(txt) { var m = document.getElementById('msg'); m.textContent = txt; m.classList.toggle('hide', !txt); }
+
+function labels() {
+  document.documentElement.lang = LANG;
+  document.getElementById('q-eye').textContent = t('eye');
+  document.getElementById('lab-ideas').textContent = t('ideas');
+  document.getElementById('b-q').textContent = t('bQ');
+  document.getElementById('b-l').textContent = t('bL');
+  document.getElementById('b-auto').textContent = t('bAuto');
+  document.getElementById('b-fs').textContent = t('bFs');
+}
+
+// ── Pintar ──
+function render() {
+  var d = D; if (!d) return;
+  var landing = d.landingUrl;
+  // Vista 1
+  document.getElementById('q-biz').textContent = d.negocio || '';
+  var q = document.getElementById('q-text');
+  q.textContent = d.pregunta;
+  q.className = 'pf' + (d.pregunta.length > 150 ? ' xs' : d.pregunta.length > 105 ? ' sm' : '');
+  var sub = document.getElementById('q-sub');
+  var pausada = d.estado && d.estado !== 'activa';
+  sub.textContent = pausada ? t('paused') : t('sub');
+  sub.className = pausada ? 'paused' : '';
+  var qi = document.getElementById('q-qr'), li = document.getElementById('l-qr');
+  if (qi.dataset.u !== landing) { qi.src = qrSrc(landing, 600); qi.dataset.u = landing; li.src = qrSrc(landing, 300); }
+  document.getElementById('q-count').innerHTML = '<span class="dot"></span>' + respuestas(d.n);
+
+  // Vista 2
+  document.getElementById('l-q').textContent = d.pregunta;
+  var head = document.getElementById('l-head');
+  if (d.titular && d.n) { head.textContent = d.titular; head.className = 'pf' + (d.titular.length > 130 ? ' sm' : ''); }
+  else { head.textContent = t('wait'); head.className = 'pf wait'; }
+  document.getElementById('l-count').innerHTML = respuestas(d.n);
+  document.getElementById('lab-temas').textContent = d.tipo === 'eleccion' ? t('opciones') : t('temas');
+
+  var il = document.getElementById('ideas-list');
+  var ideas = (d.ideas || []).slice(0, 6);
+  if (!ideas.length) il.innerHTML = '<div class="empty">' + esc(t('noIdeas')) + '</div>';
+  else il.innerHTML = ideas.map(function(x, i) {
+    var id = x.ts + '|' + x.texto, nueva = !firstRender && !seen[id];
+    return '<div class="idea' + (i === 0 ? ' first' : '') + (nueva ? ' new' : '') + '">' +
+      '<div class="t">' + (i === 0 ? '<span class="dot"></span>' : '') + esc(x.texto) + '</div>' +
+      '<div class="m">' + (x.categoria ? '<span class="c">' + esc(x.categoria) + '</span> · ' : '') + esc(hace(x.ts)) + '</div></div>';
+  }).join('');
+  ideas.forEach(function(x) { seen[x.ts + '|' + x.texto] = 1; });
+
+  var tl = document.getElementById('temas-list'), temas = d.temas || [];
+  var max = temas.length ? temas[0].count : 1;
+  // Se reutilizan las filas para que las barras crezcan con animación
+  var rows = tl.children;
+  while (rows.length > temas.length) tl.removeChild(tl.lastChild);
+  temas.forEach(function(x, i) {
+    var row = rows[i];
+    if (!row) {
+      row = document.createElement('div');
+      row.innerHTML = '<div class="n"></div><div class="tr"><div class="b" style="width:0"></div></div><div class="k"></div>';
+      tl.appendChild(row);
+    }
+    row.className = 'tema' + (i < 3 ? ' top' : '') + (i === 0 ? ' first' : '');
+    row.querySelector('.n').textContent = cap(x.label);
+    row.querySelector('.k').textContent = x.count;
+    var b = row.querySelector('.b'), w = Math.max(4, Math.round(x.count / max * 100)) + '%';
+    requestAnimationFrame(function() { b.style.width = w; });
+  });
+  firstRender = false;
+}
+
+// ── Datos (cada 10 s) ──
+function load() {
+  return fetch(GAS_URL + '?page=getPresentacion&t=' + encodeURIComponent(T) + '&_=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d || !d.ok) { if (!D) msg(t('bad')); return; }
+      if (d.idioma && TR[d.idioma] && d.idioma !== LANG) { LANG = d.idioma; labels(); }
+      D = d; msg(''); render();
+    })
+    .catch(function() { /* sin red: se mantiene lo último que se mostró */ });
+}
+
+// ── Vistas y controles ──
+function setView(v, manual) {
+  VIEW = v;
+  document.getElementById('v-q').classList.toggle('on', v === 'q');
+  document.getElementById('v-l').classList.toggle('on', v === 'l');
+  document.getElementById('b-q').classList.toggle('on', v === 'q');
+  document.getElementById('b-l').classList.toggle('on', v === 'l');
+  if (manual && AUTO) restartAuto();
+}
+function restartAuto() {
+  clearInterval(autoTimer);
+  if (AUTO) autoTimer = setInterval(function() { setView(VIEW === 'q' ? 'l' : 'q'); }, AUTO_MS);
+  document.getElementById('b-auto').classList.toggle('on', AUTO);
+}
+function toggleAuto() { AUTO = !AUTO; restartAuto(); }
+function toggleFs() {
+  if (!document.fullscreenElement) { (document.documentElement.requestFullscreen || function() {}).call(document.documentElement); }
+  else if (document.exitFullscreen) document.exitFullscreen();
+}
+document.addEventListener('keydown', function(e) {
+  var k = e.key.toLowerCase();
+  if (k === 'arrowright' || k === 'arrowleft' || k === ' ' || k === 'pagedown' || k === 'pageup') { e.preventDefault(); setView(VIEW === 'q' ? 'l' : 'q', true); }
+  else if (k === '1' || k === 'p') setView('q', true);
+  else if (k === '2' || k === 'v') setView('l', true);
+  else if (k === 'a') toggleAuto();
+  else if (k === 'f') toggleFs();
+});
+var idleT = null;
+function wake() {
+  document.getElementById('ctrl').classList.add('show'); document.body.classList.remove('idle');
+  clearTimeout(idleT);
+  idleT = setTimeout(function() { document.getElementById('ctrl').classList.remove('show'); document.body.classList.add('idle'); }, 2500);
+}
+['mousemove', 'touchstart', 'keydown'].forEach(function(ev) { addEventListener(ev, wake, { passive: true }); });
+
+// Relojes de "hace X min" sin esperar a nuevos datos
+setInterval(function() { if (D) render(); }, 30000);
+
+// ── Inicio ──
+(function init() {
+  var bl = (navigator.language || 'es').slice(0, 2).toLowerCase();
+  LANG = TR[bl] ? bl : 'es';
+  labels(); fit(); setView(VIEW); restartAuto();
+  if (!/^[a-f0-9]{12,40}$/i.test(T)) { msg(t('bad')); return; }
+  msg(t('load'));
+  load();
+  pollTimer = setInterval(function() { if (!document.hidden) load(); }, POLL_MS);
+  wake();
+})();
+</script>
+</body>
+</html>
