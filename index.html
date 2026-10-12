@@ -298,7 +298,7 @@ window.PAGE = {
       v3_h: 'Sin fricción', v3_p: 'Nada que descargar ni contraseñas que recordar. Funciona en cualquier móvil con WhatsApp.',
       v4_h: 'Tú solo lees el resumen', v4_p: 'No tienes que escuchar cada audio: la IA te da los temas, las citas más claras y la conclusión.',
       w_eye: 'Para quién', w_h: 'Para quien quiere escuchar de verdad.',
-      chips: [["Negocios locales y cadenas", "Qué piensan tus clientes en cada local, y más reseñas en Google."], ["Empresas de producto", "Ideas y opiniones directas de quien usa lo que vendes."], ["Eventos y congresos", "Pregunta en directo y proyecta las respuestas en pantalla."], ["Medios de comunicación", "Escucha a tu audiencia y descubre qué historias quiere."], ["Administración pública", "Participación ciudadana sin formularios: el vecino habla y tú lo entiendes."], ["Equipos de trabajo", "Clima y propuestas de tu equipo, de forma anónima."]],
+      chips: [["Negocios locales y cadenas", "Qué piensan tus clientes en cada local, y más reseñas en Google.", "Saber qué opinan →", "feedback.html"], ["Empresas de producto", "Ideas y opiniones directas de quien usa lo que vendes.", "Recoger ideas →", "ideas.html"], ["Eventos y congresos", "Pregunta en directo y proyecta las respuestas en pantalla.", "Preguntar en directo →", "preguntas.html"], ["Medios de comunicación", "Escucha a tu audiencia y descubre qué historias quiere.", "Escuchar a tu audiencia →", "ideas.html"], ["Administración pública", "Participación ciudadana sin formularios: el vecino habla y tú lo entiendes.", "Preguntar a la ciudadanía →", "preguntas.html"], ["Equipos de trabajo", "Clima y propuestas de tu equipo, de forma anónima.", "Preguntar a tu equipo →", "preguntas.html#equipo"]],
       e_eye: 'Empieza gratis', e_h: 'Tu primer QR, <em>en 5 minutos.</em>', e_p: 'Dinos qué quieres conseguir y te llevamos al sitio adecuado. Los primeros audios pueden llegarte hoy mismo.',
       g_t: '¿Qué quieres conseguir?', g_btn: 'Empezar →', g_note: 'Gratis. Sin tarjeta.'
     },
@@ -320,7 +320,7 @@ window.PAGE = {
       v3_h: 'Sense fricció', v3_p: 'Res per descarregar ni contrasenyes per recordar. Funciona en qualsevol mòbil amb WhatsApp.',
       v4_h: 'Tu només llegeixes el resum', v4_p: 'No has d\'escoltar cada àudio: la IA et dona els temes, les cites més clares i la conclusió.',
       w_eye: 'Per a qui', w_h: 'Per a tothom qui vulgui escoltar de debò.',
-      chips: [["Negocis locals i cadenes", "Què pensen els teus clients a cada local, i més ressenyes a Google."], ["Empreses de producte", "Idees i opinions directes de qui fa servir el que vens."], ["Esdeveniments i congressos", "Pregunta en directe i projecta les respostes a la pantalla."], ["Mitjans de comunicació", "Escolta la teva audiència i descobreix quines històries vol."], ["Administració pública", "Participació ciutadana sense formularis: el veí parla i tu ho entens."], ["Equips de treball", "Clima i propostes del teu equip, de manera anònima."]],
+      chips: [["Negocis locals i cadenes", "Què pensen els teus clients a cada local, i més ressenyes a Google.", "Saber què opinen →", "feedback.html"], ["Empreses de producte", "Idees i opinions directes de qui fa servir el que vens.", "Recollir idees →", "ideas.html"], ["Esdeveniments i congressos", "Pregunta en directe i projecta les respostes a la pantalla.", "Preguntar en directe →", "preguntas.html"], ["Mitjans de comunicació", "Escolta la teva audiència i descobreix quines històries vol.", "Escoltar la teva audiència →", "ideas.html"], ["Administració pública", "Participació ciutadana sense formularis: el veí parla i tu ho entens.", "Preguntar a la ciutadania →", "preguntas.html"], ["Equips de treball", "Clima i propostes del teu equip, de manera anònima.", "Preguntar al teu equip →", "preguntas.html#equipo"]],
       e_eye: 'Comença gratis', e_h: 'El teu primer QR, <em>en 5 minuts.</em>', e_p: 'Digues-nos què vols aconseguir i et portem al lloc adequat. Els primers àudios et poden arribar avui mateix.',
       g_t: 'Què vols aconseguir?', g_btn: 'Començar →', g_note: 'Gratis. Sense targeta.'
     },
@@ -342,13 +342,13 @@ window.PAGE = {
       v3_h: 'Zero friction', v3_p: 'Nothing to download, no passwords to remember. It works on any phone with WhatsApp.',
       v4_h: 'You just read the summary', v4_p: 'No need to listen to every message: AI gives you the topics, the clearest quotes and the takeaway.',
       w_eye: 'Who it\'s for', w_h: 'For anyone who really wants to listen.',
-      chips: [["Local businesses and chains", "What your customers think at every location, plus more Google reviews."], ["Product companies", "Ideas and honest opinions from the people who use what you sell."], ["Events and conferences", "Ask live and show the answers on screen."], ["Media", "Listen to your audience and find out which stories they want."], ["Public sector", "Citizen participation without forms: residents talk, you understand."], ["Teams", "Your team's mood and proposals, anonymously."]],
+      chips: [["Local businesses and chains", "What your customers think at every location, plus more Google reviews.", "Find out what they think →", "feedback.html"], ["Product companies", "Ideas and honest opinions from the people who use what you sell.", "Collect ideas →", "ideas.html"], ["Events and conferences", "Ask live and show the answers on screen.", "Ask live →", "preguntas.html"], ["Media", "Listen to your audience and find out which stories they want.", "Listen to your audience →", "ideas.html"], ["Public sector", "Citizen participation without forms: residents talk, you understand.", "Ask residents →", "preguntas.html"], ["Teams", "Your team's mood and proposals, anonymously.", "Ask your team →", "preguntas.html#equipo"]],
       e_eye: 'Start for free', e_h: 'Your first QR code, <em>in 5 minutes.</em>', e_p: 'Tell us what you want to achieve and we\'ll take you to the right place. The first voice messages can arrive today.',
       g_t: 'What do you want to achieve?', g_btn: 'Get started →', g_note: 'Free. No card needed.'
     }
   },
   onLang: function () {
-    document.getElementById('chips').innerHTML = T('chips').map(function (c) { return '<div class="card" style="padding:24px"><h3 style="font-size:17px">' + c[0] + '</h3><p>' + c[1] + '</p></div>'; }).join('');
+    document.getElementById('chips').innerHTML = T('chips').map(function (c) { return '<a class="card" href="' + c[3] + '" style="padding:24px"><h3 style="font-size:17px">' + c[0] + '</h3><p>' + c[1] + '</p><span class="go">' + c[2] + '</span></a>'; }).join('');
   }
 };
 </script>
