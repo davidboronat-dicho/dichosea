@@ -96,7 +96,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 
 /* ── RESPUESTAS (desplegable) ── */
 .resp-panel { border-top: 1px solid var(--border-l); background: #FCFBF8; padding: 22px 24px; display: none; }
-.resp-panel.open { display: grid; grid-template-columns: 260px 1fr; gap: 28px; }
+.resp-panel.open { display: grid; grid-template-columns: 320px 1fr; gap: 28px; }
 .sub-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
 .topic-row { margin-bottom: 10px; font-size: 13px; }
 .topic-row-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
@@ -121,6 +121,35 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .resp-tr.open { display: block; }
 .resp-empty { font-size: 13px; color: var(--muted); padding: 20px 0; line-height: 1.6; }
 .resp-count { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+/* ── ANÁLISIS POR TIPO ── */
+.tipo-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: #EEF2FF; color: #4338CA; white-space: nowrap; }
+.tipo-chip.mejora { background: #FFF7ED; color: #C2410C; }
+.tipo-chip.valoracion { background: #FEF9C3; color: #A16207; }
+.tipo-chip.eleccion { background: #ECFEFF; color: #0E7490; }
+.head-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.ai-card { background: #fff; border: 1px solid var(--green-b); border-radius: 12px; padding: 14px 16px; margin-bottom: 18px; }
+.ai-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--green-mid); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.ai-titular { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 800; line-height: 1.35; color: var(--text); margin-bottom: 10px; }
+.ai-punto { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; border-top: 1px dashed var(--border-l); font-size: 13px; line-height: 1.45; }
+.ai-punto b { display: block; font-weight: 700; }
+.ai-punto span { color: var(--muted); }
+.ai-n { flex-shrink: 0; min-width: 28px; text-align: center; font-weight: 800; font-size: 12px; color: var(--green-deep); background: var(--green-l); border-radius: 8px; padding: 2px 6px; }
+.ai-dest { margin-top: 10px; font-size: 12.5px; background: #FFFBEB; color: #92400E; border-radius: 8px; padding: 8px 10px; line-height: 1.45; }
+.ai-cita { margin-top: 8px; font-size: 12.5px; font-style: italic; color: var(--muted); border-left: 3px solid var(--green-b); padding-left: 8px; line-height: 1.45; }
+.ai-empty { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.ai-meta { font-size: 11px; color: var(--muted-l); margin-top: 10px; }
+.sent-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--border-l); margin: 4px 0 6px; }
+.sent-bar i { display: block; height: 100%; }
+.sent-legend { display: flex; gap: 12px; font-size: 11.5px; color: var(--muted); margin-bottom: 16px; flex-wrap: wrap; }
+.resp-idea { font-size: 13.5px; line-height: 1.5; color: var(--text); font-weight: 600; }
+.resp-det { font-size: 12.5px; color: var(--text); margin-top: 4px; line-height: 1.45; }
+.resp-det em { font-style: normal; color: var(--muted); font-weight: 600; }
+.resp-cita { font-size: 12.5px; font-style: italic; color: var(--muted); margin-top: 5px; line-height: 1.45; }
+.resp-cat { font-size: 10.5px; font-weight: 700; color: var(--green-deep); background: var(--green-l); padding: 1px 8px; border-radius: 10px; }
+.resp.noutil { opacity: .55; }
+.noutil-tag { font-size: 10.5px; color: var(--muted); background: #f3f4f6; padding: 1px 7px; border-radius: 10px; }
+.toggle-noutil { background: none; border: none; color: var(--muted); font-family: 'Jost', sans-serif; font-size: 12px; cursor: pointer; padding: 4px 0; text-decoration: underline; }
 
 /* ── EMPTY / LOADING ── */
 .empty-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 32px; max-width: 620px; box-shadow: 0 2px 8px rgba(20,83,45,.06); }
@@ -204,6 +233,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
   .nav-item { padding: 9px 10px; font-size: 12px; }
   .header-biz { display: none; }
   .module-head { flex-direction: column-reverse; padding: 16px; }
+  .head-right { flex-direction: row; align-items: center; align-self: flex-start; }
   .module-actions, .resp-panel { padding: 16px; }
 }
 </style>
@@ -353,7 +383,8 @@ var DATA    = { preguntas: [] };
 var LANG    = 'es';
 var CUR_QR  = null;   // pregunta abierta en el modal QR
 var OPEN    = {};     // respuestas desplegadas por id
-var FILTER  = {};     // filtro de sentimiento por id
+var FILTER  = {};     // filtro de categoría por id
+var SHOWALL = {};     // mostrar también respuestas no útiles
 
 var NAV = {
   dashboard: 'https://dichosea.com/dashboard.html?token='     + encodeURIComponent(TOKEN),
@@ -404,7 +435,16 @@ var TR = {
     err_load:'No se pudieron cargar tus preguntas.',
     btn_delete:'Eliminar', del_title:'¿Eliminar esta pregunta?', btn_delete_ok:'Eliminar pregunta', deleting:'Eliminando…',
     del_text:'Dejará de aparecer en tu panel y su QR dejará de aceptar respuestas. Si solo quieres dejar de recibir respuestas por un tiempo, mejor páusala.',
-    toast_deleted:'Pregunta eliminada'
+    toast_deleted:'Pregunta eliminada',
+    tipo_ideas:'Ideas', tipo_mejora:'Mejoras', tipo_valoracion:'Valoración', tipo_eleccion:'Elección',
+    tipo_help:'Tipo de pregunta detectado por la IA: decide cómo se analizan las respuestas',
+    s_utiles:'Respuestas', s_utiles_sub:'útiles de {n} recibidas', s_tasa:'Tasa de respuesta', s_tasa_sub:'de {n} escaneos', s_tasa_sub0:'sin escaneos aún',
+    s_val:'Valoración', s_val_sub:'positivas · {n}% negativas', s_val_sub0:'sin respuestas aún', s_gana:'Va ganando', s_votos:'{n} votos',
+    ai_title:'Resumen de la IA', ai_empty:'El resumen aparecerá en cuanto lleguen las primeras respuestas.', ai_meta:'Basado en {n} respuestas útiles',
+    val_title:'Cómo lo valoran',
+    cats_ideas:'Ideas por tema', cats_mejora:'Mejoras por tema', cats_valoracion:'Motivos más repetidos', cats_eleccion:'Votos por opción',
+    det_mejora:'Propuesta', det_eleccion:'Opción', det_valoracion:'Motivo',
+    no_util:'No útil', show_noutil:'Ver también {n} respuestas no útiles', hide_noutil:'Ocultar respuestas no útiles', no_match:'No hay respuestas con este filtro.'
   },
   ca: {
     nav_dashboard:'Dashboard', nav_feedback:'Feedback', nav_preguntas:'Preguntes', nav_config:'Configuració', logout:'Sortir',
@@ -432,7 +472,16 @@ var TR = {
     err_load:'No s\'han pogut carregar les teves preguntes.',
     btn_delete:'Eliminar', del_title:'Vols eliminar aquesta pregunta?', btn_delete_ok:'Eliminar pregunta', deleting:'Eliminant…',
     del_text:'Deixarà d\'aparèixer al teu panell i el seu QR deixarà d\'acceptar respostes. Si només vols deixar de rebre respostes una temporada, millor posa-la en pausa.',
-    toast_deleted:'Pregunta eliminada'
+    toast_deleted:'Pregunta eliminada',
+    tipo_ideas:'Idees', tipo_mejora:'Millores', tipo_valoracion:'Valoració', tipo_eleccion:'Elecció',
+    tipo_help:'Tipus de pregunta detectat per la IA: decideix com s\'analitzen les respostes',
+    s_utiles:'Respostes', s_utiles_sub:'útils de {n} rebudes', s_tasa:'Taxa de resposta', s_tasa_sub:'de {n} escanejos', s_tasa_sub0:'encara sense escanejos',
+    s_val:'Valoració', s_val_sub:'positives · {n}% negatives', s_val_sub0:'encara sense respostes', s_gana:'Va guanyant', s_votos:'{n} vots',
+    ai_title:'Resum de la IA', ai_empty:'El resum apareixerà quan arribin les primeres respostes.', ai_meta:'Basat en {n} respostes útils',
+    val_title:'Com ho valoren',
+    cats_ideas:'Idees per tema', cats_mejora:'Millores per tema', cats_valoracion:'Motius més repetits', cats_eleccion:'Vots per opció',
+    det_mejora:'Proposta', det_eleccion:'Opció', det_valoracion:'Motiu',
+    no_util:'No útil', show_noutil:'Veure també {n} respostes no útils', hide_noutil:'Amagar respostes no útils', no_match:'No hi ha respostes amb aquest filtre.'
   },
   en: {
     nav_dashboard:'Dashboard', nav_feedback:'Feedback', nav_preguntas:'Questions', nav_config:'Settings', logout:'Log out',
@@ -460,7 +509,16 @@ var TR = {
     err_load:'Could not load your questions.',
     btn_delete:'Delete', del_title:'Delete this question?', btn_delete_ok:'Delete question', deleting:'Deleting…',
     del_text:'It will disappear from your panel and its QR will stop accepting answers. If you just want to stop receiving answers for a while, pause it instead.',
-    toast_deleted:'Question deleted'
+    toast_deleted:'Question deleted',
+    tipo_ideas:'Ideas', tipo_mejora:'Improvements', tipo_valoracion:'Rating', tipo_eleccion:'Choice',
+    tipo_help:'Question type detected by AI: it decides how answers are analysed',
+    s_utiles:'Answers', s_utiles_sub:'useful out of {n} received', s_tasa:'Response rate', s_tasa_sub:'of {n} scans', s_tasa_sub0:'no scans yet',
+    s_val:'Rating', s_val_sub:'positive · {n}% negative', s_val_sub0:'no answers yet', s_gana:'Leading', s_votos:'{n} votes',
+    ai_title:'AI summary', ai_empty:'The summary will appear as soon as the first answers arrive.', ai_meta:'Based on {n} useful answers',
+    val_title:'How they rate it',
+    cats_ideas:'Ideas by topic', cats_mejora:'Improvements by topic', cats_valoracion:'Most repeated reasons', cats_eleccion:'Votes by option',
+    det_mejora:'Proposal', det_eleccion:'Option', det_valoracion:'Reason',
+    no_util:'Not useful', show_noutil:'Also show {n} non-useful answers', hide_noutil:'Hide non-useful answers', no_match:'No answers match this filter.'
   }
 };
 function t(k, n) { var s = (TR[LANG] || TR.es)[k]; if (s === undefined) s = TR.es[k] || k; return n !== undefined ? s.replace('{n}', n) : s; }
@@ -535,11 +593,30 @@ function sortPreguntas(ps) {
     .map(function(x) { return x.p; });
 }
 
+var TIPO_ICON = { ideas: '💡', mejora: '🔧', valoracion: '⭐', eleccion: '☑️' };
+function tipoDe(p) { return TIPO_ICON[p.tipo] ? p.tipo : 'ideas'; }
+
 function buildModule(p) {
   var s = p.stats || {};
+  var n = s.utiles !== undefined ? s.utiles : (s.total || 0);
   var total = s.total || 0;
+  var tipo = tipoDe(p);
   var activa = p.estado === 'activa';
   var open = !!OPEN[p.id];
+
+  // 4ª cifra según el tipo de pregunta
+  var cuarta;
+  if (tipo === 'valoracion') {
+    cuarta = '<div class="stat"><div class="stat-lbl">' + esc(t('s_val')) + '</div><div class="stat-val' + (s.pctPos >= 60 ? ' green' : '') + '">' + (n ? s.pctPos + '%' : '—') + '</div><div class="stat-sub">' + esc(n ? t('s_val_sub', s.pctNeg) : t('s_val_sub0')) + '</div></div>';
+  } else if (tipo === 'eleccion') {
+    var top = (p.opciones || [])[0];
+    cuarta = '<div class="stat"><div class="stat-lbl">' + esc(t('s_gana')) + '</div>' +
+      (top ? '<div class="stat-chip">' + esc(top.label) + '</div><div class="stat-sub">' + esc(t('s_votos', top.count)) + '</div>' : '<div class="stat-val">—</div>') + '</div>';
+  } else {
+    cuarta = '<div class="stat"><div class="stat-lbl">' + esc(t('s_tema')) + '</div>' +
+      (s.topTopic ? '<div class="stat-chip">' + esc(s.topTopic) + '</div><div class="stat-sub">' + esc(t('s_tema_sub', s.topCount)) + '</div>' : '<div class="stat-val">—</div>') + '</div>';
+  }
+
   return '<div class="module-card' + (activa ? '' : ' paused') + '" id="card-' + esc(p.id) + '">' +
     '<div class="module-head">' +
       '<div style="min-width:0">' +
@@ -549,15 +626,16 @@ function buildModule(p) {
           (p.fecha ? '<span class="meta-item"><strong>' + esc(t('lbl_creada')) + '</strong>' + esc(p.fecha) + '</span>' : '') +
         '</div>' +
       '</div>' +
-      '<span class="pill ' + esc(p.estado) + '">' + esc(t('st_' + p.estado)) + '</span>' +
+      '<div class="head-right">' +
+        '<span class="pill ' + esc(p.estado) + '">' + esc(t('st_' + p.estado)) + '</span>' +
+        '<span class="tipo-chip ' + tipo + '" title="' + esc(t('tipo_help')) + '">' + TIPO_ICON[tipo] + ' ' + esc(t('tipo_' + tipo)) + '</span>' +
+      '</div>' +
     '</div>' +
     '<div class="module-stats">' +
-      stat(t('s_total'), total, t('s_total_sub')) +
-      stat(t('s_semana'), total ? '+' + (s.semana || 0) : '—', t('s_semana_sub')) +
-      '<div class="stat"><div class="stat-lbl">' + esc(t('s_pos')) + '</div><div class="stat-val' + (s.pctPos >= 70 ? ' green' : '') + '">' + (total ? s.pctPos + '%' : '—') + '</div><div class="stat-sub">' + esc(t('s_pos_sub')) + '</div></div>' +
-      '<div class="stat"><div class="stat-lbl">' + esc(t('s_tema')) + '</div>' +
-        (s.topTopic ? '<div class="stat-chip">' + esc(s.topTopic) + '</div><div class="stat-sub">' + esc(t('s_tema_sub', s.topCount)) + '</div>' : '<div class="stat-val">—</div>') +
-      '</div>' +
+      stat(t('s_utiles'), n, total > n ? t('s_utiles_sub', total) : t('s_total_sub')) +
+      stat(t('s_semana'), n ? '+' + (s.semana || 0) : '—', t('s_semana_sub')) +
+      stat(t('s_tasa'), (s.tasa === null || s.tasa === undefined) ? '—' : s.tasa + '%', p.escaneos ? t('s_tasa_sub', p.escaneos) : t('s_tasa_sub0')) +
+      cuarta +
     '</div>' +
     '<div class="module-actions">' +
       '<button class="action-btn primary' + (open ? ' on' : '') + '" onclick="toggleResp(\'' + esc(p.id) + '\')">' +
@@ -587,32 +665,75 @@ function stat(lbl, val, sub) {
   return '<div class="stat"><div class="stat-lbl">' + esc(lbl) + '</div><div class="stat-val">' + esc(val) + '</div><div class="stat-sub">' + esc(sub) + '</div></div>';
 }
 
+function buildAI(p) {
+  var r = p.resumen;
+  var head = '<div class="ai-eyebrow">✨ ' + esc(t('ai_title')) + '</div>';
+  if (!r || !r.titular) return '<div class="ai-card">' + head + '<div class="ai-empty">' + esc(t('ai_empty')) + '</div></div>';
+  return '<div class="ai-card">' + head +
+    '<div class="ai-titular">' + esc(r.titular) + '</div>' +
+    (r.puntos || []).map(function(x) {
+      return '<div class="ai-punto"><span class="ai-n">' + (x.n || '·') + '</span><div><b>' + esc(x.titulo) + '</b><span>' + esc(x.detalle) + '</span></div></div>';
+    }).join('') +
+    (r.destacado ? '<div class="ai-dest">💡 ' + esc(r.destacado) + '</div>' : '') +
+    (r.citas || []).map(function(c) { return '<div class="ai-cita">«' + esc(c) + '»</div>'; }).join('') +
+    '<div class="ai-meta">' + esc(t('ai_meta', r.n || 0)) + '</div>' +
+  '</div>';
+}
+
+function barras(items) {
+  if (!items.length) return '<div class="resp-empty" style="padding:0">' + esc(t('no_temas')) + '</div>';
+  var max = items[0].count || 1;
+  return items.map(function(tm) {
+    return '<div class="topic-row"><div class="topic-row-top"><span>' + esc(tm.label) + '</span><b>' + tm.count + '</b></div><div class="bar"><i style="width:' + Math.round(tm.count / max * 100) + '%"></i></div></div>';
+  }).join('');
+}
+
 function buildResp(p) {
   var rs = p.respuestas || [];
   if (!rs.length) return '<div style="grid-column:1/-1" class="resp-empty">' + esc(t('no_resp')) + '</div>';
-  var temas = p.temas || [];
-  var max = temas.length ? temas[0].count : 1;
-  var left = '<div><div class="sub-title">' + esc(t('temas_title')) + '</div>' +
-    (temas.length ? temas.map(function(tm) {
-      var pct = Math.round(tm.count / max * 100);
-      return '<div class="topic-row"><div class="topic-row-top"><span>' + esc(tm.label) + '</span><b>' + tm.count + '</b></div><div class="bar"><i style="width:' + pct + '%"></i></div></div>';
-    }).join('') : '<div class="resp-empty" style="padding:0">' + esc(t('no_temas')) + '</div>') +
-  '</div>';
+  var tipo = tipoDe(p), s = p.stats || {};
+
+  // Columna izquierda: resumen IA + reparto
+  var left = '<div>' + buildAI(p);
+  if (tipo === 'valoracion') {
+    var neu = Math.max(0, 100 - (s.pctPos || 0) - (s.pctNeg || 0));
+    left += '<div class="sub-title">' + esc(t('val_title')) + '</div>' +
+      '<div class="sent-bar"><i style="width:' + (s.pctPos || 0) + '%;background:#22C55E"></i><i style="width:' + neu + '%;background:#CBD5E1"></i><i style="width:' + (s.pctNeg || 0) + '%;background:#EF4444"></i></div>' +
+      '<div class="sent-legend"><span>🟢 ' + (s.pctPos || 0) + '% ' + esc(t('sent_positivo')) + '</span><span>⚪ ' + neu + '% ' + esc(t('sent_neutro')) + '</span><span>🔴 ' + (s.pctNeg || 0) + '% ' + esc(t('sent_negativo')) + '</span></div>';
+  }
+  left += '<div class="sub-title">' + esc(t('cats_' + tipo)) + '</div>' + barras(tipo === 'eleccion' ? (p.opciones || []) : (p.temas || [])) + '</div>';
+
+  // Columna derecha: respuestas con filtro por categoría
   var f = FILTER[p.id] || '';
-  var list = rs.filter(function(r) { return !f || r.sent === f; });
-  var chips = ['', 'positivo', 'neutro', 'negativo'].map(function(k) {
-    return '<button class="chip' + (f === k ? ' active' : '') + '" onclick="setFilter(\'' + esc(p.id) + '\',\'' + k + '\')">' + esc(k ? t('sent_' + k) : t('f_all')) + '</button>';
+  var showAll = !!SHOWALL[p.id];
+  var noUtiles = rs.filter(function(r) { return r.util === false; }).length;
+  var list = rs.filter(function(r) {
+    if (!showAll && r.util === false) return false;
+    return !f || (r.temas && r.temas[0] === f);
+  });
+  var cats = (p.temas || []).slice(0, 8).map(function(x) { return x.label; });
+  var chips = [''].concat(cats).map(function(k, i) {
+    return '<button class="chip' + (f === k ? ' active' : '') + '" onclick="setFilterIdx(\'' + esc(p.id) + '\',' + (i - 1) + ')">' + esc(k || t('f_all')) + '</button>';
   }).join('');
-  var right = '<div><div class="sub-title">' + esc(t('resp_title')) + '</div><div class="resp-filter">' + chips + '</div>' +
+  var detLbl = { mejora: t('det_mejora'), eleccion: t('det_eleccion'), valoracion: t('det_valoracion') }[tipo];
+  var right = '<div><div class="sub-title">' + esc(t('resp_title')) + '</div>' +
+    (cats.length ? '<div class="resp-filter">' + chips + '</div>' : '') +
+    (list.length ? '' : '<div class="resp-empty">' + esc(t('no_match')) + '</div>') +
     list.map(function(r, i) {
       var rid = esc(p.id) + '-' + i;
-      return '<div class="resp">' +
-        '<div class="resp-top"><span class="resp-date">' + esc(r.fecha) + '</span><span class="sent ' + esc(r.sent) + '">' + esc(t('sent_' + r.sent)) + '</span></div>' +
-        '<div class="resp-sum">' + esc(r.resumen || r.transcripcion || '—') + '</div>' +
-        (r.temas && r.temas.length ? '<div class="resp-tags">' + r.temas.map(function(x) { return '<span class="resp-tag">' + esc(x) + '</span>'; }).join('') + '</div>' : '') +
-        (r.transcripcion && r.resumen ? '<button class="resp-more" onclick="toggleTr(\'' + rid + '\', this)">' + esc(t('ver_tr')) + '</button><div class="resp-tr" id="tr-' + rid + '">«' + esc(r.transcripcion) + '»</div>' : '') +
+      return '<div class="resp' + (r.util === false ? ' noutil' : '') + '">' +
+        '<div class="resp-top"><span class="resp-date">' + esc(r.fecha) + '</span>' +
+          (r.temas && r.temas[0] ? '<span class="resp-cat">' + esc(r.temas[0]) + '</span>' : '') +
+          (tipo === 'valoracion' ? '<span class="sent ' + esc(r.sent) + '">' + esc(t('sent_' + r.sent)) + '</span>' : '') +
+          (r.util === false ? '<span class="noutil-tag">' + esc(t('no_util')) + '</span>' : '') +
+        '</div>' +
+        '<div class="resp-idea">' + esc(r.resumen || r.transcripcion || '—') + '</div>' +
+        (r.detalle && detLbl ? '<div class="resp-det"><em>' + esc(detLbl) + ':</em> ' + esc(r.detalle) + '</div>' : '') +
+        (r.cita ? '<div class="resp-cita">«' + esc(r.cita) + '»</div>' : '') +
+        (r.transcripcion && (r.resumen || r.cita) ? '<button class="resp-more" onclick="toggleTr(\'' + rid + '\', this)">' + esc(t('ver_tr')) + '</button><div class="resp-tr" id="tr-' + rid + '">«' + esc(r.transcripcion) + '»</div>' : '') +
       '</div>';
     }).join('') +
+    (noUtiles ? '<button class="toggle-noutil" onclick="toggleNoUtil(\'' + esc(p.id) + '\')">' + esc(showAll ? t('hide_noutil') : t('show_noutil', noUtiles)) + '</button>' : '') +
     (rs.length >= 200 ? '<div class="resp-count">' + esc(t('showing', 200)) + '</div>' : '') +
   '</div>';
   return left + right;
@@ -623,6 +744,16 @@ function toggleResp(id) {
   var card = document.getElementById('card-' + id);
   var p = findP(id);
   if (card && p) card.outerHTML = buildModule(p);
+}
+function toggleNoUtil(id) {
+  SHOWALL[id] = !SHOWALL[id];
+  var panel = document.getElementById('resp-' + id);
+  var p = findP(id);
+  if (panel && p) panel.innerHTML = buildResp(p);
+}
+function setFilterIdx(id, i) {
+  var p = findP(id); if (!p) return;
+  setFilter(id, i < 0 ? '' : ((p.temas || [])[i] || {}).label || '');
 }
 function setFilter(id, f) {
   FILTER[id] = f;
