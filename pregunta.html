@@ -191,7 +191,7 @@
         confidential: '🔒 100% confidencial', loading: 'Un momento…',
         closed: 'Esta pregunta ya no está activa. ¡Gracias por tu interés!',
         notFound: 'No hemos encontrado esta pregunta.',
-        prefill: 'Para responder a «{pregunta}»\nToca primero el botón verde >',
+        prefill: 'Para responder a «{pregunta}»\nToca primero el botón verde>',
         again: 'Ya has abierto WhatsApp. Si quieres volver a responder, toca el botón.'
       },
       ca: {
@@ -202,7 +202,7 @@
         confidential: '🔒 100% confidencial', loading: 'Un moment…',
         closed: 'Aquesta pregunta ja no està activa. Gràcies pel teu interès!',
         notFound: "No hem trobat aquesta pregunta.",
-        prefill: 'Per respondre a «{pregunta}»\nToca primer el botó verd >',
+        prefill: 'Per respondre a «{pregunta}»\nToca primer el botó verd>',
         again: 'Ja has obert WhatsApp. Si vols tornar a respondre, toca el botó.'
       },
       en: {
@@ -213,7 +213,7 @@
         confidential: '🔒 100% confidential', loading: 'One moment…',
         closed: 'This question is no longer active. Thanks for your interest!',
         notFound: "We couldn't find this question.",
-        prefill: 'To answer «{pregunta}»\nTap the green button first >',
+        prefill: 'To answer «{pregunta}»\nTap the green button first>',
         again: "You've already opened WhatsApp. To answer again, tap the button."
       }
     };
@@ -264,7 +264,8 @@
       document.getElementById('closedMsg').textContent = t.closed;
 
       // El enlace lo construye el servidor (mismo texto que reconoce Dicho); si no llega, se arma aquí
-      var texto = t.prefill.replace('{pregunta}', data.pregunta || '');
+      var pw = String(data.pregunta || '').trim().split(/\s+/);
+      var texto = t.prefill.replace('{pregunta}', pw.length <= 6 ? pw.join(' ') : pw.slice(0, 4).join(' ') + '…');
       waLink = data.waUrl || ('https://wa.me/' + (data.wa_number || WA_NUMBER_FALLBACK) + '?text=' + encodeURIComponent(texto));
       document.getElementById('ctaBtn').href = waLink;
 
