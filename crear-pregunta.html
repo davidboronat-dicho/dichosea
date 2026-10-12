@@ -9,16 +9,16 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap">
 <style>
 :root {
-  --bg:      #F5F1E8;
+  --bg:      #FFFFFF;
   --surface: #FFFFFF;
-  --ink:     #1C2B20;
-  --ink-2:   #3E4E41;
+  --ink:     #16201A;
+  --ink-2:   #4A554D;
   --g:       #16A34A;
   --g-d:     #14532D;
   --g-l:     #DCFCE7;
   --g-f:     #F0FDF4;
-  --muted:   #6B7A6E;
-  --border:  #D8D2C3;
+  --muted:   #8A938C;
+  --border:  #E6E9E4;
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -190,7 +190,7 @@ body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify
   <div class="confirm-left" id="view-crear">
     <span class="confirm-eyebrow" data-i18n="c_eye">Gratis · en 2 minutos</span>
     <h1 class="confirm-h" data-i18n-html="c_h">Crea tu<br><em>primera pregunta.</em></h1>
-    <p class="confirm-sub" data-i18n="c_sub">Escríbela y crea tu cuenta. Al terminar tendrás tu QR listo para imprimir.</p>
+    <p class="confirm-sub" data-i18n-html="c_sub">Escríbela y crea tu cuenta.<br>Al terminar tendrás tu QR listo para imprimir.</p>
 
     <form class="f-block" id="lead-form" novalidate>
       <div class="f-step"><i>1</i> <span data-i18n="c_step1">Tu pregunta</span></div>
@@ -208,7 +208,7 @@ body.mode-crear .confirm-wrap { grid-template-columns: minmax(0, 560px); justify
         </div>
         <div class="fgroup">
           <label for="f-negocio" data-i18n="f_negocio">Negocio u organización</label>
-          <input id="f-negocio" type="text" maxlength="50" data-i18n-placeholder="f_negocio_ph" placeholder="Restaurante El Mirador" autocomplete="organization">
+          <input id="f-negocio" type="text" maxlength="50" data-i18n-placeholder="f_negocio_ph" placeholder="El Mirador" autocomplete="organization">
         </div>
       </div>
       <div class="frow">
@@ -311,12 +311,12 @@ var TR = {
     title_c:'Dicho · Crea tu pregunta', title_l:'Dicho · Tu pregunta está lista',
     nav_tag:'Preguntas', nav_login:'¿Ya tienes cuenta? Accede',
     c_eye:'Gratis · en 2 minutos', c_h:'Crea tu<br><em>primera pregunta.</em>',
-    c_sub:'Escríbela y crea tu cuenta. Al terminar tendrás tu QR listo para imprimir.',
+    c_sub:'Escríbela y crea tu cuenta.<br>Al terminar tendrás tu QR listo para imprimir.',
     c_step1:'Tu pregunta', c_q_ph:'¿Qué plato te gustaría ver en nuestra carta?',
     c_tip:'💡 Las preguntas abiertas funcionan mejor: <strong>«¿Qué cambiarías?»</strong> da más que «¿Te gustó?».',
     c_step2:'Tus datos',
     f_nombre:'Nombre y apellidos', f_nombre_ph:'Ana García',
-    f_negocio:'Negocio u organización', f_negocio_ph:'Restaurante El Mirador',
+    f_negocio:'Negocio u organización', f_negocio_ph:'El Mirador',
     f_email:'Correo electrónico', f_email_ph:'ana@negocio.com', f_wa_ph:'+34 612 345 678',
     f_submit:'Crear mi pregunta →', f_loading:'Creando tu pregunta…',
     f_legal:'Al continuar aceptas los <a href="https://dichosea.com/terms.html?lang=es">términos</a> y la <a href="https://dichosea.com/privacy.html?lang=es">política de privacidad</a>.',
@@ -336,12 +336,12 @@ var TR = {
     title_c:'Dicho · Crea la teva pregunta', title_l:'Dicho · La teva pregunta és a punt',
     nav_tag:'Preguntes', nav_login:'Ja tens compte? Accedeix',
     c_eye:'Gratis · en 2 minuts', c_h:'Crea la teva<br><em>primera pregunta.</em>',
-    c_sub:'Escriu-la i crea el teu compte. En acabar tindràs el QR llest per imprimir.',
+    c_sub:'Escriu-la i crea el teu compte.<br>En acabar tindràs el QR llest per imprimir.',
     c_step1:'La teva pregunta', c_q_ph:'Quin plat t\'agradaria veure a la nostra carta?',
     c_tip:'💡 Les preguntes obertes funcionen millor: <strong>«Què canviaries?»</strong> dona més que «T\'ha agradat?».',
     c_step2:'Les teves dades',
     f_nombre:'Nom i cognoms', f_nombre_ph:'Anna García',
-    f_negocio:'Negoci o organització', f_negocio_ph:'Restaurant El Mirador',
+    f_negocio:'Negoci o organització', f_negocio_ph:'El Mirador',
     f_email:'Correu electrònic', f_email_ph:'anna@negoci.com', f_wa_ph:'+34 612 345 678',
     f_submit:'Crear la meva pregunta →', f_loading:'Creant la teva pregunta…',
     f_legal:'En continuar acceptes els <a href="https://dichosea.com/terms.html?lang=ca">termes</a> i la <a href="https://dichosea.com/privacy.html?lang=ca">política de privadesa</a>.',
@@ -361,12 +361,12 @@ var TR = {
     title_c:'Dicho · Create your question', title_l:'Dicho · Your question is ready',
     nav_tag:'Questions', nav_login:'Already have an account? Log in',
     c_eye:'Free · 2 minutes', c_h:'Create your<br><em>first question.</em>',
-    c_sub:'Write it and create your account. When you finish, your QR code will be ready to print.',
+    c_sub:'Write it and create your account.<br>When you finish, your QR code will be ready to print.',
     c_step1:'Your question', c_q_ph:'Which dish would you like to see on our menu?',
     c_tip:'💡 Open questions work best: <strong>“What would you change?”</strong> gets more than “Did you like it?”.',
     c_step2:'Your details',
     f_nombre:'Full name', f_nombre_ph:'Ana García',
-    f_negocio:'Business or organization', f_negocio_ph:'El Mirador Restaurant',
+    f_negocio:'Business or organization', f_negocio_ph:'El Mirador',
     f_email:'Email', f_email_ph:'ana@business.com', f_wa_ph:'+1 555 123 4567',
     f_submit:'Create my question →', f_loading:'Creating your question…',
     f_legal:'By continuing you accept the <a href="https://dichosea.com/terms.html?lang=en">terms</a> and the <a href="https://dichosea.com/privacy.html?lang=en">privacy policy</a>.',
