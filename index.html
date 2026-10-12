@@ -67,7 +67,7 @@ a { color: inherit; }
 @media (max-width: 860px) { .nav-links { display: none; } .nav-right { gap: 14px; } .nav-cta { padding: 9px 14px; font-size: 13px; } }
 
 /* ── Hero ── */
-.hero { display: grid; grid-template-columns: 1fr 330px; gap: 64px; align-items: center; padding-block: 80px 96px; }
+.hero { display: grid; grid-template-columns: 1fr 330px; gap: 64px; align-items: center; padding-block: 36px 88px; }
 .h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(38px, 5vw, 66px); font-weight: 700; line-height: 1.06; letter-spacing: -.02em; margin-bottom: 26px; text-wrap: balance; }
 .sub { font-size: clamp(16px, 1.8vw, 19px); line-height: 1.6; color: var(--ink-2); max-width: 540px; margin-bottom: 38px; }
 .btns { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -158,7 +158,7 @@ a.card:hover { border-color: #C9CFC7; transform: translateY(-2px); box-shadow: 0
 @media (max-width: 860px) { .close { grid-template-columns: 1fr; gap: 36px; } .row2 { grid-template-columns: 1fr; } .form { padding: 24px 20px; } }
 
 /* ── Pie ── */
-.footer { border-top: 1px solid var(--border); padding-block: 40px; display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 32px; font-size: 14px; color: var(--muted); }
+.footer { border-top: 1px solid var(--border); padding-block: 40px; display: grid; grid-template-columns: 1fr 1.7fr .8fr; gap: 40px; font-size: 14px; color: var(--muted); }
 .footer h4 { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); margin-bottom: 12px; }
 .footer a { display: block; text-decoration: none; color: var(--muted); margin-bottom: 7px; }
 .footer a:hover { color: var(--ink); }
@@ -199,7 +199,7 @@ a.card:hover { border-color: #C9CFC7; transform: translateY(-2px); box-shadow: 0
 <section class="section wrap" style="padding-top:24px" id="soluciones">
   <div class="head reveal">
     <h2 class="h2" data-t="sol_h">¿Qué quieres conseguir?</h2>
-    <p class="lead" data-t="sol_p">Elige por dónde empezar. Todo funciona igual: un QR, un audio de WhatsApp y la IA.</p>
+    <p class="lead" style="max-width:none" data-t="sol_p">Elige por dónde empezar. Todo funciona igual: un QR, un audio de WhatsApp y la IA.</p>
   </div>
   <div class="grid4">
     <a class="card reveal" href="feedback.html"><span class="ic" data-icon="feedback"></span><h3 data-t="s_feedback"></h3><p data-t="c_feedback"></p><span class="go" data-t="go">Ver más →</span></a>
@@ -227,7 +227,7 @@ a.card:hover { border-color: #C9CFC7; transform: translateY(-2px); box-shadow: 0
 <section class="section wrap" id="voz">
   <div class="head reveal">
     <span class="eye" data-t="v_eye">Por qué la voz</span>
-    <h2 class="h2" data-th="v_h">Las encuestas se abandonan. <em>Un audio se manda en 10 segundos.</em></h2>
+    <h2 class="h2" data-th="v_h"><em>Un audio se manda en 10 segundos.</em> Las encuestas se abandonan.</h2>
   </div>
   <div class="grid2">
     <div class="card reveal"><h3 data-t="v1_h">Responde mucha más gente</h3><p data-t="v1_p">Hablar cuesta menos que escribir. Un audio se graba mientras esperas la cuenta o sales de una reunión.</p></div>
@@ -292,7 +292,7 @@ window.PAGE = {
       st1_h: 'Pon tu QR', st1_p: 'Te damos un cartel con su QR, listo para imprimir o proyectar: en la mesa, en la recepción, en una charla o en el correo.',
       st2_h: 'Te responden con un audio', st2_p: 'Al escanearlo se abre WhatsApp. Graban un audio de unos segundos y listo. Sin apps ni registros.',
       st3_h: 'La IA te lo resume', st3_p: 'Dicho transcribe cada audio, lo agrupa por temas y te dice qué se repite, qué destaca y qué conviene cambiar.',
-      v_eye: 'Por qué la voz', v_h: 'Las encuestas se abandonan. <em>Un audio se manda en 10 segundos.</em>',
+      v_eye: 'Por qué la voz', v_h: '<em>Un audio se manda en 10 segundos.</em> Las encuestas se abandonan.',
       v1_h: 'Responde mucha más gente', v1_p: 'Hablar cuesta menos que escribir. Un audio se graba mientras esperas la cuenta o sales de una reunión.',
       v2_h: 'Con todos los matices', v2_p: 'La voz trae detalles, ejemplos y emociones que nunca caben en una casilla del 1 al 5.',
       v3_h: 'Sin fricción', v3_p: 'Nada que descargar ni contraseñas que recordar. Funciona en cualquier móvil con WhatsApp.',
@@ -314,7 +314,7 @@ window.PAGE = {
       st1_h: 'Posa el teu QR', st1_p: 'Et donem un cartell amb el seu QR, llest per imprimir o projectar: a la taula, a la recepció, en una xerrada o al correu.',
       st2_h: 'Et responen amb un àudio', st2_p: 'En escanejar-lo s\'obre WhatsApp. Graven un àudio d\'uns segons i ja està. Sense apps ni registres.',
       st3_h: 'La IA te\'l resumeix', st3_p: 'Dicho transcriu cada àudio, l\'agrupa per temes i et diu què es repeteix, què destaca i què convé canviar.',
-      v_eye: 'Per què la veu', v_h: 'Les enquestes s\'abandonen. <em>Un àudio s\'envia en 10 segons.</em>',
+      v_eye: 'Per què la veu', v_h: '<em>Un àudio s\'envia en 10 segons.</em> Les enquestes s\'abandonen.',
       v1_h: 'Respon molta més gent', v1_p: 'Parlar costa menys que escriure. Un àudio es grava mentre esperes el compte o surts d\'una reunió.',
       v2_h: 'Amb tots els matisos', v2_p: 'La veu porta detalls, exemples i emocions que mai no caben en una casella de l\'1 al 5.',
       v3_h: 'Sense fricció', v3_p: 'Res per descarregar ni contrasenyes per recordar. Funciona en qualsevol mòbil amb WhatsApp.',
@@ -336,7 +336,7 @@ window.PAGE = {
       st1_h: 'Put up your QR', st1_p: 'We give you a poster with its QR code, ready to print or project: on the table, at reception, in a talk or in an email.',
       st2_h: 'They reply with a voice message', st2_p: 'Scanning it opens WhatsApp. They record a few seconds of audio and that\'s it. No apps, no sign-ups.',
       st3_h: 'AI sums it up for you', st3_p: 'Dicho transcribes every message, groups it by topic and tells you what keeps coming up, what stands out and what to change.',
-      v_eye: 'Why voice', v_h: 'Surveys get abandoned. <em>A voice message takes 10 seconds.</em>',
+      v_eye: 'Why voice', v_h: '<em>A voice message takes 10 seconds.</em> Surveys get abandoned.',
       v1_h: 'Far more people respond', v1_p: 'Talking is easier than typing. A voice message gets recorded while waiting for the bill or leaving a meeting.',
       v2_h: 'With every nuance', v2_p: 'Voice brings details, examples and feelings that never fit in a 1-to-5 box.',
       v3_h: 'Zero friction', v3_p: 'Nothing to download, no passwords to remember. It works on any phone with WhatsApp.',
@@ -374,9 +374,9 @@ window.PAGE = {
     es: {
       n_sol: 'Soluciones', n_como: 'Cómo funciona', n_acc: 'Acceder', n_cta: 'Pruébalo gratis',
       s_resenas: 'Conseguir más reseñas en Google', s_resenas_d: 'Convierte clientes contentos en reseñas',
-      s_feedback: 'Saber qué opinan mis clientes', s_feedback_d: 'Qué gusta y qué falla, solo para ti',
-      s_preguntas: 'Preguntar lo que quiera a mis clientes o a mi equipo', s_preguntas_d: 'Respuestas por voz, también anónimas',
-      s_ideas: 'Recoger ideas nuevas', s_ideas_d: 'De producto, de mejora, de lo que quieras',
+      s_feedback: 'Saber qué opinan realmente tus clientes', s_feedback_d: 'Qué gusta y qué falla, solo para ti',
+      s_preguntas: 'Preguntar lo que necesitas saber', s_preguntas_d: 'A tus clientes o a tu equipo, por voz',
+      s_ideas: 'Recoger ideas nuevas de producto o servicio', s_ideas_d: 'Agrupadas y resumidas por la IA',
       f_tag: 'Feedback por voz en WhatsApp, resumido con IA.', f_sol: 'Soluciones', f_dicho: 'Dicho',
       f_login: 'Acceder', f_priv: 'Privacidad', f_terms: 'Términos', f_copy: '© 2026 Dicho',
       ck: 'Usamos cookies estrictamente necesarias para que el sitio funcione. Consulta nuestra <a href="privacy.html">política de privacidad</a>.', ck_ok: 'Aceptar',
@@ -388,9 +388,9 @@ window.PAGE = {
     ca: {
       n_sol: 'Solucions', n_como: 'Com funciona', n_acc: 'Accedeix', n_cta: 'Prova-ho gratis',
       s_resenas: 'Aconseguir més ressenyes a Google', s_resenas_d: 'Converteix clients contents en ressenyes',
-      s_feedback: 'Saber què opinen els meus clients', s_feedback_d: 'Què agrada i què falla, només per a tu',
-      s_preguntas: 'Preguntar el que vulgui als meus clients o al meu equip', s_preguntas_d: 'Respostes per veu, també anònimes',
-      s_ideas: 'Recollir idees noves', s_ideas_d: 'De producte, de millora, del que vulguis',
+      s_feedback: 'Saber què opinen realment els teus clients', s_feedback_d: 'Què agrada i què falla, només per a tu',
+      s_preguntas: 'Preguntar el que necessites saber', s_preguntas_d: 'Als teus clients o al teu equip, per veu',
+      s_ideas: 'Recollir idees noves de producte o servei', s_ideas_d: 'Agrupades i resumides per la IA',
       f_tag: 'Feedback per veu a WhatsApp, resumit amb IA.', f_sol: 'Solucions', f_dicho: 'Dicho',
       f_login: 'Accedeix', f_priv: 'Privadesa', f_terms: 'Termes', f_copy: '© 2026 Dicho',
       ck: 'Fem servir cookies estrictament necessàries perquè el lloc funcioni. Consulta la nostra <a href="privacy.html">política de privadesa</a>.', ck_ok: 'Acceptar',
@@ -402,9 +402,9 @@ window.PAGE = {
     en: {
       n_sol: 'Solutions', n_como: 'How it works', n_acc: 'Log in', n_cta: 'Try it free',
       s_resenas: 'Get more Google reviews', s_resenas_d: 'Turn happy customers into reviews',
-      s_feedback: 'Know what my customers think', s_feedback_d: "What works and what doesn't, just for you",
-      s_preguntas: 'Ask my customers or my team anything', s_preguntas_d: 'Voice answers, anonymous if you like',
-      s_ideas: 'Collect new ideas', s_ideas_d: 'For products, improvements, anything',
+      s_feedback: 'Know what your customers really think', s_feedback_d: "What works and what doesn't, just for you",
+      s_preguntas: 'Ask what you need to know', s_preguntas_d: 'Your customers or your team, by voice',
+      s_ideas: 'Collect new product or service ideas', s_ideas_d: 'Grouped and summarised by AI',
       f_tag: 'Voice feedback on WhatsApp, summarised by AI.', f_sol: 'Solutions', f_dicho: 'Dicho',
       f_login: 'Log in', f_priv: 'Privacy', f_terms: 'Terms', f_copy: '© 2026 Dicho',
       ck: 'We only use cookies that are strictly necessary for the site to work. See our <a href="privacy.html">privacy policy</a>.', ck_ok: 'Accept',
