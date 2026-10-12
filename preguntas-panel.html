@@ -361,6 +361,10 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             <span data-i18n="btn_test">Probar enlace</span>
           </a>
+          <button class="action-btn primary" id="btn-pres" onclick="openPresentacion()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span data-i18n="btn_present">Proyectar en pantalla</span>
+          </button>
           <button class="action-btn" id="btn-copy" onclick="copyLink()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             <span data-i18n="btn_copy">Copiar enlace</span>
@@ -428,7 +432,7 @@ var TR = {
     no_resp:'Todavía no hay respuestas. Imprime la tarjeta y colócala donde la gente tenga un momento para responder.',
     f_all:'Todas', sent_positivo:'Positivo', sent_neutro:'Neutro', sent_negativo:'Negativo',
     ver_tr:'Ver transcripción', ocultar_tr:'Ocultar transcripción', showing:'Mostrando las {n} más recientes',
-    qr_title:'Cartel para imprimir', btn_save_img:'Descargar cartel (PNG)', btn_print:'Imprimir cartel A4',
+    qr_title:'Cartel para imprimir', btn_save_img:'Descargar cartel (PNG)', btn_print:'Imprimir cartel A4', btn_present:'Proyectar en pantalla',
     btn_dl_qr:'Descargar solo QR', btn_test:'Probar enlace', btn_copy:'Copiar enlace', copied:'¡Copiado!', generating:'Generando…',
     p_cta:'Escanea y respóndenos con un audio de WhatsApp', p_sub:'10 segundos · sin apps',
     k_eye:'Queremos saber', k_scan:'Escáneame', k_text:'Respóndenos con un audio y listo.', k_note:'(Sin apps ni registros ;)', k_via:'vía',
@@ -466,7 +470,7 @@ var TR = {
     no_resp:'Encara no hi ha respostes. Imprimeix la targeta i posa-la on la gent tingui un moment per respondre.',
     f_all:'Totes', sent_positivo:'Positiu', sent_neutro:'Neutre', sent_negativo:'Negatiu',
     ver_tr:'Veure transcripció', ocultar_tr:'Amagar transcripció', showing:'Es mostren les {n} més recents',
-    qr_title:'Cartell per imprimir', btn_save_img:'Descarregar cartell (PNG)', btn_print:'Imprimir cartell A4',
+    qr_title:'Cartell per imprimir', btn_save_img:'Descarregar cartell (PNG)', btn_print:'Imprimir cartell A4', btn_present:'Projectar en pantalla',
     btn_dl_qr:'Descarregar només QR', btn_test:'Provar enllaç', btn_copy:'Copiar enllaç', copied:'Copiat!', generating:'Generant…',
     p_cta:'Escaneja i respon-nos amb un àudio de WhatsApp', p_sub:'10 segons · sense apps',
     k_eye:'Volem saber', k_scan:'Escaneja\'m', k_text:'Respon-nos amb un àudio i llestos.', k_note:'(Sense apps ni registres ;)', k_via:'via',
@@ -504,7 +508,7 @@ var TR = {
     no_resp:'No answers yet. Print the card and put it where people have a moment to answer.',
     f_all:'All', sent_positivo:'Positive', sent_neutro:'Neutral', sent_negativo:'Negative',
     ver_tr:'Show transcript', ocultar_tr:'Hide transcript', showing:'Showing the {n} most recent',
-    qr_title:'Poster to print', btn_save_img:'Download poster (PNG)', btn_print:'Print A4 poster',
+    qr_title:'Poster to print', btn_save_img:'Download poster (PNG)', btn_print:'Print A4 poster', btn_present:'Show on screen',
     btn_dl_qr:'Download QR only', btn_test:'Test link', btn_copy:'Copy link', copied:'Copied!', generating:'Generating…',
     p_cta:'Scan and answer us with a WhatsApp voice message', p_sub:'10 seconds · no apps',
     k_eye:'We want to know', k_scan:'Scan me', k_text:'Just answer us with a voice message.', k_note:'(No apps, no sign-up ;)', k_via:'via',
@@ -1094,6 +1098,20 @@ function saveAsImage() {
 function printCard() {
   var p = CUR_QR; if (!p) return;
   printPoster(posterData(p));
+}
+
+// Modo presentación: pantalla para proyectar en un evento o videollamada (solo lectura, enlace propio)
+function openPresentacion() {
+  var p = CUR_QR; if (!p) return;
+  // La ventana se abre ya (si no, el navegador la bloquea) y se le pone la dirección al tener el enlace
+  var w = window.open('', '_blank');
+  function go(url) { if (w) w.location.href = url; else window.location.href = url; }
+  if (p.presUrl) { go(p.presUrl); return; }
+  if (w) { try { w.document.write('<p style="font:16px sans-serif;color:#5C665F;padding:40px">…</p>'); } catch (e) {} }
+  gasCall('api_presToken', { token: TOKEN, id: p.id }).then(function(r) {
+    if (r && r.ok && r.url) { p.presUrl = r.url; go(r.url); }
+    else { if (w) w.close(); toast(t('err_general')); }
+  }).catch(function() { if (w) w.close(); toast(t('err_general')); });
 }
 
 function copyLink() {
