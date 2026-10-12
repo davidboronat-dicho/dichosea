@@ -650,6 +650,10 @@ function buildModule(p) {
         esc(t('btn_resp')) + (total ? ' (' + total + ')' : '') +
         ' <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
       '</button>' +
+      '<button class="action-btn" onclick="openPresentacion(\'' + esc(p.id) + '\')">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' +
+        esc(t('btn_present')) +
+      '</button>' +
       '<button class="action-btn" onclick="openQR(\'' + esc(p.id) + '\')">' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="17" y="17" width="4" height="4" rx=".5"/></svg>' +
         esc(t('btn_qr')) +
@@ -1101,8 +1105,8 @@ function printCard() {
 }
 
 // Modo presentación: pantalla para proyectar en un evento o videollamada (solo lectura, enlace propio)
-function openPresentacion() {
-  var p = CUR_QR; if (!p) return;
+function openPresentacion(id) {
+  var p = id ? findP(id) : CUR_QR; if (!p) return;
   // La ventana se abre ya (si no, el navegador la bloquea) y se le pone la dirección al tener el enlace
   var w = window.open('', '_blank');
   function go(url) { if (w) w.location.href = url; else window.location.href = url; }
