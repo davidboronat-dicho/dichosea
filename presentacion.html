@@ -238,14 +238,27 @@ function render() {
   firstRender = false;
 }
 
+// ── Últimos datos vistos en este navegador: se muestran al instante al reabrir ──
+var STORE_KEY = 'dicho_pres_' + T;
+function guardar(d) {
+  try { if (d) localStorage.setItem(STORE_KEY, JSON.stringify(d)); else localStorage.removeItem(STORE_KEY); } catch (e) {}
+}
+function guardado() {
+  try { var d = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); return d && d.ok ? d : null; } catch (e) { return null; }
+}
+
 // ── Datos (cada 10 s) ──
 function load() {
   return fetch(GAS_URL + '?page=getPresentacion&t=' + encodeURIComponent(T) + '&_=' + Date.now())
     .then(function(r) { return r.json(); })
     .then(function(d) {
-      if (!d || !d.ok) { if (!D) msg(t('bad')); return; }
+      if (!d || !d.ok) {
+        // Enlace eliminado o inválido: se olvida lo guardado y se avisa
+        if (!D || (d && d.error === 'Enlace no válido')) { guardar(null); msg(t('bad')); }
+        return;
+      }
       if (d.idioma && TR[d.idioma] && d.idioma !== LANG) { LANG = d.idioma; labels(); }
-      D = d; msg(''); render();
+      D = d; msg(''); render(); guardar(d);
     })
     .catch(function() { /* sin red: se mantiene lo último que se mostró */ });
 }
@@ -294,7 +307,13 @@ setInterval(function() { if (D) render(); }, 30000);
   LANG = TR[bl] ? bl : 'es';
   labels(); fit(); setView(VIEW); restartAuto();
   if (!/^[a-f0-9]{12,40}$/i.test(T)) { msg(t('bad')); return; }
-  msg(t('load'));
+  var prev = guardado();
+  if (prev) {
+    if (prev.idioma && TR[prev.idioma] && prev.idioma !== LANG) { LANG = prev.idioma; labels(); }
+    D = prev; msg(''); render();
+  } else {
+    msg(t('load'));
+  }
   load();
   pollTimer = setInterval(function() { if (!document.hidden) load(); }, POLL_MS);
   wake();
