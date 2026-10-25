@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Responde con tu voz · Dicho</title>
   <meta property="og:title" content="Queremos saber tu opinión 🎙️">
-  <meta property="og:description" content="Responde a una pregunta enviando un audio de WhatsApp.">
+  <meta property="og:description" content="Responde a una pregunta por WhatsApp.">
   <meta property="og:site_name" content="Dicho">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -139,7 +139,8 @@
           <div class="mic-ring"></div>
           <div class="mic-ring"></div>
           <div class="mic-circle">
-            <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg id="icoTexto" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+            <svg id="icoAudio" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="11" y="3" width="12" height="18" rx="6" fill="white"/>
               <path d="M6 17c0 6.075 4.925 11 11 11s11-4.925 11-11" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
               <line x1="17" y1="28" x2="17" y2="32" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
@@ -192,6 +193,9 @@
         closed: 'Esta pregunta ya no está activa. ¡Gracias por tu interés!',
         notFound: 'No hemos encontrado esta pregunta.',
         prefill: 'Para responder a «{pregunta}»\nToca primero el botón verde>',
+        answerTexto: 'Respóndenos con un mensaje de WhatsApp',
+        ctaTexto: 'Abrir WhatsApp<br><span style="display:block;font-weight:500;font-size:13px;opacity:.75;">y escribir tu respuesta</span>',
+        prefillTexto: 'Para contestar a «{pregunta}»\nToca primero el botón verde>',
         again: 'Ya has abierto WhatsApp. Si quieres volver a responder, toca el botón.'
       },
       ca: {
@@ -203,6 +207,9 @@
         closed: 'Aquesta pregunta ja no està activa. Gràcies pel teu interès!',
         notFound: "No hem trobat aquesta pregunta.",
         prefill: 'Per respondre a «{pregunta}»\nToca primer el botó verd>',
+        answerTexto: 'Respon-nos amb un missatge de WhatsApp',
+        ctaTexto: 'Obrir WhatsApp<br><span style="display:block;font-weight:500;font-size:13px;opacity:.75;">i escriure la teva resposta</span>',
+        prefillTexto: 'Per contestar a «{pregunta}»\nToca primer el botó verd>',
         again: 'Ja has obert WhatsApp. Si vols tornar a respondre, toca el botó.'
       },
       en: {
@@ -214,6 +221,9 @@
         closed: 'This question is no longer active. Thanks for your interest!',
         notFound: "We couldn't find this question.",
         prefill: 'To answer «{pregunta}»\nTap the green button first>',
+        answerTexto: 'Answer with a WhatsApp message',
+        ctaTexto: 'Open WhatsApp<br><span style="display:block;font-weight:500;font-size:13px;opacity:.75;">and write your answer</span>',
+        prefillTexto: 'To reply to «{pregunta}»\nTap the green button first>',
         again: "You've already opened WhatsApp. To answer again, tap the button."
       }
     };
@@ -258,14 +268,17 @@
       var q = document.getElementById('question');
       q.textContent = data.pregunta || '';
       q.classList.toggle('long', (data.pregunta || '').length > 80);
-      document.getElementById('answerText').innerHTML = t.answer;
+      var esTexto = data.formato === 'texto';   // formato del cliente: audio (por defecto) | texto
+      document.getElementById('answerText').innerHTML = esTexto ? t.answerTexto : t.answer;
+      document.getElementById('icoAudio').style.display = esTexto ? 'none' : '';
+      document.getElementById('icoTexto').style.display = esTexto ? '' : 'none';
       document.getElementById('confidentialText').textContent = t.confidential;
-      document.getElementById('ctaText').innerHTML = t.cta;
+      document.getElementById('ctaText').innerHTML = esTexto ? t.ctaTexto : t.cta;
       document.getElementById('closedMsg').textContent = t.closed;
 
       // El enlace lo construye el servidor (mismo texto que reconoce Dicho); si no llega, se arma aquí
       var pw = String(data.pregunta || '').trim().split(/\s+/);
-      var texto = t.prefill.replace('{pregunta}', pw.length <= 6 ? pw.join(' ') : pw.slice(0, 4).join(' ') + '…');
+      var texto = (esTexto ? t.prefillTexto : t.prefill).replace('{pregunta}', pw.length <= 6 ? pw.join(' ') : pw.slice(0, 4).join(' ') + '…');
       waLink = data.waUrl || ('https://wa.me/' + (data.wa_number || WA_NUMBER_FALLBACK) + '?text=' + encodeURIComponent(texto));
       document.getElementById('ctaBtn').href = waLink;
 
