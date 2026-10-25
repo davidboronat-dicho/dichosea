@@ -282,6 +282,35 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
     <div class="section-foot" id="plan-foot" style="justify-content:space-between"><!-- rendered by JS --></div>
   </div>
 
+  <!-- ── 2b. CÓMO TE RESPONDEN (canal y formato) ── -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <div>
+        <div class="section-title" data-i18n="s5_title">Cómo te responden</div>
+        <div class="section-sub" data-i18n="s5_sub">Por dónde y de qué forma te contestan las personas que escanean tu QR</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="form-label" style="margin-bottom:8px" data-i18n="f_canal">Canal</div>
+      <div class="lang-tabs">
+        <button class="lang-btn active" id="canal-whatsapp" onclick="saveModo('canal','whatsapp')">WhatsApp</button>
+        <button class="lang-btn" id="canal-web" disabled style="opacity:.5;cursor:default" data-i18n="canal_web">Web (próximamente)</button>
+      </div>
+      <div class="form-label" style="margin:18px 0 8px" data-i18n="f_formato">Formato</div>
+      <div class="lang-tabs">
+        <button class="lang-btn active" id="formato-audio" onclick="saveModo('formato','audio')" data-i18n="fmt_audio">Audio</button>
+        <button class="lang-btn" id="formato-texto" onclick="saveModo('formato','texto')" data-i18n="fmt_texto">Texto</button>
+      </div>
+      <div class="form-hint" style="margin-top:8px" id="modo-hint"></div>
+    </div>
+    <div class="section-foot">
+      <span class="save-chip" id="chip-modo" data-i18n="chip_saved">✓ Guardado</span>
+    </div>
+  </div>
+
   <!-- ── 3. NOTIFICACIONES ── -->
   <div class="section-card">
     <div class="section-head">
@@ -467,6 +496,10 @@ var TR = {
     f_ciudad: 'Ciudad', f_email: 'Email de contacto', f_whatsapp: 'WhatsApp',
     btn_discard: 'Descartar', btn_save: 'Guardar cambios', chip_saved: '✓ Guardado',
     s2_title: 'Plan y suscripción', s2_sub: 'Tu plan actual y lo que incluye',
+    s5_title: 'Cómo te responden', s5_sub: 'Por dónde y de qué forma te contestan las personas que escanean tu QR',
+    f_canal: 'Canal', canal_web: 'Web (próximamente)', f_formato: 'Formato', fmt_audio: 'Audio', fmt_texto: 'Texto',
+    hint_audio: 'Te responden con un audio de WhatsApp. Si alguien prefiere escribir, también se acepta.',
+    hint_texto: 'Te responden escribiendo en WhatsApp. Si alguien envía un audio, también se acepta. Los carteles ya impresos siguen sirviendo.',
     s3_title: 'Notificaciones', s3_sub: 'Elige cómo y cuándo te avisamos',
     n1_title: 'Nuevo feedback recibido', n1_desc: 'Recibe un email cada vez que un cliente deja un feedback',
     n2_title: 'Resumen semanal', n2_desc: 'Un informe con los principales indicadores de la semana, cada lunes',
@@ -490,6 +523,10 @@ var TR = {
     f_ciudad: 'Ciutat', f_email: 'Email de contacte', f_whatsapp: 'WhatsApp',
     btn_discard: 'Descartar', btn_save: 'Desar canvis', chip_saved: '✓ Desat',
     s2_title: 'Pla i subscripció', s2_sub: 'El teu pla actual i el que inclou',
+    s5_title: 'Com et responen', s5_sub: 'Per on i de quina manera et contesten les persones que escanegen el teu QR',
+    f_canal: 'Canal', canal_web: 'Web (aviat)', f_formato: 'Format', fmt_audio: 'Àudio', fmt_texto: 'Text',
+    hint_audio: "Et responen amb un àudio de WhatsApp. Si algú prefereix escriure, també s'accepta.",
+    hint_texto: "Et responen escrivint a WhatsApp. Si algú envia un àudio, també s'accepta. Els cartells ja impresos continuen servint.",
     s3_title: 'Notificacions', s3_sub: "Tria com i quan t'avisem",
     n1_title: 'Nou feedback rebut', n1_desc: 'Rep un email cada vegada que un client deixa un feedback',
     n2_title: 'Resum setmanal', n2_desc: 'Un informe amb els principals indicadors de la setmana, cada dilluns',
@@ -513,6 +550,10 @@ var TR = {
     f_ciudad: 'City', f_email: 'Contact email', f_whatsapp: 'WhatsApp',
     btn_discard: 'Discard', btn_save: 'Save changes', chip_saved: '✓ Saved',
     s2_title: 'Plan & subscription', s2_sub: 'Your current plan and what it includes',
+    s5_title: 'How people answer', s5_sub: 'Where and how people who scan your QR reply to you',
+    f_canal: 'Channel', canal_web: 'Web (coming soon)', f_formato: 'Format', fmt_audio: 'Audio', fmt_texto: 'Text',
+    hint_audio: 'People answer with a WhatsApp voice message. Written replies are accepted too.',
+    hint_texto: 'People answer by writing on WhatsApp. Voice messages are accepted too. Posters already printed keep working.',
     s3_title: 'Notifications', s3_sub: 'Choose how and when we alert you',
     n1_title: 'New feedback received', n1_desc: 'Get an email every time a customer leaves feedback',
     n2_title: 'Weekly summary', n2_desc: 'A report with key metrics for the week, every Monday',
@@ -547,6 +588,7 @@ function applyLang(lang) {
   });
   document.documentElement.lang = lang === 'en' ? 'en' : lang === 'ca' ? 'ca' : 'es';
   renderTipos(lang);
+  renderModo();
   try { sessionStorage.setItem('dicho_lang_' + TOKEN, lang); } catch(e) {}
 }
 
@@ -673,6 +715,7 @@ function renderPlan(planKey) {
       applyLang(CURRENT_LANG);
       document.getElementById('f-tipo').value = data.tipoNegocio || '';
       renderPlan(data.plan || 'sin_costo');
+      renderModo();
     })
     .catch(function(err) { console.error('Error cargando config:', err); });
 })();
@@ -767,6 +810,28 @@ function savePwd() {
       errEl.textContent = 'Error: ' + (e.message || 'inténtalo de nuevo.');
       errEl.style.display = 'block';
     });
+}
+
+// ── Canal y formato de respuesta (Clientes col W/X) ──
+function renderModo() {
+  var canal = CFG_DATA.canal || 'whatsapp', formato = CFG_DATA.formato || 'audio';
+  ['whatsapp', 'web'].forEach(function(c) { var b = document.getElementById('canal-' + c); if (b) b.classList.toggle('active', c === canal); });
+  ['audio', 'texto'].forEach(function(f) { var b = document.getElementById('formato-' + f); if (b) b.classList.toggle('active', f === formato); });
+  var h = document.getElementById('modo-hint'), tr = TR[CURRENT_LANG] || TR.es;
+  if (h) h.textContent = formato === 'texto' ? tr.hint_texto : tr.hint_audio;
+}
+function saveModo(campo, valor) {
+  if ((CFG_DATA[campo] || (campo === 'canal' ? 'whatsapp' : 'audio')) === valor) return;
+  var antes = CFG_DATA[campo];
+  CFG_DATA[campo] = valor;
+  renderModo();
+  var p = { token: TOKEN }; p[campo] = valor;
+  gasCall('api_saveModo', p)
+    .then(function(r) {
+      if (r && r.ok) { CFG_DATA.canal = r.canal; CFG_DATA.formato = r.formato; renderModo(); showChip('chip-modo'); }
+      else { CFG_DATA[campo] = antes; renderModo(); alert((r && r.error) || 'Error'); }
+    })
+    .catch(function() { CFG_DATA[campo] = antes; renderModo(); alert('Error de conexión'); });
 }
 
 function showChip(id) {
