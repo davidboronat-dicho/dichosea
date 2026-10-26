@@ -27,6 +27,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--ink); -webkit-
 
 /* ── Vista 1: la pregunta ── */
 #v-q .biz { position: absolute; top: 56px; left: 96px; font-size: 15px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--soft); }
+#v-q .biz-logo { position: absolute; top: 44px; left: 96px; max-height: 76px; max-width: 380px; display: none; }
+#l-logo { position: absolute; bottom: 40px; right: 96px; max-height: 46px; max-width: 240px; display: none; }
 #v-q .left { position: absolute; top: 205px; left: 96px; width: 820px; }
 #v-q .eye { font-size: 15px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--green); margin-bottom: 22px; line-height: 1; }
 #q-text { font-size: 68px; line-height: 1.14; letter-spacing: -.01em; }
@@ -87,6 +89,7 @@ body.idle { cursor: none; }
   <!-- Vista 1: la pregunta con su QR -->
   <section class="view" id="v-q">
     <div class="biz" id="q-biz"></div>
+    <img class="biz-logo" id="q-logo" alt="">
     <div class="left">
       <div class="eye" id="q-eye"></div>
       <div class="pf" id="q-text"></div>
@@ -108,6 +111,7 @@ body.idle { cursor: none; }
     <img id="l-qr" alt="">
     <div id="l-ideas"><div class="lab" id="lab-ideas"></div><div id="ideas-list"></div></div>
     <div id="l-temas"><div class="lab" id="lab-temas"></div><div id="temas-list"></div></div>
+    <img id="l-logo" alt="">
     <div class="brand">dicho<span>.</span></div>
   </section>
 
@@ -132,17 +136,17 @@ var AUTO = _p.get('auto') === '1';
 var D = null, LANG = 'es', seen = {}, firstRender = true, autoTimer = null, pollTimer = null;
 
 var TR = {
-  es: { eye: 'Queremos saber', sub: 'Escanea y responde con un audio de WhatsApp', subTexto: 'Escanea y respóndenos por WhatsApp', paused: 'Esta pregunta está en pausa',
+  es: { eye: 'Queremos saber', sub: 'Escanea y responde con un audio de WhatsApp', subTexto: 'Escanea y respóndenos por WhatsApp', subWebAudio: 'Escanea y respóndenos con un audio', subWebTexto: 'Escanea y escríbenos tu respuesta', paused: 'Esta pregunta está en pausa',
         r1: 'respuesta', rN: 'respuestas', ideas: 'Últimas ideas recibidas', temas: 'Temas más mencionados', opciones: 'Opciones más elegidas',
         wait: 'Esperando las primeras respuestas…', noIdeas: 'Las ideas aparecerán aquí en cuanto lleguen.',
         now: 'ahora mismo', min: 'hace {n} min', h: 'hace {n} h', d: 'hace {n} d',
         bQ: 'Pregunta', bL: 'En vivo', bAuto: 'Alternar', bFs: 'Pantalla completa', bad: 'Este enlace de presentación no es válido.', load: 'Cargando…' },
-  ca: { eye: 'Volem saber', sub: 'Escaneja i respon amb un àudio de WhatsApp', subTexto: 'Escaneja i respon-nos per WhatsApp', paused: 'Aquesta pregunta està en pausa',
+  ca: { eye: 'Volem saber', sub: 'Escaneja i respon amb un àudio de WhatsApp', subTexto: 'Escaneja i respon-nos per WhatsApp', subWebAudio: 'Escaneja i respon-nos amb un àudio', subWebTexto: 'Escaneja i escriu-nos la teva resposta', paused: 'Aquesta pregunta està en pausa',
         r1: 'resposta', rN: 'respostes', ideas: 'Últimes idees rebudes', temas: 'Temes més mencionats', opciones: 'Opcions més triades',
         wait: 'Esperant les primeres respostes…', noIdeas: 'Les idees apareixeran aquí tan bon punt arribin.',
         now: 'ara mateix', min: 'fa {n} min', h: 'fa {n} h', d: 'fa {n} d',
         bQ: 'Pregunta', bL: 'En directe', bAuto: 'Alternar', bFs: 'Pantalla completa', bad: 'Aquest enllaç de presentació no és vàlid.', load: 'Carregant…' },
-  en: { eye: 'We want to know', sub: 'Scan and answer with a WhatsApp voice message', subTexto: 'Scan and answer us on WhatsApp', paused: 'This question is paused',
+  en: { eye: 'We want to know', sub: 'Scan and answer with a WhatsApp voice message', subTexto: 'Scan and answer us on WhatsApp', subWebAudio: 'Scan and answer us with a voice message', subWebTexto: 'Scan and write us your answer', paused: 'This question is paused',
         r1: 'answer', rN: 'answers', ideas: 'Latest ideas', temas: 'Most mentioned topics', opciones: 'Most chosen options',
         wait: 'Waiting for the first answers…', noIdeas: 'Ideas will appear here as soon as they arrive.',
         now: 'just now', min: '{n} min ago', h: '{n} h ago', d: '{n} d ago',
@@ -191,14 +195,22 @@ function render() {
   var d = D; if (!d) return;
   var landing = d.landingUrl;
   // Vista 1
-  document.getElementById('q-biz').textContent = d.negocio || '';
+  // Logo del cliente (Configuración): sustituye al nombre; en directo, pequeño abajo a la derecha
+  var logo = d.logo || '';
+  document.getElementById('q-biz').textContent = logo ? '' : (d.negocio || '');
+  ['q-logo', 'l-logo'].forEach(function(id) {
+    var im = document.getElementById(id);
+    if (logo && im.getAttribute('src') !== logo) im.src = logo;
+    im.style.display = logo ? 'block' : 'none';
+  });
   var q = document.getElementById('q-text');
   q.textContent = d.pregunta;
   q.className = 'pf' + (d.pregunta.length > 150 ? ' xs' : d.pregunta.length > 105 ? ' sm' : '');
   var sub = document.getElementById('q-sub');
   var pausada = d.estado && d.estado !== 'activa';
   var esTexto = d.formato === 'texto';   // formato del cliente: audio (por defecto) | texto
-  sub.textContent = pausada ? t('paused') : t(esTexto ? 'subTexto' : 'sub');
+  var esWeb = d.canal === 'web';
+  sub.textContent = pausada ? t('paused') : t(esWeb ? (esTexto ? 'subWebTexto' : 'subWebAudio') : (esTexto ? 'subTexto' : 'sub'));
   var ico = document.getElementById('q-ico');
   if (ico.dataset.f !== (esTexto ? 't' : 'a')) {
     ico.dataset.f = esTexto ? 't' : 'a';
