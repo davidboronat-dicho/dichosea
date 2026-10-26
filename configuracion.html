@@ -64,6 +64,11 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
 .section-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -.01em; }
 .section-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .section-body { padding: 22px 24px; }
+.logo-box { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.logo-prev { width: 220px; height: 96px; border: 1px dashed var(--border-l); border-radius: 10px; background: #FBF8F1;
+  display: flex; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; color: #9AA59C; font-size: 13px; text-align: center; }
+.logo-prev img { max-width: 100%; max-height: 100%; display: block; }
+.logo-btns { display: flex; gap: 10px; flex-wrap: wrap; }
 .section-foot { padding: 14px 24px; border-top: 1px solid var(--border-l); display: flex; justify-content: flex-end; gap: 10px; align-items: center; }
 
 /* ── FORM ── */
@@ -297,7 +302,7 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
       <div class="form-label" style="margin-bottom:8px" data-i18n="f_canal">Canal</div>
       <div class="lang-tabs">
         <button class="lang-btn active" id="canal-whatsapp" onclick="saveModo('canal','whatsapp')">WhatsApp</button>
-        <button class="lang-btn" id="canal-web" disabled style="opacity:.5;cursor:default" data-i18n="canal_web">Web (próximamente)</button>
+        <button class="lang-btn" id="canal-web" onclick="saveModo('canal','web')" data-i18n="canal_web">Web</button>
       </div>
       <div class="form-label" style="margin:18px 0 8px" data-i18n="f_formato">Formato</div>
       <div class="lang-tabs">
@@ -308,6 +313,33 @@ body { background: var(--surface); color: var(--text); min-height: 100vh; font-s
     </div>
     <div class="section-foot">
       <span class="save-chip" id="chip-modo" data-i18n="chip_saved">✓ Guardado</span>
+    </div>
+  </div>
+
+  <!-- ── 2c. LOGO ── -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>
+      <div>
+        <div class="section-title" data-i18n="s6_title">Logo</div>
+        <div class="section-sub" data-i18n="s6_sub">Aparece en el cartel y en la pantalla completa, en lugar del nombre</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="logo-box">
+        <div class="logo-prev" id="logo-prev"></div>
+        <div class="logo-btns">
+          <button class="btn-primary" type="button" onclick="document.getElementById('logo-file').click()"><span class="btn-label" data-i18n="logo_up">Subir logo</span></button>
+          <button class="btn-ghost" type="button" id="logo-del" onclick="quitarLogo()" data-i18n="logo_del">Quitar</button>
+        </div>
+        <input type="file" id="logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none" onchange="subirLogo(this)">
+      </div>
+      <div class="form-hint" style="margin-top:10px" id="logo-hint" data-i18n="logo_hint">PNG o SVG con fondo transparente, mejor en horizontal.</div>
+    </div>
+    <div class="section-foot">
+      <span class="save-chip" id="chip-logo" data-i18n="chip_saved">✓ Guardado</span>
     </div>
   </div>
 
@@ -496,10 +528,16 @@ var TR = {
     f_ciudad: 'Ciudad', f_email: 'Email de contacto', f_whatsapp: 'WhatsApp',
     btn_discard: 'Descartar', btn_save: 'Guardar cambios', chip_saved: '✓ Guardado',
     s2_title: 'Plan y suscripción', s2_sub: 'Tu plan actual y lo que incluye',
+    s6_title: 'Logo', s6_sub: 'Aparece en el cartel y en la pantalla completa, en lugar del nombre',
+    logo_up: 'Subir logo', logo_del: 'Quitar', logo_none: 'Sin logo: se muestra el nombre', logo_hint: 'PNG o SVG con fondo transparente, mejor en horizontal.',
+    logo_busy: 'Guardando…', logo_err: 'No se ha podido guardar el logo. Prueba con otra imagen.',
     s5_title: 'Cómo te responden', s5_sub: 'Por dónde y de qué forma te contestan las personas que escanean tu QR',
-    f_canal: 'Canal', canal_web: 'Web (próximamente)', f_formato: 'Formato', fmt_audio: 'Audio', fmt_texto: 'Texto',
+    f_canal: 'Canal', canal_web: 'Web', f_formato: 'Formato', fmt_audio: 'Audio', fmt_texto: 'Texto',
     hint_audio: 'Te responden con un audio de WhatsApp. Si alguien prefiere escribir, también se acepta.',
     hint_texto: 'Te responden escribiendo en WhatsApp. Si alguien envía un audio, también se acepta. Los carteles ya impresos siguen sirviendo.',
+    hint_web_audio: 'Te responden desde el navegador, sin WhatsApp: graban un audio de hasta 1 minuto o, si lo prefieren, escriben. Las respuestas son anónimas.',
+    hint_web_texto: 'Te responden escribiendo desde el navegador, sin WhatsApp. Las respuestas son anónimas.',
+    hint_reprint: 'Los carteles ya impresos siguen sirviendo; solo cambia el texto si los vuelves a descargar.',
     s3_title: 'Notificaciones', s3_sub: 'Elige cómo y cuándo te avisamos',
     n1_title: 'Nuevo feedback recibido', n1_desc: 'Recibe un email cada vez que un cliente deja un feedback',
     n2_title: 'Resumen semanal', n2_desc: 'Un informe con los principales indicadores de la semana, cada lunes',
@@ -523,10 +561,16 @@ var TR = {
     f_ciudad: 'Ciutat', f_email: 'Email de contacte', f_whatsapp: 'WhatsApp',
     btn_discard: 'Descartar', btn_save: 'Desar canvis', chip_saved: '✓ Desat',
     s2_title: 'Pla i subscripció', s2_sub: 'El teu pla actual i el que inclou',
+    s6_title: 'Logo', s6_sub: 'Apareix al cartell i a la pantalla completa, en lloc del nom',
+    logo_up: 'Pujar logo', logo_del: 'Treure', logo_none: 'Sense logo: es mostra el nom', logo_hint: 'PNG o SVG amb fons transparent, millor en horitzontal.',
+    logo_busy: 'Desant…', logo_err: "No s'ha pogut desar el logo. Prova amb una altra imatge.",
     s5_title: 'Com et responen', s5_sub: 'Per on i de quina manera et contesten les persones que escanegen el teu QR',
-    f_canal: 'Canal', canal_web: 'Web (aviat)', f_formato: 'Format', fmt_audio: 'Àudio', fmt_texto: 'Text',
+    f_canal: 'Canal', canal_web: 'Web', f_formato: 'Format', fmt_audio: 'Àudio', fmt_texto: 'Text',
     hint_audio: "Et responen amb un àudio de WhatsApp. Si algú prefereix escriure, també s'accepta.",
     hint_texto: "Et responen escrivint a WhatsApp. Si algú envia un àudio, també s'accepta. Els cartells ja impresos continuen servint.",
+    hint_web_audio: "Et responen des del navegador, sense WhatsApp: graven un àudio d'1 minut com a màxim o, si ho prefereixen, escriuen. Les respostes són anònimes.",
+    hint_web_texto: 'Et responen escrivint des del navegador, sense WhatsApp. Les respostes són anònimes.',
+    hint_reprint: 'Els cartells ja impresos continuen servint; només canvia el text si els tornes a descarregar.',
     s3_title: 'Notificacions', s3_sub: "Tria com i quan t'avisem",
     n1_title: 'Nou feedback rebut', n1_desc: 'Rep un email cada vegada que un client deixa un feedback',
     n2_title: 'Resum setmanal', n2_desc: 'Un informe amb els principals indicadors de la setmana, cada dilluns',
@@ -550,10 +594,16 @@ var TR = {
     f_ciudad: 'City', f_email: 'Contact email', f_whatsapp: 'WhatsApp',
     btn_discard: 'Discard', btn_save: 'Save changes', chip_saved: '✓ Saved',
     s2_title: 'Plan & subscription', s2_sub: 'Your current plan and what it includes',
+    s6_title: 'Logo', s6_sub: 'Shown on the poster and the full-screen view, instead of the name',
+    logo_up: 'Upload logo', logo_del: 'Remove', logo_none: 'No logo: the name is shown', logo_hint: 'PNG or SVG with a transparent background, ideally horizontal.',
+    logo_busy: 'Saving…', logo_err: "We couldn't save the logo. Try another image.",
     s5_title: 'How people answer', s5_sub: 'Where and how people who scan your QR reply to you',
-    f_canal: 'Channel', canal_web: 'Web (coming soon)', f_formato: 'Format', fmt_audio: 'Audio', fmt_texto: 'Text',
+    f_canal: 'Channel', canal_web: 'Web', f_formato: 'Format', fmt_audio: 'Audio', fmt_texto: 'Text',
     hint_audio: 'People answer with a WhatsApp voice message. Written replies are accepted too.',
     hint_texto: 'People answer by writing on WhatsApp. Voice messages are accepted too. Posters already printed keep working.',
+    hint_web_audio: 'People answer from their browser, no WhatsApp needed: they record up to 1 minute of audio or, if they prefer, write. Answers are anonymous.',
+    hint_web_texto: 'People answer by writing in their browser, no WhatsApp needed. Answers are anonymous.',
+    hint_reprint: 'Posters already printed keep working; only the text changes if you download them again.',
     s3_title: 'Notifications', s3_sub: 'Choose how and when we alert you',
     n1_title: 'New feedback received', n1_desc: 'Get an email every time a customer leaves feedback',
     n2_title: 'Weekly summary', n2_desc: 'A report with key metrics for the week, every Monday',
@@ -589,6 +639,7 @@ function applyLang(lang) {
   document.documentElement.lang = lang === 'en' ? 'en' : lang === 'ca' ? 'ca' : 'es';
   renderTipos(lang);
   renderModo();
+  renderLogo();
   try { sessionStorage.setItem('dicho_lang_' + TOKEN, lang); } catch(e) {}
 }
 
@@ -716,6 +767,7 @@ function renderPlan(planKey) {
       document.getElementById('f-tipo').value = data.tipoNegocio || '';
       renderPlan(data.plan || 'sin_costo');
       renderModo();
+      renderLogo();
     })
     .catch(function(err) { console.error('Error cargando config:', err); });
 })();
@@ -818,7 +870,9 @@ function renderModo() {
   ['whatsapp', 'web'].forEach(function(c) { var b = document.getElementById('canal-' + c); if (b) b.classList.toggle('active', c === canal); });
   ['audio', 'texto'].forEach(function(f) { var b = document.getElementById('formato-' + f); if (b) b.classList.toggle('active', f === formato); });
   var h = document.getElementById('modo-hint'), tr = TR[CURRENT_LANG] || TR.es;
-  if (h) h.textContent = formato === 'texto' ? tr.hint_texto : tr.hint_audio;
+  if (h) h.textContent = canal === 'web'
+    ? (formato === 'texto' ? tr.hint_web_texto : tr.hint_web_audio) + ' ' + tr.hint_reprint
+    : (formato === 'texto' ? tr.hint_texto : tr.hint_audio);
 }
 function saveModo(campo, valor) {
   if ((CFG_DATA[campo] || (campo === 'canal' ? 'whatsapp' : 'audio')) === valor) return;
@@ -833,6 +887,63 @@ function saveModo(campo, valor) {
     })
     .catch(function() { CFG_DATA[campo] = antes; renderModo(); alert('Error de conexión'); });
 }
+
+// ── Logo (Clientes col Y): se reduce aquí y se guarda como imagen PNG incrustada ──
+var LOGO_MAX_W = 600, LOGO_MAX_H = 240, LOGO_MAX_LEN = 45000;
+function renderLogo() {
+  var tr = TR[CURRENT_LANG] || TR.es, box = document.getElementById('logo-prev');
+  if (!box) return;
+  box.innerHTML = '';
+  if (CFG_DATA.logo) { var im = document.createElement('img'); im.src = CFG_DATA.logo; im.alt = ''; box.appendChild(im); }
+  else box.textContent = tr.logo_none;
+  document.getElementById('logo-del').style.display = CFG_DATA.logo ? '' : 'none';
+}
+function reducirLogo(file) {
+  return new Promise(function(res, rej) {
+    var url = URL.createObjectURL(file), im = new Image();
+    im.onload = function() {
+      var w = im.naturalWidth || 600, h = im.naturalHeight || 240;
+      var esc = Math.min(1, LOGO_MAX_W / w, LOGO_MAX_H / h), out = '';
+      for (var i = 0; i < 8; i++) {
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(w * esc)); c.height = Math.max(1, Math.round(h * esc));
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+        out = c.toDataURL('image/png');
+        if (out.length <= LOGO_MAX_LEN) break;
+        esc *= 0.8;
+      }
+      URL.revokeObjectURL(url);
+      out.length <= LOGO_MAX_LEN ? res(out) : rej(new Error('grande'));
+    };
+    im.onerror = function() { URL.revokeObjectURL(url); rej(new Error('imagen')); };
+    im.src = url;
+  });
+}
+function guardarLogo(logo) {
+  var tr = TR[CURRENT_LANG] || TR.es, antes = CFG_DATA.logo || '';
+  CFG_DATA.logo = logo; renderLogo();
+  document.getElementById('logo-hint').textContent = tr.logo_busy;
+  return fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                          body: JSON.stringify({ page: 'saveLogo', token: TOKEN, logo: logo }) })
+    .then(function(r) { return r.json(); })
+    .then(function(r) {
+      if (!r || !r.ok) throw new Error((r && r.error) || 'error');
+      document.getElementById('logo-hint').textContent = tr.logo_hint;
+      showChip('chip-logo');
+    })
+    .catch(function() {
+      CFG_DATA.logo = antes; renderLogo();
+      document.getElementById('logo-hint').textContent = tr.logo_err;
+    });
+}
+function subirLogo(input) {
+  var f = input.files && input.files[0]; input.value = '';
+  if (!f) return;
+  reducirLogo(f).then(guardarLogo).catch(function() {
+    document.getElementById('logo-hint').textContent = (TR[CURRENT_LANG] || TR.es).logo_err;
+  });
+}
+function quitarLogo() { guardarLogo(''); }
 
 function showChip(id) {
   var chip = document.getElementById(id);
